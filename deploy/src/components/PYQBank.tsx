@@ -214,7 +214,7 @@ export function PYQBank() {
 
   // AI questions loaded from static JSON file (auto-published by GitHub Actions)
   const [aiQuestions, setAiQuestions] = useState<UnifiedQuestion[]>([]);
-  const [aiMeta,      setAiMeta]      = useState<{ lastUpdated: string; todayCount: number } | null>(null);
+  const [aiMeta,      setAiMeta]      = useState<{ lastUpdated: string; todayCount: number; totalDays: number } | null>(null);
   const [loadingAI,   setLoadingAI]   = useState<boolean>(true);
 
   const fetchAI = useCallback(async () => {
@@ -225,7 +225,7 @@ export function PYQBank() {
       const data = await res.json();
       const qs   = (data.questions ?? []) as AIQuestion[];
       setAiQuestions(qs.map(aiToUnified));
-      setAiMeta({ lastUpdated: data.lastUpdated ?? "", todayCount: data.todayCount ?? 0 });
+      setAiMeta({ lastUpdated: data.lastUpdated ?? "", todayCount: data.todayCount ?? 0, totalDays: data.totalDays ?? 1 });
     } catch {
       // File doesn't exist yet — first workflow run pending; silent fallback
     } finally {
@@ -332,15 +332,17 @@ export function PYQBank() {
             <h2 className="font-mono font-bold text-foreground uppercase tracking-wider text-sm">PYQ Practice</h2>
             <p className="text-xs text-muted-foreground font-mono">
               {allQuestions.length.toLocaleString()} questions
-              {todayCount > 0 && (
-                <span className="ml-2 text-yellow-400">
-                  <Zap className="w-3 h-3 inline mr-0.5" />{todayCount} new today
+              {aiMeta && aiMeta.totalDays > 0 && (
+                <span className="ml-2 text-primary/80">
+                  · Day {aiMeta.totalDays} · {(aiMeta.totalDays * 500).toLocaleString()} total
                 </span>
               )}
-              {loadingAI && <span className="ml-2 animate-pulse">· loading AI questions…</span>}
-              {aiMeta?.lastUpdated && (
-                <span className="ml-2 text-muted-foreground/60">· updated {aiMeta.lastUpdated}</span>
+              {todayCount > 0 && (
+                <span className="ml-2 text-yellow-400">
+                  <Zap className="w-3 h-3 inline mr-0.5" />+{todayCount} today
+                </span>
               )}
+              {loadingAI && <span className="ml-2 animate-pulse">· loading…</span>}
             </p>
           </div>
         </div>
