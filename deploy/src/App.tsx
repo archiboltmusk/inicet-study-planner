@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Target, Calendar, Clock, StickyNote, Flag, Bot, Flame, Download, Upload, BookOpen } from "lucide-react";
+import { Target, Calendar, Clock, StickyNote, Flag, Bot, Flame, Download, Upload, BookOpen, Award, MessageSquare, ExternalLink, Sun, Moon } from "lucide-react";
 import { StudyReminderBanner, StudyReminderBell } from "@/components/StudyReminder";
 import { EXAM_DATE, SCHEDULE } from "@/data/schedule";
 import { safeLoad, safeSave } from "@/lib/storage";
@@ -13,8 +13,14 @@ import { RevisionList, FlaggedTopic } from "@/components/RevisionList";
 import { MockScoreTracker } from "@/components/MockScoreTracker";
 import { ChatPanel } from "@/components/ChatPanel";
 import { PYQBank } from "@/components/PYQBank";
+import { TopperInsights } from "@/components/TopperInsights";
+import { RankPredictor } from "@/components/RankPredictor";
+import { OnboardingModal } from "@/components/OnboardingModal";
+import { ResourceHub } from "@/components/ResourceHub";
+import { CommunityQA } from "@/components/CommunityQA";
+import { AdaptiveSuggestions } from "@/components/AdaptiveSuggestions";
 
-type MainTab = 'planner' | 'schedule' | 'notes' | 'revision' | 'ai' | 'pyq';
+type MainTab = 'planner' | 'schedule' | 'notes' | 'revision' | 'ai' | 'pyq' | 'toppers' | 'resources' | 'community';
 
 interface TimeLeft   { days: number; hours: number; minutes: number; seconds: number; }
 interface StreakData  { count: number; longest: number; lastDate: string; }
@@ -65,12 +71,38 @@ export default function App() {
   const [streak, setStreak] = useState<StreakData>(() =>
     safeLoad('inicet_streak', { count: 0, longest: 0, lastDate: '' })
   );
+  const [pyqAttempts, setPyqAttempts] = useState<Record<number, { selected: number; correct: boolean }>>(() =>
+    safeLoad('inicet_pyq_attempts', {})
+  );
+
   const [activeTab,       setActiveTab]       = useState<MainTab>('planner');
   const [selectedSubject, setSelectedSubject] = useState<string>('All');
   const [selectedDayId,   setSelectedDayId]   = useState<number>(1);
   const [detailTab,       setDetailTab]       = useState<DetailTab>('TOPICS');
   const [timeLeft,        setTimeLeft]        = useState<TimeLeft>(calcTimeLeft);
+  const [showOnboarding,  setShowOnboarding]  = useState<boolean>(() =>
+    !localStorage.getItem('inicet_onboarded')
+  );
+  const [isLightMode, setIsLightMode] = useState<boolean>(() =>
+    safeLoad('inicet_light_mode', false)
+  );
+
   const importRef = useRef<HTMLInputElement>(null);
+
+  // Apply light/dark class to document root
+  useEffect(() => {
+    if (isLightMode) {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+    safeSave('inicet_light_mode', isLightMode);
+  }, [isLightMode]);
+
+  const handleOnboardingDone = () => {
+    localStorage.setItem('inicet_onboarded', '1');
+    setShowOnboarding(false);
+  };
 
   useEffect(() => { safeSave('inicet_completed_days', completedDays); }, [completedDays]);
   useEffect(() => { safeSave('inicet_notes', notes); },                 [notes]);
@@ -82,6 +114,15 @@ export default function App() {
   useEffect(() => {
     const timer = setInterval(() => setTimeLeft(calcTimeLeft()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Sync pyqAttempts from localStorage when PYQBank updates it directly
+  useEffect(() => {
+    const handler = () => {
+      setPyqAttempts(safeLoad('inicet_pyq_attempts', {}));
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
   }, []);
 
   const toggleDayCompletion = (day: number) => {
@@ -141,16 +182,22 @@ export default function App() {
   const studiedToday  = streak.lastDate === new Date().toISOString().slice(0, 10);
 
   const NAV_TABS: { id: MainTab; label: string; Icon: React.FC<{ className?: string }>; badge?: number }[] = [
-    { id: 'planner',  label: 'Planner',  Icon: Calendar                               },
-    { id: 'schedule', label: 'Schedule', Icon: Clock                                  },
-    { id: 'notes',    label: 'Notes',    Icon: StickyNote                             },
-    { id: 'revision', label: 'Revision', Icon: Flag, badge: flagged.length || undefined },
-    { id: 'ai',       label: 'AI Tutor', Icon: Bot                                    },
-    { id: 'pyq',      label: 'PYQ',      Icon: BookOpen                               },
+    { id: 'planner',   label: 'Planner',   Icon: Calendar                                },
+    { id: 'schedule',  label: 'Schedule',  Icon: Clock                                   },
+    { id: 'notes',     label: 'Notes',     Icon: StickyNote                              },
+    { id: 'revision',  label: 'Revision',  Icon: Flag, badge: flagged.length || undefined },
+    { id: 'ai',        label: 'AI Tutor',  Icon: Bot                                     },
+    { id: 'pyq',       label: 'PYQ',       Icon: BookOpen                                },
+    { id: 'toppers',   label: 'Toppers',   Icon: Award                                   },
+    { id: 'resources', label: 'Resources', Icon: ExternalLink                            },
+    { id: 'community', label: 'Community', Icon: MessageSquare                           },
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      {/* Onboarding modal */}
+      {showOnboarding && <OnboardingModal onDone={handleOnboardingDone} />}
+
       {/* Header */}
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <StudyReminderBanner studiedToday={studiedToday} />
@@ -175,6 +222,15 @@ export default function App() {
               </div>
             )}
             <CountdownTimer timeLeft={timeLeft} />
+            {/* Theme toggle */}
+            <button
+              onClick={() => setIsLightMode(m => !m)}
+              title={isLightMode ? "Switch to dark mode" : "Switch to light mode"}
+              className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded border border-transparent hover:border-border"
+              aria-label="Toggle theme"
+            >
+              {isLightMode ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+            </button>
             <StudyReminderBell studiedToday={studiedToday} />
           </div>
         </div>
@@ -286,9 +342,18 @@ export default function App() {
         <div id="main-panel-schedule" role="tabpanel" aria-label="Daily Schedule" hidden={activeTab !== 'schedule'}>
           <div className="flex flex-col gap-8 max-w-5xl mx-auto">
             <DailyScheduleView />
-            <div className="bg-card border border-border rounded-xl p-6">
-              <MockScoreTracker />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-card border border-border rounded-xl p-6">
+                <MockScoreTracker />
+              </div>
+              <RankPredictor />
             </div>
+            <AdaptiveSuggestions
+              pyqAttempts={pyqAttempts}
+              mcqScores={mcqScores}
+              completedDays={completedDays}
+              onGoToTab={(tab) => setActiveTab(tab as MainTab)}
+            />
           </div>
         </div>
 
@@ -318,6 +383,18 @@ export default function App() {
 
         <div id="main-panel-pyq" role="tabpanel" aria-label="PYQ Practice" hidden={activeTab !== 'pyq'}>
           <PYQBank />
+        </div>
+
+        <div id="main-panel-toppers" role="tabpanel" aria-label="Topper Insights" hidden={activeTab !== 'toppers'}>
+          <TopperInsights />
+        </div>
+
+        <div id="main-panel-resources" role="tabpanel" aria-label="Resource Hub" hidden={activeTab !== 'resources'}>
+          <ResourceHub />
+        </div>
+
+        <div id="main-panel-community" role="tabpanel" aria-label="Community Q&A" hidden={activeTab !== 'community'}>
+          <CommunityQA />
         </div>
 
       </main>
