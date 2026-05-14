@@ -22,7 +22,6 @@ const OUTPUT = join(__dir, "..", "deploy", "public", "daily-questions.json");
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const BATCH_SIZE = 40; // per subject call (~520 total across 13 subjects)
-const KEEP_DAYS  = 3;  // rolling window kept in the JSON file
 
 const SUBJECTS = [
   {
@@ -151,8 +150,13 @@ async function generateForSubject(subject) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  const today = new Date().toISOString().slice(0, 10);
-  console.log(`\n🚀 INI-CET Daily Question Generator — batch ${today}\n`);
+  // BATCH_DATE_OFFSET lets the bulk-seed workflow simulate historical batches
+  // e.g. offset=3 means "generate as if this were 3 days ago"
+  const offsetDays = parseInt(process.env.BATCH_DATE_OFFSET ?? "0");
+  const d = new Date();
+  d.setDate(d.getDate() - offsetDays);
+  const today = d.toISOString().slice(0, 10);
+  console.log(`\n🚀 INI-CET Daily Question Generator — batch ${today}${offsetDays > 0 ? ` (offset -${offsetDays}d)` : ""}\n`);
 
   // ── Generate fresh questions ──────────────────────────────────────────────
   let newQuestions = [];
@@ -169,7 +173,7 @@ async function main() {
   }
   console.log(`\n  Generated: ${newQuestions.length} questions`);
 
-  // ── Load existing file, drop expired batches ──────────────────────────────
+  // ── Load existing questions and append (questions stack up over time) ────────
   let existing = [];
   if (existsSync(OUTPUT)) {
     try {
@@ -178,18 +182,18 @@ async function main() {
     } catch { /* ignore corrupt file */ }
   }
 
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - KEEP_DAYS);
-  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  // Keep all previous questions — new ones prepended so today's batch shows first
+  const merged = [...newQuestions, ...existing];
 
-  const retained = existing.filter(q => (q.batch_date ?? "") > cutoffStr);
-  const merged   = [...newQuestions, ...retained];
+  // Count unique batches so we can show "Day N" in the UI
+  const batches = [...new Set(merged.map(q => q.batch_date))].sort();
 
   // ── Write output ──────────────────────────────────────────────────────────
   const output = {
     lastUpdated:  today,
     totalCount:   merged.length,
     todayCount:   newQuestions.length,
+    totalDays:    batches.length,
     questions:    merged,
   };
 
