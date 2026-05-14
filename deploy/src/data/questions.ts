@@ -20,6 +20,7 @@ export const QUESTION_SUBJECTS: string[] = [
   "Paediatrics",
   "ENT/Ophthalmology",
   "PSM/Community Medicine",
+  "Forensic Medicine",
 ];
 
 export const QUESTIONS: Question[] = [
@@ -1636,4 +1637,1261 @@ export const QUESTIONS: Question[] = [
     explanation:
       "DALY (Disability-Adjusted Life Year) = YLL + YLD. One DALY = one year of healthy life lost. It is the standard metric used by WHO/World Bank for global disease burden comparisons.",
   },
+
+  // ─── PHARMACOLOGY EXTENDED (127–140) ─────────────────────────────────────
+  {
+    id: 127,
+    subject: "Pharmacology",
+    stem: "Drug of choice for status epilepticus (first-line) in the emergency setting is:",
+    options: ["Phenytoin IV", "Lorazepam IV", "Valproate IV", "Phenobarbitone IV"],
+    answer: 1,
+    explanation:
+      "Lorazepam IV (0.1 mg/kg) is first-line for status epilepticus — longer duration of CNS action than diazepam. If IV access is unavailable, midazolam IM or diazepam PR. Phenytoin IV is second-line.",
+  },
+  {
+    id: 128,
+    subject: "Pharmacology",
+    stem: "Which drug is the drug of choice for organophosphate poisoning?",
+    options: ["Pralidoxime alone", "Atropine alone", "Atropine + Pralidoxime", "Physostigmine"],
+    answer: 2,
+    explanation:
+      "Atropine blocks muscarinic effects (SLUDGE); pralidoxime (PAM) reactivates acetylcholinesterase if given within 24 hours (before 'ageing'). Both are required. Atropine is titrated to dry secretions.",
+  },
+  {
+    id: 129,
+    subject: "Pharmacology",
+    stem: "Absolute contraindication to metformin use is:",
+    options: ["Obesity", "eGFR < 30 mL/min/1.73m²", "Age > 65 years", "Hepatic steatosis"],
+    answer: 1,
+    explanation:
+      "Metformin is contraindicated when eGFR < 30 (risk of lactic acidosis). It can be used cautiously if eGFR 30–45 with dose reduction. Contraindicated also in IV contrast procedures and surgery.",
+  },
+  {
+    id: 130,
+    subject: "Pharmacology",
+    stem: "The mechanism of action of heparin is:",
+    options: [
+      "Direct thrombin inhibitor",
+      "Inhibits vitamin K-dependent clotting factors",
+      "Potentiates antithrombin III to inhibit thrombin and factor Xa",
+      "Inhibits platelet aggregation",
+    ],
+    answer: 2,
+    explanation:
+      "Heparin binds antithrombin III (AT-III) → conformational change → accelerates AT-III inhibition of thrombin (factor IIa) and factor Xa by ~1000-fold. Low molecular weight heparins primarily inhibit Xa.",
+  },
+  {
+    id: 131,
+    subject: "Pharmacology",
+    stem: "Which antifungal works by inhibiting beta-1,3-glucan synthase?",
+    options: ["Fluconazole", "Amphotericin B", "Caspofungin", "Terbinafine"],
+    answer: 2,
+    explanation:
+      "Echinocandins (caspofungin, micafungin, anidulafungin) inhibit beta-1,3-glucan synthase → disrupts fungal cell wall synthesis. Active against Candida and Aspergillus. Not active against Cryptococcus.",
+  },
+  {
+    id: 132,
+    subject: "Pharmacology",
+    stem: "Serotonin syndrome is caused by which combination?",
+    options: [
+      "SSRI + MAO-A inhibitor",
+      "Dopamine agonist + antipsychotic",
+      "Beta blocker + calcium channel blocker",
+      "ACE inhibitor + ARB",
+    ],
+    answer: 0,
+    explanation:
+      "Serotonin syndrome = excess serotonergic activity. Classic triad: hyperthermia + neuromuscular abnormality + autonomic instability. Caused by SSRI+MAOI, SSRI+tramadol, SSRI+linezolid, SSRI+fentanyl, etc.",
+  },
+  {
+    id: 133,
+    subject: "Pharmacology",
+    stem: "The drug of choice for Pseudomonas aeruginosa infections is:",
+    options: ["Amoxicillin-clavulanate", "Piperacillin-tazobactam", "Amoxicillin", "Cefazolin"],
+    answer: 1,
+    explanation:
+      "Piperacillin-tazobactam (pip-tazo) has excellent anti-pseudomonal activity. Alternatives include cefepime, meropenem, imipenem, ciprofloxacin, or aztreonam. Pseudomonas is intrinsically resistant to many penicillins.",
+  },
+  {
+    id: 134,
+    subject: "Pharmacology",
+    stem: "Neuroleptic malignant syndrome (NMS) is most commonly caused by:",
+    options: ["Benzodiazepines", "Antipsychotics (D2 antagonists)", "SSRIs", "Opioids"],
+    answer: 1,
+    explanation:
+      "NMS: hyperthermia + lead-pipe rigidity + altered consciousness + autonomic instability + elevated CK. Caused by D2 receptor blockade (typical > atypical antipsychotics, also metoclopramide). Treat with dantrolene + bromocriptine.",
+  },
+  {
+    id: 135,
+    subject: "Pharmacology",
+    stem: "Which drug is an irreversible COX inhibitor?",
+    options: ["Ibuprofen", "Diclofenac", "Aspirin", "Celecoxib"],
+    answer: 2,
+    explanation:
+      "Aspirin irreversibly acetylates COX-1 and COX-2. This permanently inhibits platelet thromboxane A2 synthesis for the platelet's lifetime (~10 days). All other NSAIDs are reversible, competitive inhibitors.",
+  },
+  {
+    id: 136,
+    subject: "Pharmacology",
+    stem: "Drug of choice for Helicobacter pylori eradication (first-line triple therapy) in India is:",
+    options: [
+      "Amoxicillin + clarithromycin + omeprazole",
+      "Tetracycline + metronidazole + bismuth",
+      "Metronidazole + tinidazole + rabeprazole",
+      "Cefixime + azithromycin + pantoprazole",
+    ],
+    answer: 0,
+    explanation:
+      "Standard triple therapy: PPI + amoxicillin + clarithromycin × 14 days. Quadruple therapy (PPI + bismuth + metronidazole + tetracycline) is used where clarithromycin resistance >15%. India uses clarithromycin-based first.",
+  },
+  {
+    id: 137,
+    subject: "Pharmacology",
+    stem: "Which diuretic is the drug of choice for acute pulmonary edema?",
+    options: ["Hydrochlorothiazide", "Spironolactone", "Furosemide", "Acetazolamide"],
+    answer: 2,
+    explanation:
+      "Furosemide IV in acute pulmonary oedema: immediate venodilation (within minutes, before diuresis begins), then diuresis. Loop diuretics also reduce preload acutely. Dose: 40–80 mg IV stat.",
+  },
+  {
+    id: 138,
+    subject: "Pharmacology",
+    stem: "The antidote for paracetamol (acetaminophen) overdose is:",
+    options: ["Flumazenil", "Naloxone", "N-acetylcysteine", "Fomepizole"],
+    answer: 2,
+    explanation:
+      "N-acetylcysteine (NAC) replenishes glutathione stores → prevents NAPQI accumulation → prevents hepatotoxicity. Most effective within 8–10 hours of ingestion. IV protocol: 3-bag regimen over 21 hours.",
+  },
+  {
+    id: 139,
+    subject: "Pharmacology",
+    stem: "Which drug prolongs QT interval and is associated with Torsades de Pointes?",
+    options: ["Lidocaine", "Metoprolol", "Amiodarone", "Verapamil"],
+    answer: 2,
+    explanation:
+      "Amiodarone (class III) blocks K⁺ channels → prolongs QT. Despite this, Torsades is paradoxically rare with amiodarone (< other class III drugs like sotalol, dofetilide) because it also blocks ICa and INa.",
+  },
+  {
+    id: 140,
+    subject: "Pharmacology",
+    stem: "Trastuzumab (Herceptin) targets which receptor?",
+    options: ["EGFR (HER1)", "HER2/neu (ErbB2)", "VEGFR", "BCR-ABL"],
+    answer: 1,
+    explanation:
+      "Trastuzumab is a monoclonal antibody against HER2/neu (ErbB2). Used in HER2-positive breast and gastric cancers. Cardiotoxicity (cardiomyopathy) is a key side effect — differs from anthracycline toxicity (irreversible vs reversible).",
+  },
+
+  // ─── MEDICINE EXTENDED (141–155) ─────────────────────────────────────────
+  {
+    id: 141,
+    subject: "Medicine",
+    stem: "The most common cause of community-acquired pneumonia (CAP) in adults is:",
+    options: ["Haemophilus influenzae", "Streptococcus pneumoniae", "Mycoplasma pneumoniae", "Klebsiella pneumoniae"],
+    answer: 1,
+    explanation:
+      "Streptococcus pneumoniae is the commonest cause of CAP in all age groups. Mycoplasma ('atypical') is commonest in young adults. Klebsiella is associated with alcoholics and diabetics ('currant-jelly sputum').",
+  },
+  {
+    id: 142,
+    subject: "Medicine",
+    stem: "CURB-65 score of ≥3 in community-acquired pneumonia indicates:",
+    options: ["Home treatment", "Outpatient antibiotics only", "Hospital admission", "ICU admission mandatory"],
+    answer: 2,
+    explanation:
+      "CURB-65: Confusion, Urea >7mmol/L, RR ≥30, BP systolic <90 or diastolic ≤60, Age ≥65. Score 0–1: home, 2: hospitalise, ≥3: hospital (consider ICU if 4–5). CURB-65 ≥3 = severe CAP.",
+  },
+  {
+    id: 143,
+    subject: "Medicine",
+    stem: "Which autoantibody is most specific for Systemic Lupus Erythematosus (SLE)?",
+    options: ["Anti-dsDNA", "ANA", "Anti-Ro (SSA)", "Anti-CCP"],
+    answer: 0,
+    explanation:
+      "Anti-dsDNA and anti-Sm are most specific for SLE. ANA is sensitive (~99%) but not specific. Anti-Ro/La seen in Sjögren's and neonatal lupus. Anti-CCP is specific for rheumatoid arthritis.",
+  },
+  {
+    id: 144,
+    subject: "Medicine",
+    stem: "The classical triad of Wernicke's encephalopathy is:",
+    options: [
+      "Confusion + ataxia + ophthalmoplegia",
+      "Fever + neck stiffness + photophobia",
+      "Tremor + rigidity + bradykinesia",
+      "Diplopia + dysphagia + dysarthria",
+    ],
+    answer: 0,
+    explanation:
+      "Wernicke's encephalopathy (thiamine deficiency): confusion + ataxia + ophthalmoplegia (lateral gaze palsy/nystagmus). Treat with IV thiamine BEFORE glucose. Korsakoff's psychosis (confabulation) follows if untreated.",
+  },
+  {
+    id: 145,
+    subject: "Medicine",
+    stem: "Gold standard investigation for diagnosis of pulmonary embolism is:",
+    options: ["D-dimer", "CT pulmonary angiography (CTPA)", "V/Q scan", "Pulmonary angiography"],
+    answer: 1,
+    explanation:
+      "CTPA is the current gold standard — high sensitivity/specificity, widely available. Classic pulmonary angiography (invasive) was the old gold standard. V/Q scan used if CTPA contraindicated (CKD, contrast allergy, pregnancy).",
+  },
+  {
+    id: 146,
+    subject: "Medicine",
+    stem: "Child-Pugh class C cirrhosis indicates a 1-year survival of approximately:",
+    options: ["90%", "80%", "45%", "25%"],
+    answer: 2,
+    explanation:
+      "Child-Pugh scoring: Class A (5–6) = 100% 1-yr survival, Class B (7–9) = 80%, Class C (10–15) = 45%. MELD score (creatinine, bilirubin, INR) is now preferred for transplant listing (more objective).",
+  },
+  {
+    id: 147,
+    subject: "Medicine",
+    stem: "First-line treatment for giant cell arteritis (temporal arteritis) to prevent blindness is:",
+    options: ["NSAIDs", "Methotrexate", "High-dose prednisolone", "Hydroxychloroquine"],
+    answer: 2,
+    explanation:
+      "High-dose corticosteroids (prednisolone 40–60 mg/day) must be started immediately on clinical suspicion — BEFORE biopsy results — to prevent irreversible blindness. Temporal artery biopsy confirms diagnosis.",
+  },
+  {
+    id: 148,
+    subject: "Medicine",
+    stem: "The hallmark ECG finding of hyperkalaemia is:",
+    options: ["Prolonged PR interval", "Peaked T waves", "Delta waves", "Osborn (J) waves"],
+    answer: 1,
+    explanation:
+      "Progressive ECG changes in hyperkalaemia: peaked T waves (earliest) → PR prolongation → wide QRS → sine wave pattern → VF. Osborn waves = hypothermia. Delta waves = WPW. Treat K⁺ >6.5 or any ECG change urgently.",
+  },
+  {
+    id: 149,
+    subject: "Medicine",
+    stem: "Diabetes insipidus (central) is treated with:",
+    options: ["Furosemide", "Desmopressin (DDAVP)", "Vasopressin IV only", "Hydrochlorothiazide"],
+    answer: 1,
+    explanation:
+      "Central DI (ADH deficiency) → desmopressin (synthetic ADH analogue, intranasal or oral). Nephrogenic DI (ADH resistance) → low-sodium diet + hydrochlorothiazide + NSAIDs. Lithium-induced = nephrogenic DI.",
+  },
+  {
+    id: 150,
+    subject: "Medicine",
+    stem: "Anti-GBM (anti-glomerular basement membrane) disease (Goodpasture syndrome) characteristically presents with:",
+    options: [
+      "Proteinuria + haematuria alone",
+      "Pulmonary haemorrhage + rapidly progressive glomerulonephritis",
+      "Nephrotic syndrome + oedema",
+      "Haematuria + deafness",
+    ],
+    answer: 1,
+    explanation:
+      "Goodpasture syndrome: anti-GBM antibodies → pulmonary haemorrhage + RPGN. IF shows linear IgG deposits along GBM (pathognomonic). Anti-GBM + ANCA double-positive has worse prognosis. Treat with plasma exchange + immunosuppression.",
+  },
+  {
+    id: 151,
+    subject: "Medicine",
+    stem: "The most common type of renal calculus in India is:",
+    options: ["Uric acid stones", "Calcium oxalate stones", "Struvite (triple phosphate) stones", "Cystine stones"],
+    answer: 1,
+    explanation:
+      "Calcium oxalate stones are the most common (80%) worldwide and in India. Risk factors: hypercalciuria, hyperoxaluria, hypocitraturia. Uric acid stones: radiolucent on X-ray, seen in gout/hyperuricosuria. Struvite: 'staghorn', associated with urease-producing bacteria.",
+  },
+  {
+    id: 152,
+    subject: "Medicine",
+    stem: "Which clinical feature best distinguishes Type 1 DM from Type 2 DM at presentation?",
+    options: [
+      "Age > 40 years",
+      "Obesity",
+      "Diabetic ketoacidosis at onset",
+      "Family history of diabetes",
+    ],
+    answer: 2,
+    explanation:
+      "DKA at presentation is the hallmark of Type 1 DM (absolute insulin deficiency → lipolysis → ketogenesis). Type 2 DM presents with HHS (hyperosmolar hyperglycaemic state) or is found incidentally. C-peptide and antibodies (anti-GAD, anti-IA2) confirm Type 1.",
+  },
+  {
+    id: 153,
+    subject: "Medicine",
+    stem: "Erythema nodosum is most commonly associated with which condition in India?",
+    options: ["Crohn's disease", "Sarcoidosis", "Tuberculosis", "Streptococcal infection"],
+    answer: 2,
+    explanation:
+      "In India, the most common cause of erythema nodosum is tuberculosis (due to high TB prevalence). Globally, streptococcal infection and sarcoidosis are common. EN = tender, erythematous nodules on shins (panniculitis).",
+  },
+  {
+    id: 154,
+    subject: "Medicine",
+    stem: "Trousseau's sign (migrating thrombophlebitis) is classically associated with:",
+    options: ["SLE", "Pancreatic adenocarcinoma", "Liver cirrhosis", "Renal cell carcinoma"],
+    answer: 1,
+    explanation:
+      "Trousseau's sign of malignancy = migratory thrombophlebitis — classically associated with pancreatic cancer (Trousseau himself died of it). Also seen in other GI adenocarcinomas. Hypercoagulability via mucin-mediated platelet activation.",
+  },
+  {
+    id: 155,
+    subject: "Medicine",
+    stem: "Chvostek's sign (facial muscle twitch on tapping facial nerve) indicates:",
+    options: ["Hyperkalaemia", "Hypomagnesaemia", "Hypocalcaemia", "Hypernatraemia"],
+    answer: 2,
+    explanation:
+      "Chvostek's sign = tap facial nerve anterior to ear → facial muscle twitch → indicates hypocalcaemia (neuromuscular irritability). Trousseau's sign (carpal spasm with BP cuff) is more specific for hypocalcaemia. Treat with IV calcium gluconate if symptomatic.",
+  },
+
+  // ─── SURGERY EXTENDED (156–168) ──────────────────────────────────────────
+  {
+    id: 156,
+    subject: "Surgery",
+    stem: "Most common type of thyroid carcinoma is:",
+    options: ["Follicular", "Papillary", "Medullary", "Anaplastic"],
+    answer: 1,
+    explanation:
+      "Papillary thyroid carcinoma (PTC) is the most common (80%). Best prognosis. RET/PTC rearrangement. Psammoma bodies on histology. Medullary = calcitonin-secreting, associated with MEN2. Anaplastic = worst prognosis, rapidly fatal.",
+  },
+  {
+    id: 157,
+    subject: "Surgery",
+    stem: "The Alvarado score is used to assess the likelihood of:",
+    options: ["Appendicitis", "Cholelithiasis", "Diverticulitis", "Pancreatitis"],
+    answer: 0,
+    explanation:
+      "Alvarado score (MANTRELS): Migration of pain to RIF, Anorexia, Nausea, Tenderness in RIF, Rebound tenderness, Elevated temperature, Leucocytosis, Shift to left. Score ≥7 = high likelihood appendicitis → surgery.",
+  },
+  {
+    id: 158,
+    subject: "Surgery",
+    stem: "The most common cause of small bowel obstruction in adults in developed countries is:",
+    options: ["Hernia", "Adhesions", "Tumours", "Volvulus"],
+    answer: 1,
+    explanation:
+      "Adhesions (post-surgical) are the most common cause of SBO in adults (~60%). In developing countries (and in virgin abdomen), hernia is the commonest cause. Management: conservative (NGT, IV fluids) vs surgery based on signs of strangulation.",
+  },
+  {
+    id: 159,
+    subject: "Surgery",
+    stem: "Courvoisier's law states that in obstructive jaundice:",
+    options: [
+      "Palpable gallbladder = stone in CBD",
+      "Palpable gallbladder with jaundice is unlikely due to stone",
+      "Jaundice without palpable gallbladder = malignancy",
+      "Gallbladder carcinoma causes jaundice always",
+    ],
+    answer: 1,
+    explanation:
+      "Courvoisier's law: jaundice + palpable (non-tender) gallbladder is unlikely to be due to stone (chronic stone disease causes fibrosis/shrinkage). More likely = periampullary carcinoma, pancreatic head cancer, cholangiocarcinoma.",
+  },
+  {
+    id: 160,
+    subject: "Surgery",
+    stem: "Duke's B colorectal carcinoma means:",
+    options: [
+      "Tumour confined to mucosa",
+      "Tumour through muscularis propria, no lymph node involvement",
+      "Lymph node involvement",
+      "Distant metastases",
+    ],
+    answer: 1,
+    explanation:
+      "Duke's staging: A = confined to bowel wall; B = through bowel wall, nodes negative; C = lymph node positive; D = distant metastases (added later). Now replaced by TNM staging in practice but Duke's remains an exam favourite.",
+  },
+  {
+    id: 161,
+    subject: "Surgery",
+    stem: "Sentinel lymph node biopsy (SLNB) is a technique used in which cancer to avoid unnecessary axillary dissection?",
+    options: ["Thyroid cancer", "Breast cancer", "Colon cancer", "Prostate cancer"],
+    answer: 1,
+    explanation:
+      "SLNB in breast cancer: inject blue dye/radiotracer near tumour → identify first draining (sentinel) lymph node → biopsy. If SLN negative, full axillary clearance avoided → less morbidity (lymphoedema, shoulder dysfunction).",
+  },
+  {
+    id: 162,
+    subject: "Surgery",
+    stem: "The Parkland formula for fluid resuscitation in burns uses:",
+    options: [
+      "2 mL × weight (kg) × TBSA% (normal saline)",
+      "4 mL × weight (kg) × TBSA% (Ringer's lactate)",
+      "4 mL × weight (kg) × TBSA% (colloid)",
+      "1 mL × weight (kg) × TBSA% (albumin)",
+    ],
+    answer: 1,
+    explanation:
+      "Parkland formula: 4 mL × kg × TBSA% burned using Ringer's lactate. Half given in first 8 hours from time of burn; remaining half over next 16 hours. Applies to burns >15% TBSA. Fluid starts from TIME OF BURN, not arrival.",
+  },
+  {
+    id: 163,
+    subject: "Surgery",
+    stem: "Trendelenburg test is used to assess:",
+    options: ["Femoral artery competence", "Saphenofemoral junction incompetence (varicose veins)", "Hip joint stability", "Inguinal hernia"],
+    answer: 1,
+    explanation:
+      "Trendelenburg test for varicose veins: elevate leg → apply tourniquet → stand up. If veins fill immediately after releasing tourniquet = saphenofemoral junction incompetence. Modified test also assesses perforator incompetence.",
+  },
+  {
+    id: 164,
+    subject: "Surgery",
+    stem: "Most common site of carcinoid tumour in the GI tract is:",
+    options: ["Stomach", "Duodenum", "Appendix", "Sigmoid colon"],
+    answer: 2,
+    explanation:
+      "Appendix is the most common site of GI carcinoid (incidental finding on appendicectomy). However, ileal carcinoids are most likely to cause carcinoid syndrome (5-HT, bradykinin). Carcinoid syndrome = flushing + diarrhoea + bronchospasm + right heart lesions.",
+  },
+  {
+    id: 165,
+    subject: "Surgery",
+    stem: "Meckel's diverticulum follows the rule of 2s. Which of the following is part of the rule?",
+    options: [
+      "2 cm long, 2 feet from ileocaecal valve, affects 2% of population",
+      "2 inches long, 20 cm from ileocaecal valve, affects 20% of population",
+      "2 cm, 2 m from ileocaecal valve, 2% of population",
+      "2 types of ectopic mucosa, 2% incidence, presents at 20 years",
+    ],
+    answer: 0,
+    explanation:
+      "Meckel's rule of 2s: 2% of population, 2 inches (5 cm) long, 2 feet (60 cm) from ileocaecal valve, 2 types of ectopic mucosa (gastric most common → peptic ulcer/bleed, pancreatic), presents in first 2 years of life.",
+  },
+  {
+    id: 166,
+    subject: "Surgery",
+    stem: "The Glasgow Coma Scale (GCS) score for a patient who opens eyes to pain, makes incomprehensible sounds, and localises pain is:",
+    options: ["7", "9", "11", "13"],
+    answer: 1,
+    explanation:
+      "GCS: Eyes (E): 1 none, 2 to pain, 3 to voice, 4 spontaneous. Verbal (V): 1 none, 2 sounds, 3 words, 4 confused, 5 oriented. Motor (M): 1 none, 2 extension, 3 flexion, 4 withdrawal, 5 localises, 6 obeys. E2+V2+M5 = 9.",
+  },
+  {
+    id: 167,
+    subject: "Surgery",
+    stem: "Port site metastasis in laparoscopic surgery for colorectal cancer is associated with:",
+    options: ["Large port size", "High CO₂ pressure pneumoperitoneum", "Inadequate specimen bagging", "All of the above"],
+    answer: 3,
+    explanation:
+      "Port site metastasis risk reduced by: specimen retrieval in bags, wound irrigation, avoiding high pneumoperitoneum pressures that aerosolise tumour cells, and using appropriate port sizes. Incidence is ~1% in experienced hands.",
+  },
+  {
+    id: 168,
+    subject: "Surgery",
+    stem: "First-line treatment for spontaneous bacterial peritonitis (SBP) is:",
+    options: ["Ampicillin + gentamicin", "Cefotaxime IV", "Metronidazole", "Oral ciprofloxacin only"],
+    answer: 1,
+    explanation:
+      "SBP (infection of ascitic fluid, usually E.coli/Klebsiella/Streptococcus) → cefotaxime IV (or ceftriaxone) is first-line. Albumin infusion given concurrently (1.5 g/kg day 1, 1 g/kg day 3) reduces hepatorenal syndrome risk. Prophylaxis: norfloxacin.",
+  },
+
+  // ─── PATHOLOGY EXTENDED (169–180) ────────────────────────────────────────
+  {
+    id: 169,
+    subject: "Pathology",
+    stem: "Which tumour marker is elevated in hepatocellular carcinoma (HCC)?",
+    options: ["CEA", "CA 19-9", "Alpha-fetoprotein (AFP)", "CA 125"],
+    answer: 2,
+    explanation:
+      "AFP is the primary marker for HCC (sensitivity ~60%, specificity ~90% for AFP > 400 ng/mL). Also elevated in yolk sac tumours, hepatoblastoma, and physiologically in pregnancy. CEA = colon cancer; CA 19-9 = pancreatic/biliary; CA 125 = ovarian.",
+  },
+  {
+    id: 170,
+    subject: "Pathology",
+    stem: "Reed-Sternberg cells are the hallmark of:",
+    options: ["Non-Hodgkin lymphoma", "Hodgkin lymphoma", "Burkitt lymphoma", "Mycosis fungoides"],
+    answer: 1,
+    explanation:
+      "Reed-Sternberg cells (owl-eye nucleoli, binucleated/multinucleated large cells) are the diagnostic hallmark of Hodgkin lymphoma. RS cells are CD15+, CD30+ (most subtypes). In nodular lymphocyte-predominant HL (NLPHL), 'popcorn cells' are seen instead.",
+  },
+  {
+    id: 171,
+    subject: "Pathology",
+    stem: "The histological type of carcinoma breast most commonly associated with Paget's disease of the nipple is:",
+    options: ["Lobular carcinoma in situ", "Invasive lobular carcinoma", "Ductal carcinoma in situ (DCIS)", "Mucinous carcinoma"],
+    answer: 2,
+    explanation:
+      "Paget's disease of the nipple = DCIS (ductal carcinoma in situ) or invasive ductal carcinoma with intraepidermal spread of malignant cells to the nipple-areola. Looks like eczema of nipple. Paget cells are large with pale cytoplasm, HER2+.",
+  },
+  {
+    id: 172,
+    subject: "Pathology",
+    stem: "The oncogene mutated in Burkitt lymphoma is:",
+    options: ["BCL-2", "c-MYC", "BCR-ABL", "RET"],
+    answer: 1,
+    explanation:
+      "Burkitt lymphoma: c-MYC translocation t(8;14) — most common; less common: t(2;8) or t(8;22). Starry sky pattern on H&E. EBV-associated (endemic form). BCL-2 = follicular lymphoma t(14;18). BCR-ABL = CML t(9;22).",
+  },
+  {
+    id: 173,
+    subject: "Pathology",
+    stem: "Coagulative necrosis is seen in all of the following EXCEPT:",
+    options: ["Myocardial infarction", "Renal infarction", "Brain infarction", "Splenic infarction"],
+    answer: 2,
+    explanation:
+      "Brain infarction causes liquefactive necrosis (due to high lipid content and activated proteases). All other solid organ infarcts (heart, kidney, spleen) cause coagulative necrosis — cell outlines preserved, eosinophilic, ghost cells.",
+  },
+  {
+    id: 174,
+    subject: "Pathology",
+    stem: "Gaucher's disease is caused by a deficiency of:",
+    options: ["Sphingomyelinase", "Glucocerebrosidase (beta-glucosidase)", "Hexosaminidase A", "Alpha-galactosidase A"],
+    answer: 1,
+    explanation:
+      "Gaucher's disease: glucocerebrosidase deficiency → glucocerebroside accumulation in macrophages. 'Crinkled paper' or 'wrinkled tissue paper' macrophages in bone marrow. Type 1 (non-neuropathic) most common. Treat with enzyme replacement (imiglucerase).",
+  },
+  {
+    id: 175,
+    subject: "Pathology",
+    stem: "Dystrophic calcification occurs in:",
+    options: [
+      "Normal tissue with elevated serum calcium",
+      "Dead or dying tissue with normal serum calcium",
+      "Normal tissue with elevated serum phosphate",
+      "Viable tissue with hypercalcaemia",
+    ],
+    answer: 1,
+    explanation:
+      "Dystrophic calcification: calcium deposits in dead/necrotic/abnormal tissue (serum calcium NORMAL). Examples: atherosclerotic plaques, TB caseous necrosis, tumour calcification. Metastatic calcification = calcification in normal tissue due to hypercalcaemia.",
+  },
+  {
+    id: 176,
+    subject: "Pathology",
+    stem: "The Philadelphia chromosome (t9;22) results in which fusion gene?",
+    options: ["PML-RARA", "BCL2-IGH", "BCR-ABL1", "EWS-FLI1"],
+    answer: 2,
+    explanation:
+      "t(9;22) Philadelphia chromosome → BCR-ABL1 fusion → constitutively active tyrosine kinase → uncontrolled proliferation. Present in >95% CML, 25-30% adult ALL. Imatinib (Gleevec) specifically inhibits BCR-ABL → revolutionary targeted therapy.",
+  },
+  {
+    id: 177,
+    subject: "Pathology",
+    stem: "Psammoma bodies are characteristically seen in all EXCEPT:",
+    options: ["Papillary thyroid carcinoma", "Serous papillary ovarian carcinoma", "Meningioma", "Follicular thyroid carcinoma"],
+    answer: 3,
+    explanation:
+      "Psammoma bodies (laminated calcified concentric rings) are seen in: papillary thyroid carcinoma, serous papillary ovarian carcinoma, meningioma, papillary RCC. NOT seen in follicular thyroid carcinoma (psammoma bodies suggest papillary pattern).",
+  },
+  {
+    id: 178,
+    subject: "Pathology",
+    stem: "Hyperplasia differs from hypertrophy in that hyperplasia involves:",
+    options: ["Increase in cell size", "Increase in cell number", "Decrease in cell size", "Cell death"],
+    answer: 1,
+    explanation:
+      "Hypertrophy = increase in cell SIZE (same cell number). Hyperplasia = increase in cell NUMBER (requires capacity for cell division). Cardiac muscle hypertrophy (post-MI), skeletal muscle hypertrophy (exercise). Endometrial hyperplasia (oestrogen excess). Both can coexist.",
+  },
+  {
+    id: 179,
+    subject: "Pathology",
+    stem: "The pattern of necrosis seen in tuberculosis is:",
+    options: ["Coagulative", "Liquefactive", "Caseous", "Fat necrosis"],
+    answer: 2,
+    explanation:
+      "Caseous necrosis is the hallmark of tuberculosis — cheese-like, structureless, amorphous material on H&E. Differs from coagulative (structure preserved) and liquefactive (liquid pus). Also seen in some fungi (Histoplasma) and syphilitic gummas.",
+  },
+  {
+    id: 180,
+    subject: "Pathology",
+    stem: "Li-Fraumeni syndrome is associated with germline mutations in:",
+    options: ["BRCA1", "APC", "p53 (TP53)", "VHL"],
+    answer: 2,
+    explanation:
+      "Li-Fraumeni syndrome: germline p53 (TP53) mutation → multiple cancers at young age (sarcomas, breast cancer, brain tumours, leukaemias, adrenal cortical carcinoma). Autosomal dominant. Risk of cancer by age 30: ~50%, by age 70: >90%.",
+  },
+
+  // ─── OBG EXTENDED (181–192) ──────────────────────────────────────────────
+  {
+    id: 181,
+    subject: "OBG",
+    stem: "The most common cause of postpartum haemorrhage (PPH) is:",
+    options: ["Retained placenta", "Uterine atony", "Genital tract trauma", "Coagulopathy"],
+    answer: 1,
+    explanation:
+      "Uterine atony accounts for 80% of PPH. The '4 Ts': Tone (atony 80%), Tissue (retained placenta), Trauma (lacerations), Thrombin (coagulopathy). First-line management: uterine massage + oxytocin 10 IU IM/IV.",
+  },
+  {
+    id: 182,
+    subject: "OBG",
+    stem: "Pre-eclampsia is defined as hypertension (≥140/90) developing after __ weeks with proteinuria:",
+    options: ["16 weeks", "20 weeks", "24 weeks", "28 weeks"],
+    answer: 1,
+    explanation:
+      "Pre-eclampsia: new-onset hypertension (≥140/90 mmHg on 2 occasions ≥4 hours apart) after 20 weeks gestation with proteinuria (≥300 mg/24h or PCR ≥0.3) or end-organ involvement. Before 20 weeks = chronic hypertension.",
+  },
+  {
+    id: 183,
+    subject: "OBG",
+    stem: "The drug of choice for prevention of eclamptic seizures is:",
+    options: ["Phenytoin", "Diazepam", "Magnesium sulfate", "Phenobarbitone"],
+    answer: 2,
+    explanation:
+      "Magnesium sulfate (MgSO₄) is the DOC for both treatment and prevention of eclamptic fits. Loading dose: 4g IV over 20 min; maintenance: 1g/hr. Monitor toxicity: loss of knee jerk reflex (first sign), respiratory depression (9-12 mEq/L), cardiac arrest (>12 mEq/L). Antidote: calcium gluconate.",
+  },
+  {
+    id: 184,
+    subject: "OBG",
+    stem: "Cardinal movements of labour in the correct sequence are:",
+    options: [
+      "Engagement → flexion → descent → internal rotation → extension → external rotation → expulsion",
+      "Descent → engagement → flexion → internal rotation → extension → expulsion",
+      "Flexion → engagement → descent → external rotation → extension → expulsion",
+      "Engagement → descent → flexion → external rotation → extension → expulsion",
+    ],
+    answer: 0,
+    explanation:
+      "Cardinal movements: Engagement → Descent → Flexion → Internal rotation → Extension → External rotation (restitution) → Expulsion. Mnemonic: 'Every Dog Finds It Extremely Easy' or 'EDFIEE'.",
+  },
+  {
+    id: 185,
+    subject: "OBG",
+    stem: "FIGO staging of cervical carcinoma: tumour invading the parametrium but not reaching the pelvic wall is stage:",
+    options: ["IB1", "IIA", "IIB", "IIIB"],
+    answer: 2,
+    explanation:
+      "FIGO 2018 cervical cancer: Stage I = confined to cervix; IIA = upper 2/3 vagina; IIB = parametrial invasion (NOT pelvic wall); IIIA = lower 1/3 vagina; IIIB = pelvic wall or hydronephrosis; IVA = bladder/rectal mucosa; IVB = distant mets.",
+  },
+  {
+    id: 186,
+    subject: "OBG",
+    stem: "The most common ectopic pregnancy site is:",
+    options: ["Ovary", "Cornua", "Ampulla of fallopian tube", "Isthmus of fallopian tube"],
+    answer: 2,
+    explanation:
+      "Ampulla of fallopian tube = 70% of ectopic pregnancies. Cornua/interstitial = most dangerous (ruptures at 8-16 weeks, massive haemorrhage). Ovarian and abdominal are rare. Risk factors: PID, previous tubal surgery, IUD failure.",
+  },
+  {
+    id: 187,
+    subject: "OBG",
+    stem: "Duncan mechanism of placental separation differs from Schultz mechanism in that:",
+    options: [
+      "Central separation first in Duncan",
+      "Maternal surface presents first in Duncan",
+      "Fetal surface presents first in Duncan",
+      "No bleeding in Duncan mechanism",
+    ],
+    answer: 1,
+    explanation:
+      "Schultz = central separation → fetal (shiny) surface presents first, bleeding is concealed then gushes. Duncan = peripheral/marginal separation → maternal (raw, rough) surface presents first, bleeding trickles throughout. Schultz more common (~80%).",
+  },
+  {
+    id: 188,
+    subject: "OBG",
+    stem: "Asherman syndrome (intrauterine adhesions) is a complication of:",
+    options: ["PCOD", "Endometriosis", "Aggressive curettage of uterus", "Uterine fibroid"],
+    answer: 2,
+    explanation:
+      "Asherman syndrome: endometrial adhesions from aggressive curettage (post-abortion, post-partum) → amenorrhoea, infertility. Diagnosis: hysteroscopy (gold standard). Treatment: hysteroscopic adhesiolysis + oestrogen for endometrial regeneration.",
+  },
+  {
+    id: 189,
+    subject: "OBG",
+    stem: "The most sensitive indicator of ovulation is:",
+    options: [
+      "Basal body temperature rise",
+      "Serum progesterone on day 21",
+      "LH surge detection",
+      "Endometrial biopsy showing secretory phase",
+    ],
+    answer: 2,
+    explanation:
+      "LH surge precedes ovulation by 34–36 hours and is the earliest, most sensitive predictor. Basal body temperature rises AFTER ovulation (due to progesterone). Serum progesterone > 5 ng/mL on day 21 confirms ovulation retrospectively.",
+  },
+  {
+    id: 190,
+    subject: "OBG",
+    stem: "Clue cells on vaginal wet mount are characteristic of:",
+    options: ["Trichomonas vaginalis", "Candida albicans", "Bacterial vaginosis", "Gonorrhoea"],
+    answer: 2,
+    explanation:
+      "Bacterial vaginosis (BV): clue cells (vaginal epithelial cells studded with bacteria, 'salt and pepper'), fishy amine odour, pH > 4.5, positive whiff test. Caused by Gardnerella vaginalis (not exclusively STI). Treat with metronidazole.",
+  },
+  {
+    id: 191,
+    subject: "OBG",
+    stem: "Which investigation is most useful for assessing tubal patency in infertility?",
+    options: ["Hysteroscopy", "Laparoscopy with chromopertubation", "Hysterosalpingography (HSG)", "Saline infusion sonography"],
+    answer: 1,
+    explanation:
+      "Laparoscopy with chromopertubation (methylene blue through cervix while viewing tubes) is the gold standard for tubal assessment. HSG is a good first-line investigation (non-invasive, outpatient), but laparoscopy confirms and can simultaneously treat (adhesiolysis).",
+  },
+  {
+    id: 192,
+    subject: "OBG",
+    stem: "The most common cause of female infertility worldwide is:",
+    options: ["Tubal factor", "Ovulatory dysfunction", "Unexplained infertility", "Uterine factor"],
+    answer: 0,
+    explanation:
+      "Tubal factor (PID-related damage, endometriosis, previous surgery) is the most common cause of female infertility globally (~40%). Ovulatory dysfunction (PCOD, hypothalamic amenorrhoea) is second. In developed nations, unexplained infertility is increasingly common.",
+  },
+
+  // ─── PAEDIATRICS EXTENDED (193–202) ──────────────────────────────────────
+  {
+    id: 193,
+    subject: "Paediatrics",
+    stem: "The drug of choice for childhood absence epilepsy (petit mal) is:",
+    options: ["Carbamazepine", "Ethosuximide", "Phenobarbitone", "Vigabatrin"],
+    answer: 1,
+    explanation:
+      "Ethosuximide is DOC for pure absence seizures in children. Valproate is used when absence coexists with other seizure types. Carbamazepine is contraindicated in absence epilepsy (can worsen). Vigabatrin → infantile spasms.",
+  },
+  {
+    id: 194,
+    subject: "Paediatrics",
+    stem: "Normal birth weight is defined as:",
+    options: ["> 2000 g", "1500–2000 g", "≥ 2500 g", "> 3000 g"],
+    answer: 2,
+    explanation:
+      "Normal birth weight: ≥2500 g. Low birth weight (LBW): <2500 g. Very low birth weight (VLBW): <1500 g. Extremely low birth weight (ELBW): <1000 g. LBW includes preterm + SGA (small for gestational age).",
+  },
+  {
+    id: 195,
+    subject: "Paediatrics",
+    stem: "Koplik's spots are pathognomonic of:",
+    options: ["Rubella", "Varicella", "Measles", "Scarlet fever"],
+    answer: 2,
+    explanation:
+      "Koplik's spots (white/grey papules on buccal mucosa opposite lower molars) appear 1–2 days before measles rash — pathognomonic. Measles rash: maculopapular, starts at hairline/behind ears, spreads downward (cephalocaudal). Complications: pneumonia, encephalitis, SSPE.",
+  },
+  {
+    id: 196,
+    subject: "Paediatrics",
+    stem: "The commonest congenital heart disease in children is:",
+    options: ["Atrial septal defect (ASD)", "Ventricular septal defect (VSD)", "Patent ductus arteriosus (PDA)", "Tetralogy of Fallot (ToF)"],
+    answer: 1,
+    explanation:
+      "VSD is the most common CHD (30–35%). Most small VSDs close spontaneously. Large VSDs → Eisenmenger syndrome if untreated. ASD = second most common; PDA = third. Tetralogy of Fallot = most common cyanotic CHD.",
+  },
+  {
+    id: 197,
+    subject: "Paediatrics",
+    stem: "The Apgar score is assessed at which time points after birth?",
+    options: ["Immediately and at 5 minutes", "1 minute and 5 minutes", "2 minutes and 10 minutes", "At birth and at 10 minutes"],
+    answer: 1,
+    explanation:
+      "APGAR score at 1 minute and 5 minutes. Parameters: Appearance (colour), Pulse (HR), Grimace (reflex irritability), Activity (muscle tone), Respiration. Score 7–10 = normal; 4–6 = moderate depression; 0–3 = severe depression → resuscitation.",
+  },
+  {
+    id: 198,
+    subject: "Paediatrics",
+    stem: "Which vaccine is contraindicated in a child with HIV infection?",
+    options: ["Inactivated polio vaccine (IPV)", "Hepatitis B vaccine", "BCG (in symptomatic HIV)", "Influenza vaccine (inactivated)"],
+    answer: 2,
+    explanation:
+      "BCG is a live attenuated vaccine — contraindicated in symptomatic HIV (CD4 count low) due to risk of disseminated BCG disease. In asymptomatic HIV, BCG may be given in high-TB-burden countries (India gives BCG at birth before HIV diagnosis). IPV is safe in all HIV.",
+  },
+  {
+    id: 199,
+    subject: "Paediatrics",
+    stem: "Kawasaki disease diagnostic criterion includes fever for at least how many days?",
+    options: ["3 days", "5 days", "7 days", "10 days"],
+    answer: 1,
+    explanation:
+      "Kawasaki disease (mucocutaneous lymph node syndrome): fever ≥5 days + 4 of 5: conjunctival injection, oral changes (strawberry tongue), rash, extremity changes (erythema/desquamation), cervical lymphadenopathy. Treat with IVIG + aspirin (rare exception where aspirin used in children).",
+  },
+  {
+    id: 200,
+    subject: "Paediatrics",
+    stem: "Which investigation is the gold standard for diagnosis of cystic fibrosis?",
+    options: ["Chest X-ray", "Sweat chloride test (>60 mmol/L)", "Sputum culture", "Serum IRT (immunoreactive trypsinogen)"],
+    answer: 1,
+    explanation:
+      "Sweat chloride test (pilocarpine iontophoresis): >60 mmol/L diagnostic, 30–59 = borderline (repeat + CFTR mutation testing). CFTR mutation analysis also diagnostic. IRT used for newborn screening. CXR shows hyperinflation, bronchiectasis (not diagnostic).",
+  },
+  {
+    id: 201,
+    subject: "Paediatrics",
+    stem: "The triple vaccine (DPT) is contraindicated in a child who had which reaction after previous dose?",
+    options: ["Fever 38°C", "Redness at injection site", "Encephalopathy within 7 days", "Inconsolable crying for 3 hours"],
+    answer: 2,
+    explanation:
+      "Encephalopathy within 7 days of DPT is an absolute contraindication to further doses. Relative contraindications: progressive neurological disorder, fever >40.5°C within 48h, inconsolable crying >3h, hypotonic-hyporesponsive episode. Fever <40.5°C, local reactions = not contraindications.",
+  },
+  {
+    id: 202,
+    subject: "Paediatrics",
+    stem: "Physiological jaundice in a term newborn appears after how many hours of life?",
+    options: ["<24 hours", "24–72 hours", "72–96 hours", ">7 days"],
+    answer: 1,
+    explanation:
+      "Physiological neonatal jaundice appears after 24 hours (NEVER in first 24 hours — that's always pathological). Peaks at 3–5 days, resolves by 10–14 days in term infants (longer in preterm). Bilirubin <12 mg/dL (term) and <15 mg/dL (preterm) usually physiological.",
+  },
+
+  // ─── MICROBIOLOGY EXTENDED (203–212) ─────────────────────────────────────
+  {
+    id: 203,
+    subject: "Microbiology",
+    stem: "The Weil-Felix test is used for diagnosis of which disease?",
+    options: ["Typhoid", "Rickettsial infections", "Leptospirosis", "Brucellosis"],
+    answer: 1,
+    explanation:
+      "Weil-Felix test: agglutination of Proteus vulgaris OX-2, OX-19, OX-K strains by patient serum — tests for rickettsial infections. OX-19 + OX-2 positive = epidemic typhus, Rocky Mountain spotted fever. OX-K positive = scrub typhus (Orientia tsutsugamushi).",
+  },
+  {
+    id: 204,
+    subject: "Microbiology",
+    stem: "Which hepatitis virus is transmitted by the faeco-oral route and does NOT cause chronic infection?",
+    options: ["Hepatitis B", "Hepatitis C", "Hepatitis D", "Hepatitis E"],
+    answer: 3,
+    explanation:
+      "Hepatitis E = faeco-oral, does NOT cause chronic hepatitis (like Hep A). However, HEV is DANGEROUS in pregnancy — mortality 20–30% in third trimester. Hepatitis B, C, D = parenteral/sexual; B, C, D can cause chronic hepatitis.",
+  },
+  {
+    id: 205,
+    subject: "Microbiology",
+    stem: "The capsule of Cryptococcus neoformans is demonstrated by:",
+    options: ["Gram stain", "ZN stain", "India ink preparation", "Giemsa stain"],
+    answer: 2,
+    explanation:
+      "India ink preparation: negative staining shows C. neoformans with prominent polysaccharide capsule (clear halo around yeast cell) in CSF. India ink positive in ~70% HIV-associated cryptococcal meningitis. Latex agglutination (cryptococcal antigen) is more sensitive.",
+  },
+  {
+    id: 206,
+    subject: "Microbiology",
+    stem: "The vector for Kala-azar (visceral leishmaniasis) in India is:",
+    options: ["Anopheles mosquito", "Culex mosquito", "Phlebotomus sandfly", "Ixodes tick"],
+    answer: 2,
+    explanation:
+      "Phlebotomus argentipes (female sandfly) is the vector for Kala-azar (Leishmania donovani) in India. Endemic in Bihar, Jharkhand, West Bengal, UP. Aldehyde (formol-gel) test: positive in Kala-azar (globulin elevation). Treat with liposomal amphotericin B (first-line in India).",
+  },
+  {
+    id: 207,
+    subject: "Microbiology",
+    stem: "The 'school of fish' pattern on Gram stain is characteristic of:",
+    options: ["Clostridium perfringens", "Haemophilus ducreyi", "Bacteroides fragilis", "Listeria monocytogenes"],
+    answer: 1,
+    explanation:
+      "Haemophilus ducreyi (chancroid): small gram-negative coccobacilli in 'school of fish' or 'railroad track' parallel streams pattern. Causes painful genital ulcer (unlike painless primary syphilis). Treat with azithromycin single dose or ceftriaxone.",
+  },
+  {
+    id: 208,
+    subject: "Microbiology",
+    stem: "The M protein of Group A Streptococcus (Streptococcus pyogenes) is responsible for:",
+    options: ["Beta-haemolysis", "Antiphagocytic virulence", "Exotoxin production", "Resistance to penicillin"],
+    answer: 1,
+    explanation:
+      "M protein of S. pyogenes is the primary virulence factor — antiphagocytic (inhibits complement activation and opsonisation). >80 serotypes based on M protein. Anti-M antibodies are type-specific and protective. Cross-reactive with cardiac myosin → rheumatic fever.",
+  },
+  {
+    id: 209,
+    subject: "Microbiology",
+    stem: "Cold agglutinin test is positive in:",
+    options: ["Mycoplasma pneumoniae infection", "Legionella pneumophila infection", "Chlamydia psittaci infection", "Pneumococcal pneumonia"],
+    answer: 0,
+    explanation:
+      "Cold agglutinins (IgM anti-I RBC antibodies at 4°C) are positive in Mycoplasma pneumoniae pneumonia (~50% of cases). Also seen in EBV, CMV, and haemolytic anaemias. Mycoplasma: 'walking pneumonia', young adults, X-ray worse than clinical signs, no cell wall (penicillin ineffective).",
+  },
+  {
+    id: 210,
+    subject: "Microbiology",
+    stem: "The Mantoux test uses:",
+    options: ["Whole killed M. tuberculosis", "5 TU of PPD (purified protein derivative)", "BCG vaccine antigen", "10 TU of old tuberculin"],
+    answer: 1,
+    explanation:
+      "Mantoux test: 5 TU (tuberculin units) of PPD (RT-23) injected intradermally on volar forearm. Read at 48–72 hours. Induration (not redness) ≥10 mm = positive in general population; ≥5 mm = positive in HIV, immunocompromised, recent TB contact.",
+  },
+  {
+    id: 211,
+    subject: "Microbiology",
+    stem: "Negri bodies are pathognomonic of:",
+    options: ["Herpes encephalitis", "Rabies", "Japanese encephalitis", "CMV encephalitis"],
+    answer: 1,
+    explanation:
+      "Negri bodies (eosinophilic intracytoplasmic inclusions in Purkinje cells of cerebellum and hippocampal neurons) are pathognomonic of rabies. Seen on H&E stain of brain tissue (post-mortem diagnosis). Ante-mortem: RT-PCR of saliva, skin biopsy.",
+  },
+  {
+    id: 212,
+    subject: "Microbiology",
+    stem: "The laboratory diagnosis of enteric fever (typhoid) in the first week of illness is best made by:",
+    options: ["Stool culture", "Urine culture", "Blood culture", "Widal test"],
+    answer: 2,
+    explanation:
+      "Blood culture is positive in 90% of cases in WEEK 1 (bacteraemia phase). Stool/urine culture positive weeks 2–3. Widal test: O agglutinins rise week 1, H agglutinins rise week 2. Widal titre ≥1:80 for O is significant; ≥1:160 for H. Blood culture = gold standard.",
+  },
+
+  // ─── ENT/OPHTHALMOLOGY EXTENDED (213–222) ───────────────────────────────
+  {
+    id: 213,
+    subject: "ENT/Ophthalmology",
+    stem: "The most common cause of conductive hearing loss in children is:",
+    options: ["Otosclerosis", "Otitis media with effusion (glue ear)", "Acoustic neuroma", "Presbycusis"],
+    answer: 1,
+    explanation:
+      "Otitis media with effusion (OME/'glue ear') is the most common cause of acquired conductive hearing loss in children (peak age 2–5 years). Accumulation of non-purulent fluid in middle ear. Treatment: observation 3 months → grommets (ventilation tubes).",
+  },
+  {
+    id: 214,
+    subject: "ENT/Ophthalmology",
+    stem: "The treatment of choice for cholesteatoma is:",
+    options: ["Antibiotics", "Topical ear drops", "Surgical excision (mastoidectomy)", "Hearing aid"],
+    answer: 2,
+    explanation:
+      "Cholesteatoma (keratinising squamous epithelium in middle ear/mastoid) = surgical emergency — erodes bone, can cause intracranial complications. Treatment: mastoidectomy (cortical or modified radical). Cannot be treated conservatively (will expand and erode).",
+  },
+  {
+    id: 215,
+    subject: "ENT/Ophthalmology",
+    stem: "The most common organism causing acute bacterial rhinosinusitis is:",
+    options: ["Moraxella catarrhalis", "Haemophilus influenzae", "Streptococcus pneumoniae", "Staphylococcus aureus"],
+    answer: 2,
+    explanation:
+      "Streptococcus pneumoniae is the most common cause of acute bacterial rhinosinusitis (30–35%), followed by H. influenzae (20–30%) and M. catarrhalis (<10%). Most viral sinusitis (>90%) resolves spontaneously without antibiotics.",
+  },
+  {
+    id: 216,
+    subject: "ENT/Ophthalmology",
+    stem: "Rinne's test with BC > AC (Rinne negative) in the right ear suggests:",
+    options: [
+      "Right sensorineural hearing loss",
+      "Right conductive hearing loss",
+      "Left sensorineural hearing loss",
+      "Normal hearing",
+    ],
+    answer: 1,
+    explanation:
+      "Normally AC > BC (Rinne positive). If BC > AC (Rinne negative) = conductive hearing loss in that ear. Weber test: sound lateralises to the AFFECTED ear in conductive loss; to the NORMAL ear in sensorineural loss.",
+  },
+  {
+    id: 217,
+    subject: "ENT/Ophthalmology",
+    stem: "The most common benign tumour of the parotid gland is:",
+    options: ["Mucoepidermoid carcinoma", "Pleomorphic adenoma", "Warthin's tumour", "Acinic cell carcinoma"],
+    answer: 1,
+    explanation:
+      "Pleomorphic adenoma (benign mixed tumour) = most common salivary gland tumour (70–80%), most common in parotid. Contains epithelial + myoepithelial + mesenchymal elements. Risk of malignant transformation if untreated. Treat with superficial parotidectomy.",
+  },
+  {
+    id: 218,
+    subject: "ENT/Ophthalmology",
+    stem: "Trachoma (blinding eye disease) is caused by:",
+    options: ["Neisseria gonorrhoeae", "Chlamydia trachomatis (serotypes A–C)", "Herpes simplex virus", "Adenovirus"],
+    answer: 1,
+    explanation:
+      "Trachoma: Chlamydia trachomatis serotypes A, B, Ba, C → leading infectious cause of blindness globally. WHO SAFE strategy: Surgery (trichiasis), Antibiotics (azithromycin), Facial cleanliness, Environmental improvement. India: highly endemic in Rajasthan, UP.",
+  },
+  {
+    id: 219,
+    subject: "ENT/Ophthalmology",
+    stem: "Bitot's spots are a sign of deficiency of which vitamin?",
+    options: ["Vitamin B12", "Vitamin C", "Vitamin A", "Vitamin D"],
+    answer: 2,
+    explanation:
+      "Bitot's spots (foamy, cheesy triangular spots on bulbar conjunctiva) = early sign of vitamin A deficiency (xerophthalmia). Progression: night blindness → xerosis conjunctivae → Bitot's spots → corneal xerosis → keratomalacia → blindness.",
+  },
+  {
+    id: 220,
+    subject: "ENT/Ophthalmology",
+    stem: "The most common cause of sudden painless loss of vision in an elderly patient with diabetes and hypertension is:",
+    options: ["Acute angle closure glaucoma", "Central retinal artery occlusion (CRAO)", "Vitreous haemorrhage", "Retinal detachment"],
+    answer: 1,
+    explanation:
+      "CRAO: sudden, painless, profound visual loss, 'cherry red spot' at macula (choroidal circulation visible through avascular fovea), pale retina. Emergency (irreversible after 90 min). Risk factors: emboli (carotid, cardiac), vasculitis, hypertension, DM. Urgent ophthalmology referral.",
+  },
+  {
+    id: 221,
+    subject: "ENT/Ophthalmology",
+    stem: "The most common type of glaucoma in India is:",
+    options: ["Acute angle-closure glaucoma", "Primary open-angle glaucoma", "Secondary glaucoma", "Congenital glaucoma"],
+    answer: 1,
+    explanation:
+      "Primary open-angle glaucoma (POAG) is the most common glaucoma in India (and globally). Chronic, painless, progressive peripheral vision loss. IOP usually elevated (>21 mmHg). Cupping of optic disc (CDR >0.6). Treat with beta-blockers (timolol) or prostaglandin analogues (latanoprost).",
+  },
+  {
+    id: 222,
+    subject: "ENT/Ophthalmology",
+    stem: "Corneal graft (penetrating keratoplasty) rejection is primarily mediated by:",
+    options: ["Antibody-mediated rejection", "T-cell mediated (cellular) rejection", "Complement activation", "NK cell-mediated rejection"],
+    answer: 1,
+    explanation:
+      "Corneal graft rejection is primarily T-cell mediated (cellular). Cornea is 'immune-privileged' (avascular, no lymphatics, low MHC expression) — hence the best graft survival of any tissue (~90% at 5 years). Rejection signs: oedema, keratic precipitates, Khodadoust line.",
+  },
+
+  // ─── PSM EXTENDED (223–232) ───────────────────────────────────────────────
+  {
+    id: 223,
+    subject: "PSM/Community Medicine",
+    stem: "The number of ASHA workers in India (approximately) is:",
+    options: ["500,000", "1 million", "2 million", "5 million"],
+    answer: 1,
+    explanation:
+      "There are approximately 1 million (10 lakh) ASHAs in India. Norm: 1 ASHA per 1000 population in general areas; 1 per habitation in tribal/hilly areas. ASHA is a community health volunteer, not a health worker (receives incentives, not salary).",
+  },
+  {
+    id: 224,
+    subject: "PSM/Community Medicine",
+    stem: "Which is the correct infant mortality rate (IMR) of India as per SRS 2020-21?",
+    options: ["27 per 1000 live births", "35 per 1000 live births", "42 per 1000 live births", "50 per 1000 live births"],
+    answer: 1,
+    explanation:
+      "IMR India (SRS 2020-21): 35 per 1000 live births. Best state: Kerala (6/1000). Worst: MP (41/1000). U5MR (NFHS-5): 41.9. NMR: 28.2. MMR (SRS 2018-20): 97 per 100,000 live births. These figures are heavily tested in INI-CET.",
+  },
+  {
+    id: 225,
+    subject: "PSM/Community Medicine",
+    stem: "Integrated Child Development Services (ICDS) is administered by the Ministry of:",
+    options: ["Health and Family Welfare", "Women and Child Development", "Social Justice and Empowerment", "Rural Development"],
+    answer: 1,
+    explanation:
+      "ICDS is administered by the Ministry of Women and Child Development (not MoHFW). Anganwadi centres provide 6 services: supplementary nutrition, non-formal pre-school education, nutrition and health education, immunisation, health check-up, referral services.",
+  },
+  {
+    id: 226,
+    subject: "PSM/Community Medicine",
+    stem: "The attack rate in an outbreak is calculated as:",
+    options: [
+      "Number of new cases / Total population at risk × 100",
+      "Number of cases / Population exposed × 100",
+      "Cumulative incidence during the outbreak",
+      "Both B and C",
+    ],
+    answer: 3,
+    explanation:
+      "Attack rate = number who develop disease / total exposed (at risk) × 100. It is essentially cumulative incidence used during an outbreak (typically a short, defined period). Secondary attack rate (SAR) = new cases in contacts / susceptible contacts × 100.",
+  },
+  {
+    id: 227,
+    subject: "PSM/Community Medicine",
+    stem: "The National Nutrition Mission (POSHAN Abhiyaan) targets reduction in stunting to:",
+    options: ["<20% by 2022", "25% by 2022", "<40% by 2022", "<15% by 2025"],
+    answer: 1,
+    explanation:
+      "POSHAN Abhiyaan (2018): reduce stunting from 38.4% (NFHS-4) to 25% by 2022. Target 3% annual reduction. NFHS-5 shows stunting at 35.5% — still far from target. Also targets: anaemia, LBW, wasting, undernutrition, overweight.",
+  },
+  {
+    id: 228,
+    subject: "PSM/Community Medicine",
+    stem: "Correlation coefficient (r) of +1 indicates:",
+    options: ["No correlation", "Perfect negative correlation", "Perfect positive correlation", "Moderate positive correlation"],
+    answer: 2,
+    explanation:
+      "Pearson's r: +1 = perfect positive correlation, -1 = perfect negative correlation, 0 = no correlation. 0.1–0.3 = weak, 0.3–0.7 = moderate, >0.7 = strong. r² (coefficient of determination) = % of variance in Y explained by X.",
+  },
+  {
+    id: 229,
+    subject: "PSM/Community Medicine",
+    stem: "The Pradhan Mantri Jan Arogya Yojana (PM-JAY/Ayushman Bharat) provides health cover of:",
+    options: ["₹1 lakh per family per year", "₹3 lakh per family per year", "₹5 lakh per family per year", "₹10 lakh per family per year"],
+    answer: 2,
+    explanation:
+      "PM-JAY/Ayushman Bharat: ₹5 lakh per family per year for secondary and tertiary hospitalisation. Covers ~107 million vulnerable families (bottom 40% of population). Cashless, paperless at empanelled hospitals. Launched 2018. Previously called RSBY (₹30,000 cover).",
+  },
+  {
+    id: 230,
+    subject: "PSM/Community Medicine",
+    stem: "Type I error (alpha error) in hypothesis testing refers to:",
+    options: [
+      "Accepting H₀ when it is false",
+      "Rejecting H₀ when it is true",
+      "Not detecting a true difference",
+      "Incorrect sample size calculation",
+    ],
+    answer: 1,
+    explanation:
+      "Type I error (alpha): rejecting H₀ when it is actually true (false positive). Usually set at 0.05 (5%). Type II error (beta): accepting H₀ when it is false (false negative). Power = 1 - beta. POWER increases with larger sample size.",
+  },
+  {
+    id: 231,
+    subject: "PSM/Community Medicine",
+    stem: "The first Indian state to achieve polio-free status was:",
+    options: ["Bihar", "Uttar Pradesh", "Kerala", "Tamil Nadu"],
+    answer: 2,
+    explanation:
+      "Kerala was the first state to achieve polio-free status. India was declared polio-free by WHO in 2014 (3 years after last case in UP in 2011). India used OPV (Oral Polio Vaccine - Sabin) in national pulse immunisation. IPV added to routine UIP in 2015.",
+  },
+  {
+    id: 232,
+    subject: "PSM/Community Medicine",
+    stem: "Which of the following is a notifiable disease in India under the Integrated Disease Surveillance Programme (IDSP)?",
+    options: ["Common cold", "Hypertension", "Cholera", "Hyperlipidaemia"],
+    answer: 2,
+    explanation:
+      "Cholera is a notifiable disease under IDSP. All epidemic-prone diseases must be notified: cholera, plague, yellow fever (International Health Regulations notifiable), plus dengue, malaria, viral hepatitis, AES, AFP, influenza A H1N1, COVID-19 etc. under IDSP.",
+  },
+
+  // ─── FORENSIC MEDICINE (233–242) ─────────────────────────────────────────
+  {
+    id: 233,
+    subject: "Forensic Medicine",
+    stem: "Rigor mortis typically starts after death at:",
+    options: ["Immediately", "30 minutes", "3–6 hours", "12–18 hours"],
+    answer: 2,
+    explanation:
+      "Rigor mortis: onset 3–6 hours after death (earlier in hot climate/exercise before death), maximum stiffness at 12 hours, starts disappearing at 24–36 hours, completely gone by 48–72 hours. Caused by ATP depletion → actin-myosin cross-links unable to release.",
+  },
+  {
+    id: 234,
+    subject: "Forensic Medicine",
+    stem: "The MHCA (Mental Healthcare Act) 2017 replaces which previous Act?",
+    options: ["Indian Lunacy Act 1912", "Mental Health Act 1987", "Persons with Disabilities Act 1995", "NDPS Act 1985"],
+    answer: 1,
+    explanation:
+      "MHCA 2017 replaced the Mental Health Act 1987. Key features: rights-based approach, advance directives, nominated representative, mental illness definition (Section 3), decriminalises suicide attempt (Section 115), free treatment at government facilities.",
+  },
+  {
+    id: 235,
+    subject: "Forensic Medicine",
+    stem: "Section 375 IPC (now BNS 2023) defines:",
+    options: ["Culpable homicide", "Rape", "Kidnapping", "Cheating"],
+    answer: 1,
+    explanation:
+      "IPC Section 375 = Rape (7 circumstances including penetration, without consent, with minors). Punishment: Section 376 = minimum 7 years, maximum life imprisonment. 2013 Criminal Law Amendment (Nirbhaya Act) expanded definition. Note: BNS 2023 now applies (Sections 63–64 of BNS).",
+  },
+  {
+    id: 236,
+    subject: "Forensic Medicine",
+    stem: "The minimum age of consent for sexual activity in India as per POCSO Act 2012 is:",
+    options: ["16 years", "18 years", "14 years", "21 years"],
+    answer: 1,
+    explanation:
+      "POCSO Act 2012: any sexual activity with a person below 18 years = 'child sexual abuse' regardless of consent. Mandatory reporting requirement for all persons/institutions. Punishment up to life imprisonment for aggravated sexual assault.",
+  },
+  {
+    id: 237,
+    subject: "Forensic Medicine",
+    stem: "The MTP (Medical Termination of Pregnancy) Act 2021 allows termination up to 24 weeks for:",
+    options: [
+      "Any woman on request",
+      "Rape survivors, disabled women, and minors (special categories)",
+      "All married women",
+      "Women with more than 3 children",
+    ],
+    answer: 1,
+    explanation:
+      "MTP Amendment 2021: up to 20 weeks with 1 registered medical practitioner opinion; up to 24 weeks for special categories (rape survivors, minors, disabled, mentally ill, multi-gestation); beyond 24 weeks only for substantial foetal abnormalities (Medical Board). No upper limit changed for foetal anomalies.",
+  },
+  {
+    id: 238,
+    subject: "Forensic Medicine",
+    stem: "Putrefaction is accelerated by:",
+    options: ["Cold temperature", "Dry environment", "Hot, moist conditions", "Burial underground"],
+    answer: 2,
+    explanation:
+      "Putrefaction (decomposition by bacteria): accelerated by heat + moisture. Summer/tropical conditions accelerate decomposition significantly. Retarded by: cold (embalming), dry conditions (mummification), waterlogging (adipocere formation), burial depth (slower in deep burial).",
+  },
+  {
+    id: 239,
+    subject: "Forensic Medicine",
+    stem: "A professional secret in medical ethics may be disclosed without the patient's consent in which situation?",
+    options: [
+      "Request by a relative",
+      "Notifiable communicable disease",
+      "Insurance company request",
+      "Patient's employer request",
+    ],
+    answer: 1,
+    explanation:
+      "Compulsory disclosure of medical secrets: notifiable diseases (cholera, plague, etc.), court order/subpoena, when patient is a danger to self/others, medico-legal cases, MTP notification. Disclosure to insurance/employer without consent = breach of confidentiality.",
+  },
+  {
+    id: 240,
+    subject: "Forensic Medicine",
+    stem: "McEwen's sign in drowning refers to:",
+    options: ["Cherry-red mucosa", "Washerwoman's hands + cutis anserina", "Froth at nostrils and mouth", "Ruptured tympanic membrane"],
+    answer: 1,
+    explanation:
+      "Signs of drowning: Washerwoman's hands (cutis anserina = goose skin), frothy fluid in airways (Tardieu's spots internally), diatoms in blood/bone marrow (proof of vital reaction). 'Cafe coronaire' = food bolus obstruction (not drowning). Diatom test = only reliable post-mortem test.",
+  },
+  {
+    id: 241,
+    subject: "Forensic Medicine",
+    stem: "Section 304A IPC (BNS equivalent Section 106) deals with:",
+    options: ["Murder", "Death by negligence (rash/negligent act)", "Culpable homicide not amounting to murder", "Abetment of suicide"],
+    answer: 1,
+    explanation:
+      "IPC 304A = causing death by negligence (not amounting to culpable homicide) — 2 years imprisonment, fine, or both. Key in medical negligence. Jacob Mathew vs State of Punjab (2005) SC ruling: doctors negligent under civil law but criminal prosecution needs grossly negligent act.",
+  },
+  {
+    id: 242,
+    subject: "Forensic Medicine",
+    stem: "Adipocere formation (saponification) in a dead body occurs in conditions of:",
+    options: ["Hot and dry environment", "Cold and moist environment", "Waterlogged/buried in wet soil", "Both B and C"],
+    answer: 3,
+    explanation:
+      "Adipocere (soap-like substance): hydrolysis + hydrogenation of body fat into fatty acids (palmitic, stearic acids). Occurs in cold, moist, anaerobic conditions — waterlogged bodies, buried in wet soil. Can preserve body outline for years. Grey-white, greasy, waxy substance.",
+  },
+
+  // ─── BIOCHEMISTRY EXTENDED (243–252) ─────────────────────────────────────
+  {
+    id: 243,
+    subject: "Biochemistry",
+    stem: "The rate-limiting enzyme of the urea cycle is:",
+    options: ["Arginase", "Carbamoyl phosphate synthetase I (CPS-I)", "Argininosuccinate synthetase", "Ornithine transcarbamylase"],
+    answer: 1,
+    explanation:
+      "CPS-I (in mitochondria) is the rate-limiting enzyme of the urea cycle. It catalyses: NH₃ + CO₂ + 2ATP → carbamoyl phosphate. Activated by N-acetylglutamate (NAG). Deficiency → hyperammonemia (most severe in neonates).",
+  },
+  {
+    id: 244,
+    subject: "Biochemistry",
+    stem: "Phenylketonuria (PKU) is caused by deficiency of:",
+    options: ["Tyrosine hydroxylase", "Phenylalanine hydroxylase", "Homogentisate oxidase", "Fumarylacetoacetase"],
+    answer: 1,
+    explanation:
+      "PKU: phenylalanine hydroxylase deficiency → phenylalanine accumulates → intellectual disability, fair skin/hair (reduced melanin), musty odour (phenylacetate), eczema. Treat with phenylalanine-restricted diet + sapropterin (BH4) in BH4-responsive forms.",
+  },
+  {
+    id: 245,
+    subject: "Biochemistry",
+    stem: "The enzyme deficient in gout (Lesch-Nyhan syndrome) is:",
+    options: ["Xanthine oxidase", "Adenosine deaminase", "Hypoxanthine-guanine phosphoribosyltransferase (HGPRT)", "Purine nucleoside phosphorylase"],
+    answer: 2,
+    explanation:
+      "Lesch-Nyhan syndrome: HGPRT deficiency → purine salvage pathway blocked → excess uric acid production → gout + neurological features (self-mutilation, choreoathetosis, intellectual disability). X-linked recessive. Allopurinol treats gout but not neurological features.",
+  },
+  {
+    id: 246,
+    subject: "Biochemistry",
+    stem: "Competitive inhibition of an enzyme is characterised by:",
+    options: [
+      "Decreased Vmax, unchanged Km",
+      "Unchanged Vmax, increased Km",
+      "Decreased Vmax, increased Km",
+      "Unchanged Vmax, unchanged Km",
+    ],
+    answer: 1,
+    explanation:
+      "Competitive inhibition: inhibitor competes with substrate for active site → Km increases (apparent reduced affinity), Vmax UNCHANGED (can be overcome by increasing substrate). Non-competitive: Vmax decreases, Km unchanged. Uncompetitive: both Km and Vmax decrease.",
+  },
+  {
+    id: 247,
+    subject: "Biochemistry",
+    stem: "The vitamin deficiency that causes pellagra is:",
+    options: ["Vitamin B1 (thiamine)", "Vitamin B2 (riboflavin)", "Vitamin B3 (niacin)", "Vitamin B6 (pyridoxine)"],
+    answer: 2,
+    explanation:
+      "Pellagra: niacin (vitamin B3/nicotinic acid) deficiency. 3 Ds: Dermatitis (photosensitive, Casal's necklace), Diarrhoea, Dementia. A 4th D = Death if untreated. Can also occur in carcinoid syndrome and isoniazid treatment (pyridoxine also deficient). Treat with nicotinamide.",
+  },
+  {
+    id: 248,
+    subject: "Biochemistry",
+    stem: "Which coenzyme is involved in transamination reactions?",
+    options: ["NAD⁺", "FAD", "Pyridoxal phosphate (PLP)", "Thiamine pyrophosphate (TPP)"],
+    answer: 2,
+    explanation:
+      "Pyridoxal phosphate (PLP) — active form of vitamin B6 — is the coenzyme for transamination (and all amino acid metabolism). ALT (alanine aminotransferase) and AST (aspartate aminotransferase) use PLP. Deficiency causes convulsions in infants (glutamate decarboxylase requires PLP).",
+  },
+  {
+    id: 249,
+    subject: "Biochemistry",
+    stem: "Scurvy (vitamin C deficiency) causes impaired synthesis of:",
+    options: ["Elastin", "Collagen (hydroxylation of proline and lysine)", "Keratin", "Fibronectin"],
+    answer: 1,
+    explanation:
+      "Vitamin C (ascorbic acid) is required for hydroxylation of proline and lysine by prolyl and lysyl hydroxylases in collagen synthesis. Deficiency → defective collagen → bleeding gums, perifollicular haemorrhage, poor wound healing, corkscrew hairs, scorbutic rosary.",
+  },
+  {
+    id: 250,
+    subject: "Biochemistry",
+    stem: "The transport protein for iron in the blood is:",
+    options: ["Ferritin", "Haemosiderin", "Transferrin", "Lactoferrin"],
+    answer: 2,
+    explanation:
+      "Transferrin (apotransferrin bound to iron) is the plasma transport protein for iron. Transferrin saturation = serum iron / TIBC × 100. In iron deficiency: low serum iron, high TIBC, low transferrin saturation (<20%). Ferritin = storage form (intracellular).",
+  },
+  {
+    id: 251,
+    subject: "Biochemistry",
+    stem: "Homocystinuria is caused by deficiency of:",
+    options: ["Methionine adenosyltransferase", "Cystathionine beta-synthase", "Cystathionase", "MTHFR (methylenetetrahydrofolate reductase)"],
+    answer: 1,
+    explanation:
+      "Cystathionine beta-synthase deficiency → homocysteine accumulates → homocystinuria. Features: Marfan-like habitus, ectopia lentis (downward, vs Marfan's upward), intellectual disability, thromboembolism, osteoporosis. Treat with high B6 diet (if B6-responsive) or low methionine diet.",
+  },
+  {
+    id: 252,
+    subject: "Biochemistry",
+    stem: "The first urine test used to diagnose phenylketonuria (PKU) at birth is:",
+    options: ["DNPH test", "Guthrie test (bacterial inhibition assay)", "Ferric chloride test", "Urinary amino acid chromatography"],
+    answer: 1,
+    explanation:
+      "Guthrie test (bacterial inhibition assay using Bacillus subtilis) was the original neonatal screening test for PKU on dried blood spot. Now replaced by tandem mass spectrometry (MS/MS) for newborn screening. Ferric chloride test on urine turns green in PKU.",
+  },
 ];
+
