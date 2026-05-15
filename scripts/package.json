@@ -2,10 +2,8 @@
   "name": "inicet-question-generator",
   "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "generate": "node generate-questions.mjs"
-  },
+  "scripts": { "generate": "node generate-questions.mjs" },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.32.0"
+    "@google/generative-ai": "^0.21.0"
   }
 }
