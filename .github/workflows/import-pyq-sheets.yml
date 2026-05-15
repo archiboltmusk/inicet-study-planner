@@ -1,0 +1,45 @@
+name: Import PYQ from Google Sheets
+
+# Automatically pulls questions from your Google Sheet daily.
+# Setup:
+#   1. Create a Google Sheet with columns:
+#      subject | topic | question | option_a | option_b | option_c | option_d | correct_answer (0-3) | explanation | mnemonic | year
+#   2. File → Share → "Anyone with the link" can view
+#   3. Copy the Sheet ID from the URL (the long string between /d/ and /edit)
+#   4. Add GOOGLE_SHEET_ID as a GitHub secret
+
+on:
+  schedule:
+    - cron: '0 20 * * *'   # 01:30 IST daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Import questions from Google Sheets
+        working-directory: scripts
+        env:
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+        run: node import-pyq-sheets.mjs
+
+      - name: Commit imported questions
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deploy/public/sheets-pyq.json
+          git diff --cached --quiet || git commit -m "chore(sheets-pyq): import $(date -u '+%Y-%m-%d')"
+          git push

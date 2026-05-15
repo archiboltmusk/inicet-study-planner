@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import type { User } from "@supabase/supabase-js";
-import { Target, Calendar, Clock, StickyNote, Flag, Bot, Flame, Download, Upload, BookOpen, Award, MessageSquare, ExternalLink, Sun, Moon, LogOut, LogIn, BarChart2, FlaskConical, FileText } from "lucide-react";
+import { Target, Calendar, Clock, StickyNote, Flag, Bot, Flame, Download, Upload, BookOpen, Award, MessageSquare, ExternalLink, Sun, Moon, LogOut, LogIn, BarChart2, FlaskConical, FileText, Crosshair, Zap, Layers } from "lucide-react";
 import { StudyReminderBanner, StudyReminderBell } from "@/components/StudyReminder";
 import { EXAM_DATE, SCHEDULE } from "@/data/schedule";
 import { safeLoad, safeSave } from "@/lib/storage";
@@ -25,11 +25,16 @@ import { AnalyticsPanel } from "@/components/AnalyticsPanel";
 import { ExamSimulation } from "@/components/ExamSimulation";
 import { ExamDateConfig } from "@/components/ExamDateConfig";
 import { PDFLearningExtractor } from "@/components/PDFLearningExtractor";
+import { SubjectDrill } from "@/components/SubjectDrill";
+import { RapidRevision } from "@/components/RapidRevision";
+import { OneLinerBank } from "@/components/OneLinerBank";
+import { DailyBriefing } from "@/components/DailyBriefing";
+import { ErrorAnalysis } from "@/components/ErrorAnalysis";
 import { computeAdaptivePlan } from "@/lib/adaptive";
 import { LoginScreen } from "@/components/LoginScreen";
 import { useAuth } from "@/lib/auth";
 
-type MainTab = 'planner' | 'schedule' | 'notes' | 'revision' | 'ai' | 'pyq' | 'toppers' | 'resources' | 'community' | 'analytics' | 'simulation' | 'pdf';
+type MainTab = 'planner' | 'schedule' | 'notes' | 'revision' | 'ai' | 'pyq' | 'toppers' | 'resources' | 'community' | 'analytics' | 'simulation' | 'pdf' | 'drills' | 'rapid' | 'oneliners';
 
 interface TimeLeft   { days: number; hours: number; minutes: number; seconds: number; }
 interface StreakData  { count: number; longest: number; lastDate: string; }
@@ -225,6 +230,9 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
     { id: 'schedule',   label: 'Schedule',   Icon: Clock                                    },
     { id: 'notes',      label: 'Notes',      Icon: StickyNote                               },
     { id: 'revision',   label: 'Revision',   Icon: Flag, badge: flagged.length || undefined },
+    { id: 'drills',     label: 'Drills',     Icon: Crosshair                                },
+    { id: 'rapid',      label: 'Rapid',      Icon: Zap                                      },
+    { id: 'oneliners',  label: 'One-liners', Icon: Layers                                   },
     { id: 'analytics',  label: 'Analytics',  Icon: BarChart2                                },
     { id: 'simulation', label: 'Simulate',   Icon: FlaskConical                             },
     { id: 'pdf',        label: 'PDF',        Icon: FileText                                 },
@@ -363,6 +371,13 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
 
         <div id="main-panel-planner" role="tabpanel" aria-label="Planner" hidden={activeTab !== 'planner'}>
           <div className="flex flex-col gap-6">
+          <DailyBriefing
+            completedDays={completedDays}
+            mcqScores={mcqScores}
+            streak={streak}
+            examDate={examDate}
+            onGoToTab={(tab) => setActiveTab(tab as MainTab)}
+          />
           <div className="flex flex-col lg:flex-row gap-6">
             <DayGrid
               schedule={SCHEDULE}
@@ -446,14 +461,6 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
           />
         </div>
 
-        <div id="main-panel-analytics" role="tabpanel" aria-label="Analytics" hidden={activeTab !== 'analytics'}>
-          <AnalyticsPanel
-            mcqScores={mcqScores}
-            completedDays={completedDays}
-            streak={streak}
-            examDate={examDate}
-          />
-        </div>
 
         <div id="main-panel-simulation" role="tabpanel" aria-label="Exam Simulation" hidden={activeTab !== 'simulation'}>
           <ExamSimulation />
@@ -484,6 +491,25 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
         </div>
 
         {/* Settings panel — exam date config */}
+        <div id="main-panel-drills" role="tabpanel" aria-label="Subject Drills" hidden={activeTab !== 'drills'}>
+          <SubjectDrill />
+        </div>
+
+        <div id="main-panel-rapid" role="tabpanel" aria-label="Rapid Revision" hidden={activeTab !== 'rapid'}>
+          <RapidRevision />
+        </div>
+
+        <div id="main-panel-oneliners" role="tabpanel" aria-label="One-Liner Bank" hidden={activeTab !== 'oneliners'}>
+          <OneLinerBank />
+        </div>
+
+        <div id="main-panel-analytics" role="tabpanel" aria-label="Analytics" hidden={activeTab !== 'analytics'}>
+          <div className="flex flex-col gap-6">
+            <AnalyticsPanel mcqScores={mcqScores} completedDays={completedDays} streak={streak} examDate={examDate} />
+            <ErrorAnalysis mcqScores={mcqScores} />
+          </div>
+        </div>
+
         <div id="main-panel-settings" role="tabpanel" aria-label="Settings" hidden={activeTab !== ('settings' as MainTab)}>
           <div className="max-w-md">
             <ExamDateConfig
