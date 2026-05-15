@@ -181,7 +181,7 @@ function TimerBar({ secsLeft }: { secsLeft: number }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function RapidRevision() {
+export function RapidRevision({ onComplete }: { onComplete?: () => void } = {}) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [questions, setQuestions] = useState<UnifiedQuestion[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -241,6 +241,7 @@ export function RapidRevision() {
       setFlash(null);
       if (qIdx + 1 >= questions.length) {
         setPhase("summary");
+        onComplete?.();
       } else {
         setCurrentIdx(qIdx + 1);
         setSecsLeft(PER_Q_SECS);

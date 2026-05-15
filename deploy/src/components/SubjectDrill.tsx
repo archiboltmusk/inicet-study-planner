@@ -139,7 +139,7 @@ function FeedbackOverlay({
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function SubjectDrill() {
+export function SubjectDrill({ onComplete }: { onComplete?: () => void } = {}) {
   // Setup state
   const [subject, setSubject] = useState<string>(QUESTION_SUBJECTS[0]);
   const [count, setCount] = useState<CountOption>(50);
@@ -236,7 +236,8 @@ export function SubjectDrill() {
   const submitDrill = useCallback(() => {
     stopTimer();
     setPhase("results");
-  }, [stopTimer]);
+    onComplete?.();
+  }, [stopTimer, onComplete]);
 
   useEffect(() => {
     submitRef.current = submitDrill;

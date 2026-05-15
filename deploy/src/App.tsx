@@ -1,6 +1,11 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
-import { Target, Calendar, Clock, StickyNote, Flag, Bot, Flame, Download, Upload, BookOpen, Award, MessageSquare, ExternalLink, Sun, Moon, LogOut, LogIn, BarChart2, FlaskConical, FileText, Crosshair, Zap, Layers } from "lucide-react";
+import {
+  Target, Calendar, Clock, StickyNote, Flag, Bot, Flame, Download, Upload,
+  BookOpen, Award, MessageSquare, ExternalLink, Sun, Moon, LogOut, LogIn,
+  BarChart2, FlaskConical, FileText, Crosshair, Zap, Layers, Home, Trophy,
+  Users, GraduationCap,
+} from "lucide-react";
 import { StudyReminderBanner, StudyReminderBell } from "@/components/StudyReminder";
 import { EXAM_DATE, SCHEDULE } from "@/data/schedule";
 import { safeLoad, safeSave } from "@/lib/storage";
@@ -30,14 +35,90 @@ import { RapidRevision } from "@/components/RapidRevision";
 import { OneLinerBank } from "@/components/OneLinerBank";
 import { DailyBriefing } from "@/components/DailyBriefing";
 import { ErrorAnalysis } from "@/components/ErrorAnalysis";
+import { GamificationPanel } from "@/components/GamificationPanel";
+import { XPToastLayer, makeToastItem, type XPToastItem } from "@/components/XPToast";
 import { computeAdaptivePlan } from "@/lib/adaptive";
 import { LoginScreen } from "@/components/LoginScreen";
 import { useAuth } from "@/lib/auth";
+import { useCloudSync } from "@/lib/cloud";
+import { computeBaseXP, XP_VALUES, getRank } from "@/lib/xp";
+import { checkAchievements } from "@/lib/achievements";
+import { supabase } from "@/lib/supabase";
 
-type MainTab = 'planner' | 'schedule' | 'notes' | 'revision' | 'ai' | 'pyq' | 'toppers' | 'resources' | 'community' | 'analytics' | 'simulation' | 'pdf' | 'drills' | 'rapid' | 'oneliners';
+// ─── Types ─────────────────────────────────────────────────────────────────────
 
-interface TimeLeft   { days: number; hours: number; minutes: number; seconds: number; }
-interface StreakData  { count: number; longest: number; lastDate: string; }
+type MainTab =
+  | 'planner' | 'schedule' | 'notes' | 'revision' | 'ai' | 'pyq'
+  | 'toppers' | 'resources' | 'community' | 'analytics' | 'simulation'
+  | 'pdf' | 'drills' | 'rapid' | 'oneliners' | 'rewards';
+
+type NavGroup = 'home' | 'practice' | 'learn' | 'insights' | 'rewards';
+
+interface TimeLeft { days: number; hours: number; minutes: number; seconds: number; }
+interface StreakData { count: number; longest: number; lastDate: string; }
+
+// ─── Nav config ────────────────────────────────────────────────────────────────
+
+const NAV_GROUPS: {
+  id: NavGroup;
+  label: string;
+  Icon: React.FC<{ className?: string }>;
+  tabs: { id: MainTab; label: string; Icon: React.FC<{ className?: string }> }[];
+}[] = [
+  {
+    id: 'home',
+    label: 'Home',
+    Icon: Home,
+    tabs: [
+      { id: 'planner',  label: 'Planner',  Icon: Calendar },
+      { id: 'schedule', label: 'Schedule', Icon: Clock    },
+    ],
+  },
+  {
+    id: 'practice',
+    label: 'Practice',
+    Icon: Zap,
+    tabs: [
+      { id: 'pyq',        label: 'PYQ',        Icon: BookOpen    },
+      { id: 'drills',     label: 'Drills',     Icon: Crosshair   },
+      { id: 'rapid',      label: 'Rapid',      Icon: Zap         },
+      { id: 'oneliners',  label: 'One-liners', Icon: Layers      },
+      { id: 'simulation', label: 'Simulate',   Icon: FlaskConical},
+      { id: 'revision',   label: 'Revision',   Icon: Flag        },
+    ],
+  },
+  {
+    id: 'learn',
+    label: 'Learn',
+    Icon: GraduationCap,
+    tabs: [
+      { id: 'notes', label: 'Notes',    Icon: StickyNote },
+      { id: 'pdf',   label: 'PDF',      Icon: FileText   },
+      { id: 'ai',    label: 'AI Tutor', Icon: Bot        },
+    ],
+  },
+  {
+    id: 'insights',
+    label: 'Insights',
+    Icon: BarChart2,
+    tabs: [
+      { id: 'analytics',  label: 'Analytics',  Icon: BarChart2    },
+      { id: 'toppers',    label: 'Toppers',    Icon: Award        },
+      { id: 'resources',  label: 'Resources',  Icon: ExternalLink },
+      { id: 'community',  label: 'Community',  Icon: MessageSquare},
+    ],
+  },
+  {
+    id: 'rewards',
+    label: 'Rewards',
+    Icon: Trophy,
+    tabs: [
+      { id: 'rewards', label: 'Rewards', Icon: Trophy },
+    ],
+  },
+];
+
+// ─── Helpers ───────────────────────────────────────────────────────────────────
 
 function calcTimeLeft(examDate: Date): TimeLeft {
   const distance = examDate.getTime() - Date.now();
@@ -66,7 +147,7 @@ function exportAllData(prefix: string) {
   URL.revokeObjectURL(url);
 }
 
-// ─── StudyApp ──────────────────────────────────────────────────────────────────────────────────
+// ─── StudyApp ──────────────────────────────────────────────────────────────────
 
 interface StudyAppProps {
   prefix: string;
@@ -75,6 +156,8 @@ interface StudyAppProps {
 }
 
 function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
+
+  // ── Core study state ──────────────────────────────────────────
   const [completedDays, setCompletedDays] = useState<number[]>(() =>
     safeLoad<number[]>(`${prefix}completed_days`, [])
   );
@@ -96,67 +179,136 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
   const [pyqAttempts, setPyqAttempts] = useState<Record<number, { selected: number; correct: boolean }>>(() =>
     safeLoad('inicet_pyq_attempts', {})
   );
-
   const [examDate, setExamDate] = useState<Date>(() => {
     const saved = safeLoad<string>(`${prefix}exam_date`, '');
     return saved ? new Date(saved) : EXAM_DATE;
   });
 
-  const [activeTab,       setActiveTab]       = useState<MainTab>('planner');
-  const [selectedSubject, setSelectedSubject] = useState<string>('All');
-  const [selectedDayId,   setSelectedDayId]   = useState<number>(1);
-  const [detailTab,       setDetailTab]       = useState<DetailTab>('TOPICS');
-  const [timeLeft,        setTimeLeft]        = useState<TimeLeft>(() => calcTimeLeft(examDate));
-  const [showOnboarding,  setShowOnboarding]  = useState<boolean>(() =>
-    !localStorage.getItem(`${prefix}onboarded`)
-  );
-  const [isLightMode, setIsLightMode] = useState<boolean>(() =>
-    safeLoad('inicet_light_mode', false)
-  );
+  // ── Gamification state ─────────────────────────────────────────
+  const [bonusXP,        setBonusXP]        = useState<number>(() => safeLoad('inicet_bonus_xp', 0));
+  const [unlockedIds,    setUnlockedIds]    = useState<string[]>(() => safeLoad('inicet_achievements', []));
+  const [drillsCompleted, setDrillsCompleted] = useState<number>(() => safeLoad('inicet_drills_count', 0));
+  const [simCompleted,   setSimCompleted]   = useState<boolean>(() => safeLoad('inicet_sim_done', false));
+  const [xpToasts,       setXpToasts]       = useState<XPToastItem[]>([]);
+
+  // ── Nav state ──────────────────────────────────────────────────
+  const [activeGroup,      setActiveGroup]      = useState<NavGroup>('home');
+  const [activeTab,        setActiveTab]        = useState<MainTab>('planner');
+  const [selectedSubject,  setSelectedSubject]  = useState<string>('All');
+  const [selectedDayId,    setSelectedDayId]    = useState<number>(1);
+  const [detailTab,        setDetailTab]        = useState<DetailTab>('TOPICS');
+  const [timeLeft,         setTimeLeft]         = useState<TimeLeft>(() => calcTimeLeft(examDate));
+  const [showOnboarding,   setShowOnboarding]   = useState<boolean>(() => !localStorage.getItem(`${prefix}onboarded`));
+  const [isLightMode,      setIsLightMode]      = useState<boolean>(() => safeLoad('inicet_light_mode', false));
 
   const importRef = useRef<HTMLInputElement>(null);
 
+  // ── Derived XP ────────────────────────────────────────────────
+  const baseXP = useMemo(
+    () => computeBaseXP(completedDays, mcqScores, notes, streak),
+    [completedDays, mcqScores, notes, streak]
+  );
+  const totalXP = baseXP + bonusXP;
+
+  // ── Achievement check ─────────────────────────────────────────
   useEffect(() => {
-    if (isLightMode) {
-      document.documentElement.classList.add('light');
-    } else {
-      document.documentElement.classList.remove('light');
+    const mcqCorrect   = Object.values(mcqScores).reduce((s, v) => s + (v.correct ?? 0), 0);
+    const mcqAttempted = Object.values(mcqScores).reduce((s, v) => s + (v.attempted ?? 0), 0);
+    const pyqAttempted = Object.values(pyqAttempts).length;
+    const notesCount   = Object.values(notes).filter(n => n?.trim()).length;
+
+    const newly = checkAchievements(
+      { completedDays, streak, mcqCorrect, mcqAttempted, pyqAttempted, notesCount, drillsCompleted, simulationCompleted: simCompleted },
+      totalXP,
+      unlockedIds,
+    );
+
+    if (newly.length > 0) {
+      const newIds = newly.map(a => a.id);
+      const bonusFromAchievements = newly.reduce((s, a) => s + a.xpReward, 0);
+      setUnlockedIds(prev => [...prev, ...newIds]);
+      setBonusXP(prev => prev + bonusFromAchievements);
+      // Each achievement also shows as a toast
+      newly.forEach(a => {
+        setXpToasts(prev => [...prev, makeToastItem(a.xpReward, `${a.emoji} ${a.title}`)]);
+      });
     }
+  }, [completedDays, streak, mcqScores, pyqAttempts, notes, drillsCompleted, simCompleted, totalXP, unlockedIds]);
+
+  // ── Leaderboard sync ──────────────────────────────────────────
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("leaderboard").upsert({
+      user_id:      user.id,
+      display_name: user.email ?? 'Aspirant',
+      xp:           totalXP,
+      rank_title:   getRank(totalXP).title,
+      streak:       streak.count,
+      completed:    completedDays.length,
+      updated_at:   new Date().toISOString(),
+    }, { onConflict: 'user_id' }).then(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalXP]);
+
+  // ── Cloud sync (now actually wired up) ───────────────────────
+  const syncReady = !!user;
+  useCloudSync('completed_days', completedDays as never, syncReady);
+  useCloudSync('notes',           notes        as never, syncReady);
+  useCloudSync('mcq_scores',      mcqScores    as never, syncReady);
+  useCloudSync('flagged',         flagged      as never, syncReady);
+  useCloudSync('sr_cards',        srCards      as never, syncReady);
+  useCloudSync('streak',          streak       as never, syncReady);
+  useCloudSync('exam_date',       examDate.toISOString() as never, syncReady);
+
+  // ── Theme ─────────────────────────────────────────────────────
+  useEffect(() => {
+    document.documentElement.classList.toggle('light', isLightMode);
     safeSave('inicet_light_mode', isLightMode);
   }, [isLightMode]);
 
-  const handleOnboardingDone = () => {
-    localStorage.setItem(`${prefix}onboarded`, '1');
-    setShowOnboarding(false);
-  };
-
+  // ── localStorage persistence ──────────────────────────────────
   useEffect(() => { safeSave(`${prefix}completed_days`, completedDays); }, [completedDays, prefix]);
-  useEffect(() => { safeSave(`${prefix}notes`, notes); },                 [notes, prefix]);
-  useEffect(() => { safeSave(`${prefix}mcq_scores`, mcqScores); },       [mcqScores, prefix]);
-  useEffect(() => { safeSave(`${prefix}flagged`, flagged); },             [flagged, prefix]);
-  useEffect(() => { safeSave(`${prefix}sr_cards`, srCards); },            [srCards, prefix]);
-  useEffect(() => { safeSave(`${prefix}streak`, streak); },               [streak, prefix]);
-  useEffect(() => { safeSave(`${prefix}exam_date`, examDate.toISOString()); }, [examDate, prefix]);
+  useEffect(() => { safeSave(`${prefix}notes`,          notes);          }, [notes, prefix]);
+  useEffect(() => { safeSave(`${prefix}mcq_scores`,     mcqScores);      }, [mcqScores, prefix]);
+  useEffect(() => { safeSave(`${prefix}flagged`,        flagged);         }, [flagged, prefix]);
+  useEffect(() => { safeSave(`${prefix}sr_cards`,       srCards);         }, [srCards, prefix]);
+  useEffect(() => { safeSave(`${prefix}streak`,         streak);          }, [streak, prefix]);
+  useEffect(() => { safeSave(`${prefix}exam_date`,      examDate.toISOString()); }, [examDate, prefix]);
+  useEffect(() => { safeSave('inicet_bonus_xp',         bonusXP);         }, [bonusXP]);
+  useEffect(() => { safeSave('inicet_achievements',     unlockedIds);     }, [unlockedIds]);
+  useEffect(() => { safeSave('inicet_drills_count',     drillsCompleted); }, [drillsCompleted]);
+  useEffect(() => { safeSave('inicet_sim_done',         simCompleted);    }, [simCompleted]);
 
+  // ── Timer ─────────────────────────────────────────────────────
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(calcTimeLeft(examDate)), 1000);
-    return () => clearInterval(timer);
+    const t = setInterval(() => setTimeLeft(calcTimeLeft(examDate)), 1000);
+    return () => clearInterval(t);
   }, [examDate]);
 
   useEffect(() => {
-    const handler = () => {
-      setPyqAttempts(safeLoad('inicet_pyq_attempts', {}));
-    };
+    const handler = () => setPyqAttempts(safeLoad('inicet_pyq_attempts', {}));
     window.addEventListener('storage', handler);
     return () => window.removeEventListener('storage', handler);
   }, []);
 
+  // ── XP gain callback ──────────────────────────────────────────
+  const gainXP = useCallback((amount: number, label: string) => {
+    setBonusXP(prev => prev + amount);
+    setXpToasts(prev => [...prev, makeToastItem(amount, label)]);
+  }, []);
+
+  const dismissToast = useCallback((id: number) => {
+    setXpToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
+  // ── Study logic ───────────────────────────────────────────────
   const toggleDayCompletion = (day: number) => {
     const isCompleting = !completedDays.includes(day);
     setCompletedDays(prev =>
       prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
     );
     if (isCompleting) {
+      gainXP(XP_VALUES.day_complete, `Day ${day} complete`);
       const today = new Date().toISOString().slice(0, 10);
       setStreak(s => {
         if (s.lastDate === today) return s;
@@ -170,8 +322,14 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
   const updateNote = (day: number, text: string) =>
     setNotes(prev => ({ ...prev, [day]: text }));
 
-  const saveMcqScore = (day: number, attempted: number, correct: number) =>
-    setMcqScores(prev => ({ ...prev, [day]: { attempted, correct } }));
+  const saveMcqScore = (day: number, attempted: number, correct: number) => {
+    const prev = mcqScores[day] ?? { attempted: 0, correct: 0 };
+    const newCorrect = correct - (prev.correct ?? 0);
+    const newWrong   = (attempted - correct) - (Math.max(0, (prev.attempted ?? 0) - (prev.correct ?? 0)));
+    setMcqScores(p => ({ ...p, [day]: { attempted, correct } }));
+    if (newCorrect > 0) gainXP(newCorrect * XP_VALUES.mcq_correct, 'MCQ correct');
+    if (newWrong   > 0) gainXP(newWrong   * XP_VALUES.mcq_wrong,   'MCQ attempt');
+  };
 
   const toggleFlag = (dayId: number, topicIdx: number) =>
     setFlagged(prev =>
@@ -198,6 +356,38 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
     e.target.value = '';
   };
 
+  const handleDrillComplete = useCallback(() => {
+    setDrillsCompleted(prev => prev + 1);
+    gainXP(XP_VALUES.drill_complete, 'Drill complete');
+  }, [gainXP]);
+
+  const handleRapidComplete = useCallback(() => {
+    setDrillsCompleted(prev => prev + 1);
+    gainXP(XP_VALUES.rapid_complete, 'Rapid revision');
+  }, [gainXP]);
+
+  const handleSimComplete = useCallback(() => {
+    setSimCompleted(true);
+    gainXP(XP_VALUES.simulation_complete, 'Exam simulation');
+  }, [gainXP]);
+
+  const handlePYQCorrect = useCallback(() => gainXP(XP_VALUES.pyq_correct, 'PYQ correct'), [gainXP]);
+  const handlePYQWrong   = useCallback(() => gainXP(XP_VALUES.pyq_wrong,   'PYQ attempt'), [gainXP]);
+  const handleAIChat     = useCallback(() => gainXP(XP_VALUES.ai_chat,     'AI tutor'),    [gainXP]);
+
+  // ── Nav helpers ───────────────────────────────────────────────
+  const handleGroupClick = (gid: NavGroup) => {
+    setActiveGroup(gid);
+    const group = NAV_GROUPS.find(g => g.id === gid);
+    if (group?.tabs.length === 1) setActiveTab(group.tabs[0].id);
+    else if (gid === 'home') setActiveTab('planner');
+  };
+
+  const handleOnboardingDone = () => {
+    localStorage.setItem(`${prefix}onboarded`, '1');
+    setShowOnboarding(false);
+  };
+
   const adaptivePlan = useMemo(
     () => computeAdaptivePlan(mcqScores, completedDays),
     [mcqScores, completedDays]
@@ -211,6 +401,9 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
 
   const selectedDay  = SCHEDULE.find(s => s.day === selectedDayId) ?? SCHEDULE[0];
   const studiedToday = streak.lastDate === new Date().toISOString().slice(0, 10);
+  const isPostExam   = examDate.getTime() <= Date.now();
+  const userInitial  = user?.email?.[0]?.toUpperCase() ?? 'G';
+  const userLabel    = user?.email ?? 'Guest';
 
   const studyContext = useMemo(() => ({
     completedDays,
@@ -220,37 +413,19 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
     examDate,
   }), [completedDays, mcqScores, flagged.length, selectedDay, examDate]);
 
-  const isPostExam = examDate.getTime() <= Date.now();
-
-  const userInitial = user?.email?.[0]?.toUpperCase() ?? 'G';
-  const userLabel   = user?.email ?? 'Guest';
-
-  const NAV_TABS: { id: MainTab; label: string; Icon: React.FC<{ className?: string }>; badge?: number }[] = [
-    { id: 'planner',    label: 'Planner',    Icon: Calendar                                 },
-    { id: 'schedule',   label: 'Schedule',   Icon: Clock                                    },
-    { id: 'notes',      label: 'Notes',      Icon: StickyNote                               },
-    { id: 'revision',   label: 'Revision',   Icon: Flag, badge: flagged.length || undefined },
-    { id: 'drills',     label: 'Drills',     Icon: Crosshair                                },
-    { id: 'rapid',      label: 'Rapid',      Icon: Zap                                      },
-    { id: 'oneliners',  label: 'One-liners', Icon: Layers                                   },
-    { id: 'analytics',  label: 'Analytics',  Icon: BarChart2                                },
-    { id: 'simulation', label: 'Simulate',   Icon: FlaskConical                             },
-    { id: 'pdf',        label: 'PDF',        Icon: FileText                                 },
-    { id: 'ai',         label: 'AI Tutor',   Icon: Bot                                      },
-    { id: 'pyq',        label: 'PYQ',        Icon: BookOpen                                 },
-    { id: 'toppers',    label: 'Toppers',    Icon: Award                                    },
-    { id: 'resources',  label: 'Resources',  Icon: ExternalLink                             },
-    { id: 'community',  label: 'Community',  Icon: MessageSquare                            },
-  ];
+  const activeGroupData = NAV_GROUPS.find(g => g.id === activeGroup) ?? NAV_GROUPS[0];
+  const showSubNav      = activeGroupData.tabs.length > 1;
+  const flagBadge       = flagged.length || undefined;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       {showOnboarding && <OnboardingModal onDone={handleOnboardingDone} />}
+      <XPToastLayer items={xpToasts} onDismiss={dismissToast} />
 
-      {/* Header */}
+      {/* ── Header ── */}
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <StudyReminderBanner studiedToday={studiedToday} />
-        <div className="px-4 md:px-6 py-3 md:py-4 flex justify-between items-center gap-4">
+        <div className="px-4 md:px-6 py-3 flex justify-between items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="bg-destructive p-2 rounded-md shrink-0">
               <Target className="w-5 h-5 text-destructive-foreground" />
@@ -260,7 +435,19 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
               <p className="text-[10px] text-muted-foreground font-mono">MAY 16, 2026 // COMMAND CENTER</p>
             </div>
           </div>
+
           <div className="flex items-center gap-2 md:gap-3">
+            {/* XP badge */}
+            <button
+              onClick={() => { setActiveGroup('rewards'); setActiveTab('rewards'); }}
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-violet-500/10 border border-violet-500/30 rounded-full hover:bg-violet-500/20 transition-colors"
+              title="View Rewards"
+            >
+              <Trophy className="w-3.5 h-3.5 text-violet-400" />
+              <span className="text-xs font-mono text-violet-400 font-bold">{totalXP.toLocaleString()} XP</span>
+            </button>
+
+            {/* Streak */}
             {streak.count > 0 && (
               <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-orange-500/10 border border-orange-500/30 rounded-full">
                 <Flame className="w-3.5 h-3.5 text-orange-400" />
@@ -270,17 +457,18 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
                 )}
               </div>
             )}
+
             <CountdownTimer timeLeft={timeLeft} />
             <button
               onClick={() => setIsLightMode(m => !m)}
-              title={isLightMode ? "Switch to dark mode" : "Switch to light mode"}
               className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded border border-transparent hover:border-border"
               aria-label="Toggle theme"
             >
               {isLightMode ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
             </button>
             <StudyReminderBell studiedToday={studiedToday} />
-            {/* User / sign-out */}
+
+            {/* User */}
             <div className="flex items-center gap-1.5 border-l border-border pl-2 md:pl-3">
               <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
                 <span className="text-[10px] font-mono font-bold text-primary">{userInitial}</span>
@@ -288,7 +476,7 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
               <span className="hidden lg:block text-[11px] font-mono text-muted-foreground max-w-[130px] truncate">{userLabel}</span>
               <button
                 onClick={onSignOut}
-                title={user ? "Sign out" : "Sign in with a different account"}
+                title={user ? "Sign out" : "Switch account"}
                 className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded border border-transparent hover:border-border"
                 aria-label={user ? "Sign out" : "Switch account"}
               >
@@ -299,126 +487,149 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
         </div>
       </header>
 
-      {/* Nav + Progress */}
-      <div className="px-4 md:px-6 py-3 border-b border-border/50 bg-background flex flex-col md:flex-row justify-between items-center gap-3">
-        <nav
-          className="flex bg-card p-1 rounded-lg border border-border w-full md:w-auto overflow-x-auto"
-          role="tablist"
-          aria-label="Main sections"
-        >
-          {NAV_TABS.map(({ id, label, Icon, badge }) => (
-            <button
-              key={id}
-              role="tab"
-              title={label}
-              aria-selected={activeTab === id}
-              aria-controls={`main-panel-${id}`}
-              onClick={() => setActiveTab(id)}
-              className={`flex-shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-1.5 relative ${
-                activeTab === id
-                  ? 'bg-secondary text-secondary-foreground'
-                  : 'text-muted-foreground hover:text-primary hover:bg-muted'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span className="hidden xl:inline">{label}</span>
-              {badge ? (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-orange-500 text-white text-[9px] font-mono flex items-center justify-center">
-                  {badge > 99 ? '99' : badge}
-                </span>
-              ) : null}
-            </button>
-          ))}
-        </nav>
+      {/* ── Primary nav (5 groups) ── */}
+      <div className="sticky top-[57px] z-[9] bg-background border-b border-border/50">
+        <div className="px-4 md:px-6 py-2 flex items-center justify-between gap-3">
+          {/* Group tabs */}
+          <nav className="flex gap-1 bg-card border border-border rounded-lg p-1 overflow-x-auto no-scrollbar" aria-label="Navigation groups">
+            {NAV_GROUPS.map(({ id, label, Icon }) => {
+              const isActive = activeGroup === id;
+              const hasBadge = id === 'practice' && flagBadge;
+              return (
+                <button
+                  key={id}
+                  onClick={() => handleGroupClick(id)}
+                  className={`relative flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-secondary text-secondary-foreground'
+                      : 'text-muted-foreground hover:text-primary hover:bg-muted'
+                  }`}
+                  aria-pressed={isActive}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{label}</span>
+                  {hasBadge && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-orange-500 text-white text-[9px] font-mono flex items-center justify-center">
+                      {flagBadge > 99 ? '99' : flagBadge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="text-xs font-mono text-muted-foreground whitespace-nowrap">
-            {completedDays.length}/28
-          </div>
-          <div
-            className="h-2 flex-1 md:w-40 bg-card rounded-full overflow-hidden border border-border"
-            role="progressbar"
-            aria-valuenow={completedDays.length}
-            aria-valuemin={0}
-            aria-valuemax={28}
-            aria-label="Study progress"
-          >
+          {/* Progress + export */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs font-mono text-muted-foreground whitespace-nowrap hidden sm:block">
+              {completedDays.length}/28
+            </span>
             <div
-              className="h-full bg-primary transition-all duration-500 ease-out"
-              style={{ width: `${(completedDays.length / 28) * 100}%` }}
-            />
+              className="h-2 w-20 sm:w-32 bg-card rounded-full overflow-hidden border border-border"
+              role="progressbar"
+              aria-valuenow={completedDays.length}
+              aria-valuemin={0}
+              aria-valuemax={28}
+              aria-label="Study progress"
+            >
+              <div
+                className="h-full bg-primary transition-all duration-500 ease-out"
+                style={{ width: `${(completedDays.length / 28) * 100}%` }}
+              />
+            </div>
+            <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+            <button onClick={() => exportAllData(prefix)} title="Export backup" className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded border border-transparent hover:border-border">
+              <Download className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={() => importRef.current?.click()} title="Import backup" className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded border border-transparent hover:border-border">
+              <Upload className="w-3.5 h-3.5" />
+            </button>
           </div>
-          <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
-          <button
-            onClick={() => exportAllData(prefix)}
-            title="Export backup"
-            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded border border-transparent hover:border-border"
-          >
-            <Download className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => importRef.current?.click()}
-            title="Import backup"
-            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded border border-transparent hover:border-border"
-          >
-            <Upload className="w-3.5 h-3.5" />
-          </button>
         </div>
+
+        {/* Sub-nav (only for multi-tab groups) */}
+        {showSubNav && (
+          <div className="px-4 md:px-6 pb-2">
+            <div className="flex gap-1 overflow-x-auto no-scrollbar" role="tablist" aria-label={`${activeGroupData.label} sections`}>
+              {activeGroupData.tabs.map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  role="tab"
+                  aria-selected={activeTab === id}
+                  onClick={() => setActiveTab(id)}
+                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium font-mono transition-colors ${
+                    activeTab === id
+                      ? 'bg-muted text-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {label}
+                  {id === 'revision' && flagBadge ? (
+                    <span className="w-4 h-4 rounded-full bg-orange-500 text-white text-[9px] font-mono flex items-center justify-center">
+                      {flagBadge}
+                    </span>
+                  ) : null}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Main Content */}
+      {/* ── Main Content ── */}
       <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl mx-auto w-full">
 
-        <div id="main-panel-planner" role="tabpanel" aria-label="Planner" hidden={activeTab !== 'planner'}>
+        {/* HOME group */}
+        <div hidden={activeGroup !== 'home' || activeTab !== 'planner'}>
           <div className="flex flex-col gap-6">
-          <DailyBriefing
-            completedDays={completedDays}
-            mcqScores={mcqScores}
-            streak={streak}
-            examDate={examDate}
-            onGoToTab={(tab) => setActiveTab(tab as MainTab)}
-          />
-          <div className="flex flex-col lg:flex-row gap-6">
-            <DayGrid
-              schedule={SCHEDULE}
-              filteredSchedule={filteredSchedule}
+            <DailyBriefing
               completedDays={completedDays}
-              notes={notes}
-              selectedDayId={selectedDayId}
-              onSelectDay={setSelectedDayId}
-              selectedSubject={selectedSubject}
-              onSelectSubject={setSelectedSubject}
-              urgentDays={adaptivePlan.urgentRemainingDays}
-              missedDays={adaptivePlan.missedBlitzDays}
-            />
-            <DayDetail
-              day={selectedDay}
-              detailTab={detailTab}
-              onSetDetailTab={setDetailTab}
-              completedDays={completedDays}
-              onToggleCompletion={toggleDayCompletion}
-              notes={notes}
-              onUpdateNote={updateNote}
               mcqScores={mcqScores}
-              onSaveMcqScore={saveMcqScore}
-              onSelectDay={setSelectedDayId}
-              flagged={flagged}
-              onToggleFlag={toggleFlag}
-              onPrevDay={() => setSelectedDayId(prev => prev - 1)}
-              onNextDay={() => setSelectedDayId(prev => prev + 1)}
-              canGoPrev={selectedDayId > 1}
-              canGoNext={selectedDayId < 28}
+              streak={streak}
+              examDate={examDate}
+              onGoToTab={(tab) => { setActiveTab(tab as MainTab); }}
             />
-          </div>
-          <AdaptivePlanPanel
-            mcqScores={mcqScores}
-            completedDays={completedDays}
-            onSelectDay={(day) => { setSelectedDayId(day); }}
-          />
+            <div className="flex flex-col lg:flex-row gap-6">
+              <DayGrid
+                schedule={SCHEDULE}
+                filteredSchedule={filteredSchedule}
+                completedDays={completedDays}
+                notes={notes}
+                selectedDayId={selectedDayId}
+                onSelectDay={setSelectedDayId}
+                selectedSubject={selectedSubject}
+                onSelectSubject={setSelectedSubject}
+                urgentDays={adaptivePlan.urgentRemainingDays}
+                missedDays={adaptivePlan.missedBlitzDays}
+              />
+              <DayDetail
+                day={selectedDay}
+                detailTab={detailTab}
+                onSetDetailTab={setDetailTab}
+                completedDays={completedDays}
+                onToggleCompletion={toggleDayCompletion}
+                notes={notes}
+                onUpdateNote={updateNote}
+                mcqScores={mcqScores}
+                onSaveMcqScore={saveMcqScore}
+                onSelectDay={setSelectedDayId}
+                flagged={flagged}
+                onToggleFlag={toggleFlag}
+                onPrevDay={() => setSelectedDayId(prev => prev - 1)}
+                onNextDay={() => setSelectedDayId(prev => prev + 1)}
+                canGoPrev={selectedDayId > 1}
+                canGoNext={selectedDayId < 28}
+              />
+            </div>
+            <AdaptivePlanPanel
+              mcqScores={mcqScores}
+              completedDays={completedDays}
+              onSelectDay={(day) => setSelectedDayId(day)}
+            />
           </div>
         </div>
 
-        <div id="main-panel-schedule" role="tabpanel" aria-label="Daily Schedule" hidden={activeTab !== 'schedule'}>
+        <div hidden={activeGroup !== 'home' || activeTab !== 'schedule'}>
           <div className="flex flex-col gap-8 max-w-5xl mx-auto">
             <DailyScheduleView />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -441,7 +652,32 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
           </div>
         </div>
 
-        <div id="main-panel-notes" role="tabpanel" aria-label="My Notes" hidden={activeTab !== 'notes'}>
+        {/* PRACTICE group */}
+        <div hidden={activeGroup !== 'practice' || activeTab !== 'pyq'}>
+          <PYQBank onCorrect={handlePYQCorrect} onWrong={handlePYQWrong} />
+        </div>
+        <div hidden={activeGroup !== 'practice' || activeTab !== 'drills'}>
+          <SubjectDrill onComplete={handleDrillComplete} />
+        </div>
+        <div hidden={activeGroup !== 'practice' || activeTab !== 'rapid'}>
+          <RapidRevision onComplete={handleRapidComplete} />
+        </div>
+        <div hidden={activeGroup !== 'practice' || activeTab !== 'oneliners'}>
+          <OneLinerBank />
+        </div>
+        <div hidden={activeGroup !== 'practice' || activeTab !== 'simulation'}>
+          <ExamSimulation onComplete={handleSimComplete} />
+        </div>
+        <div hidden={activeGroup !== 'practice' || activeTab !== 'revision'}>
+          <RevisionList
+            flagged={flagged}
+            onUnflag={toggleFlag}
+            onGoToDay={(day) => { setSelectedDayId(day); setActiveGroup('home'); setActiveTab('planner'); }}
+          />
+        </div>
+
+        {/* LEARN group */}
+        <div hidden={activeGroup !== 'learn' || activeTab !== 'notes'}>
           <NotesView
             selectedDayId={selectedDayId}
             selectedDay={selectedDay}
@@ -452,72 +688,39 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
             onUpdateSrCard={updateSrCard}
           />
         </div>
-
-        <div id="main-panel-revision" role="tabpanel" aria-label="Revision List" hidden={activeTab !== 'revision'}>
-          <RevisionList
-            flagged={flagged}
-            onUnflag={toggleFlag}
-            onGoToDay={(day) => { setSelectedDayId(day); setActiveTab('planner'); }}
-          />
-        </div>
-
-
-        <div id="main-panel-simulation" role="tabpanel" aria-label="Exam Simulation" hidden={activeTab !== 'simulation'}>
-          <ExamSimulation />
-        </div>
-
-        <div id="main-panel-pdf" role="tabpanel" aria-label="PDF Learning Extractor" hidden={activeTab !== 'pdf'}>
+        <div hidden={activeGroup !== 'learn' || activeTab !== 'pdf'}>
           <PDFLearningExtractor />
         </div>
-
-        <div id="main-panel-ai" role="tabpanel" aria-label="AI Tutor" hidden={activeTab !== 'ai'}>
-          <ChatPanel studyContext={studyContext} />
+        <div hidden={activeGroup !== 'learn' || activeTab !== 'ai'}>
+          <ChatPanel studyContext={studyContext} onFirstMessage={handleAIChat} />
         </div>
 
-        <div id="main-panel-pyq" role="tabpanel" aria-label="PYQ Practice" hidden={activeTab !== 'pyq'}>
-          <PYQBank />
-        </div>
-
-        <div id="main-panel-toppers" role="tabpanel" aria-label="Topper Insights" hidden={activeTab !== 'toppers'}>
-          <TopperInsights />
-        </div>
-
-        <div id="main-panel-resources" role="tabpanel" aria-label="Resource Hub" hidden={activeTab !== 'resources'}>
-          <ResourceHub />
-        </div>
-
-        <div id="main-panel-community" role="tabpanel" aria-label="Community Q&A" hidden={activeTab !== 'community'}>
-          <CommunityQA />
-        </div>
-
-        {/* Settings panel — exam date config */}
-        <div id="main-panel-drills" role="tabpanel" aria-label="Subject Drills" hidden={activeTab !== 'drills'}>
-          <SubjectDrill />
-        </div>
-
-        <div id="main-panel-rapid" role="tabpanel" aria-label="Rapid Revision" hidden={activeTab !== 'rapid'}>
-          <RapidRevision />
-        </div>
-
-        <div id="main-panel-oneliners" role="tabpanel" aria-label="One-Liner Bank" hidden={activeTab !== 'oneliners'}>
-          <OneLinerBank />
-        </div>
-
-        <div id="main-panel-analytics" role="tabpanel" aria-label="Analytics" hidden={activeTab !== 'analytics'}>
+        {/* INSIGHTS group */}
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'analytics'}>
           <div className="flex flex-col gap-6">
             <AnalyticsPanel mcqScores={mcqScores} completedDays={completedDays} streak={streak} examDate={examDate} />
             <ErrorAnalysis mcqScores={mcqScores} />
           </div>
         </div>
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'toppers'}>
+          <TopperInsights />
+        </div>
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'resources'}>
+          <ResourceHub />
+        </div>
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'community'}>
+          <CommunityQA />
+        </div>
 
-        <div id="main-panel-settings" role="tabpanel" aria-label="Settings" hidden={activeTab !== ('settings' as MainTab)}>
-          <div className="max-w-md">
-            <ExamDateConfig
-              currentExamDate={examDate}
-              onSave={setExamDate}
-              isPostExam={isPostExam}
-            />
-          </div>
+        {/* REWARDS group */}
+        <div hidden={activeGroup !== 'rewards'}>
+          <GamificationPanel
+            xp={totalXP}
+            unlockedIds={unlockedIds}
+            completedDays={completedDays.length}
+            streak={streak.longest}
+            displayName={user?.email ?? 'Aspirant'}
+          />
         </div>
 
       </main>
@@ -543,9 +746,7 @@ export default function App() {
     );
   }
 
-  if (!user && !isGuest) {
-    return <LoginScreen />;
-  }
+  if (!user && !isGuest) return <LoginScreen />;
 
   return (
     <StudyApp

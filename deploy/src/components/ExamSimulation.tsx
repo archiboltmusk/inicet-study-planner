@@ -65,7 +65,7 @@ type ConfidenceMap = Record<number, Confidence>;
 const OPTION_LABELS = ["A", "B", "C", "D"] as const;
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export function ExamSimulation() {
+export function ExamSimulation({ onComplete }: { onComplete?: () => void } = {}) {
   // ── Setup state ──
   const [numQuestions, setNumQuestions] = useState<50 | 100 | 200>(200);
   const [subjectFilter, setSubjectFilter] = useState<string>("All subjects");
@@ -134,7 +134,8 @@ export function ExamSimulation() {
   const submitExam = useCallback(() => {
     stopTimer();
     setPhase("results");
-  }, [stopTimer]);
+    onComplete?.();
+  }, [stopTimer, onComplete]);
 
   // Keep the ref up-to-date
   useEffect(() => {

@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import Anthropic from "@anthropic-ai/sdk";
-import { Bot, Send, Trash2, Key, ChevronDown, ChevronUp, Loader2, ExternalLink, ShieldCheck, Zap } from "lucide-react";
-import { safeLoad, safeSave } from "@/lib/storage";
+import { Bot, Send, Trash2, Loader2 } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
@@ -18,20 +16,10 @@ interface StudyContext {
   examDate: Date;
 }
 
-const BASE_SYSTEM_PROMPT = `You are an expert INI-CET / USMLE-style medical exam tutor helping an Indian postgraduate medical aspirant preparing for INI-CET (All India Institute of Medical Sciences PG entrance exam).
-
-Your role:
-- Give concise, high-yield exam-focused answers
-- Use mnemonics and memory hooks whenever relevant
-- Highlight key exam-specific facts (DOC, DOC in pregnancy, classic presentations, exceptions)
-- When asked about drug classifications, use standard Indian PG exam format (e.g., Vaughan Williams for antiarrhythmics)
-- Point out common MCQ traps and favourite examiners' tricks
-- Keep answers ≤300 words unless the topic genuinely demands more
-- Use bullet points and bold for scannable reading
-- Always mention the most likely exam angle at the end (e.g., "Most likely asked as: identify the drug from its mechanism")
-- When the student asks "what should I study" or "what's my weak area", use the student profile below to give a specific, personalised answer
-
-Subjects covered: Anatomy, Physiology, Biochemistry, Pharmacology, Pathology, Microbiology, FMT/Forensics, PSM/Community Medicine, Medicine, Surgery, OBG, Paediatrics, Orthopaedics, Ophthalmology, ENT, Psychiatry, Radiology, Skin.`;
+interface Props {
+  studyContext?: StudyContext;
+  onFirstMessage?: () => void;
+}
 
 const SUBJECT_DAYS: Record<string, number[]> = {
   Medicine: [1,2,3,4], Surgery: [5,6], Pathology: [7,8],
@@ -39,145 +27,127 @@ const SUBJECT_DAYS: Record<string, number[]> = {
   PSM: [14,15], Microbiology: [16,17], Forensic: [18],
 };
 
-function buildSystemPrompt(ctx: StudyContext | undefined): string {
-  if (!ctx) return BASE_SYSTEM_PROMPT;
-
+function buildContext(ctx: StudyContext | undefined): string | undefined {
+  if (!ctx) return undefined;
   const daysToExam = Math.max(0, Math.ceil(
     (ctx.examDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
   ));
-
-  const subjectLines = Object.entries(SUBJECT_DAYS).map(([subj, days]) => {
+  const lines = Object.entries(SUBJECT_DAYS).flatMap(([subj, days]) => {
     let attempted = 0, correct = 0;
     days.filter(d => ctx.completedDays.includes(d)).forEach(d => {
       const s = ctx.mcqScores[d];
       if (s?.attempted) { attempted += s.attempted; correct += s.correct; }
     });
-    if (!attempted) return null;
+    if (!attempted) return [];
     const acc = Math.round((correct / attempted) * 100);
-    const tag = acc < 60 ? "⚠ WEAK" : acc < 75 ? "~ borderline" : "✓ strong";
-    return `  ${subj}: ${acc}% accuracy (${attempted} Qs) ${tag}`;
-  }).filter(Boolean);
-
-  const contextBlock = `
-
-=== STUDENT PROFILE (use this to personalise answers) ===
-Plan progress: ${ctx.completedDays.length}/28 days completed
-Currently studying: ${ctx.currentDayFocus}
-Days until exam: ${daysToExam}
-Flagged topics for review: ${ctx.flaggedCount}
-${subjectLines.length ? `Subject MCQ performance:\n${subjectLines.join("\n")}` : "MCQ scores: not yet logged"}
-=== END PROFILE ===`;
-
-  return BASE_SYSTEM_PROMPT + contextBlock;
+    const tag = acc < 60 ? "WEAK" : acc < 75 ? "borderline" : "strong";
+    return [`${subj}: ${acc}% (${tag})`];
+  });
+  return [
+    `Progress: ${ctx.completedDays.length}/28 days`,
+    `Currently: ${ctx.currentDayFocus}`,
+    `Days to exam: ${daysToExam}`,
+    `Flagged: ${ctx.flaggedCount} topics`,
+    ...(lines.length ? [`MCQ accuracy: ${lines.join(', ')}`] : []),
+  ].join(' | ');
 }
 
-const DEFAULT_QUICK_PROMPTS = [
+const DEFAULT_PROMPTS = [
   "What is the DOC for absence seizures?",
   "Vaughan Williams classification of antiarrhythmics",
-  "Classic triad of Cushing's syndrome vs Cushing's disease",
+  "Cushing's syndrome vs disease — classic MCQ differences",
   "Mechanism of metformin and why it's used in PCOS",
   "Layers of the cornea in order",
   "Most common cause of surgical jaundice",
 ];
 
-function loadKey(): string {
-  return safeLoad<string>("inicet_ai_key", "");
-}
-
-interface Props {
-  studyContext?: StudyContext;
-}
-
-export function ChatPanel({ studyContext }: Props) {
-  const [apiKey, setApiKey]     = useState<string>(loadKey);
-  const [keyInput, setKeyInput] = useState<string>("");
-  const [showKeyForm, setShowKeyForm] = useState<boolean>(!loadKey());
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput]       = useState<string>("");
+export function ChatPanel({ studyContext, onFirstMessage }: Props) {
+  const [messages,  setMessages]  = useState<Message[]>([]);
+  const [input,     setInput]     = useState<string>("");
   const [streaming, setStreaming] = useState<boolean>(false);
-  const [error, setError]       = useState<string>("");
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const [error,     setError]     = useState<string>("");
+  const firstMsgFired = useRef(false);
+  const bottomRef     = useRef<HTMLDivElement>(null);
+  const textareaRef   = useRef<HTMLTextAreaElement>(null);
+  const abortRef      = useRef<AbortController | null>(null);
 
   const quickPrompts = studyContext
     ? [
         "Based on my weak subjects, what should I focus on today?",
         "Give me the top 5 high-yield mnemonics for my weakest subject",
         "What are the most common MCQ traps for my current topic?",
-        ...DEFAULT_QUICK_PROMPTS.slice(0, 3),
+        ...DEFAULT_PROMPTS.slice(0, 3),
       ]
-    : DEFAULT_QUICK_PROMPTS;
+    : DEFAULT_PROMPTS;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streaming]);
 
-  const saveKey = () => {
-    const k = keyInput.trim();
-    if (!k.startsWith("sk-ant-")) {
-      setError("Key must start with sk-ant-");
-      return;
-    }
-    safeSave("inicet_ai_key", k);
-    setApiKey(k);
-    setShowKeyForm(false);
-    setError("");
-    setKeyInput("");
-  };
-
-  const clearKey = () => {
-    safeSave("inicet_ai_key", "");
-    setApiKey("");
-    setKeyInput("");
-    setShowKeyForm(true);
-  };
-
   const send = async (text: string) => {
     if (!text.trim() || streaming) return;
     setError("");
 
+    if (!firstMsgFired.current) {
+      firstMsgFired.current = true;
+      onFirstMessage?.();
+    }
+
     const userMsg: Message = { role: "user", content: text.trim() };
     const nextMessages = [...messages, userMsg];
-    setMessages(nextMessages);
+    setMessages([...nextMessages, { role: "assistant", content: "" }]);
     setInput("");
-
-    const assistantPlaceholder: Message = { role: "assistant", content: "" };
-    setMessages([...nextMessages, assistantPlaceholder]);
     setStreaming(true);
 
     abortRef.current = new AbortController();
 
     try {
-      const client = new Anthropic({
-        apiKey,
-        dangerouslyAllowBrowser: true,
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: nextMessages.map(m => ({ role: m.role, content: m.content })),
+          context: buildContext(studyContext),
+        }),
+        signal: abortRef.current.signal,
       });
 
-      const stream = client.messages.stream({
-        model: "claude-haiku-4-5",
-        max_tokens: 1024,
-        system: buildSystemPrompt(studyContext),
-        messages: nextMessages.map(m => ({ role: m.role, content: m.content })),
-      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`);
+      }
 
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error("No response body");
+
+      const decoder = new TextDecoder();
       let accumulated = "";
-      for await (const event of stream) {
-        if (abortRef.current?.signal.aborted) break;
-        if (
-          event.type === "content_block_delta" &&
-          event.delta.type === "text_delta"
-        ) {
-          accumulated += event.delta.text;
-          setMessages([...nextMessages, { role: "assistant", content: accumulated }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        for (const line of chunk.split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const payload = line.slice(6);
+          if (payload === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(payload) as { text?: string; error?: string };
+            if (parsed.error) throw new Error(parsed.error);
+            if (parsed.text) {
+              accumulated += parsed.text;
+              setMessages([...nextMessages, { role: "assistant", content: accumulated }]);
+            }
+          } catch (e) {
+            if ((e as Error).message !== "Unexpected end of JSON input") throw e;
+          }
         }
       }
     } catch (err: unknown) {
+      if ((err as Error).name === "AbortError") return;
       const msg = err instanceof Error ? err.message : String(err);
-      if (!msg.includes("abort")) {
-        setError(msg.includes("401") ? "Invalid API key. Please re-enter." : msg);
-        setMessages(nextMessages); // remove empty assistant bubble
-      }
+      setError(msg);
+      setMessages(nextMessages);
     } finally {
       setStreaming(false);
       abortRef.current = null;
@@ -185,24 +155,15 @@ export function ChatPanel({ studyContext }: Props) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      send(input);
-    }
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); }
   };
 
-  const stop = () => {
-    abortRef.current?.abort();
-  };
+  const stop = () => abortRef.current?.abort();
 
-  const clearChat = () => {
-    stop();
-    setMessages([]);
-    setError("");
-  };
+  const clearChat = () => { stop(); setMessages([]); setError(""); };
 
   return (
-    <div className="flex flex-col gap-4 max-w-4xl mx-auto h-[calc(100vh-160px)]">
+    <div className="flex flex-col gap-4 max-w-4xl mx-auto h-[calc(100vh-220px)] min-h-[400px]">
       {/* Header */}
       <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -211,231 +172,109 @@ export function ChatPanel({ studyContext }: Props) {
           </div>
           <div>
             <h2 className="font-mono font-bold text-foreground uppercase tracking-wider text-sm">AI Doubt Solver</h2>
-            <p className="text-xs text-muted-foreground font-mono">Powered by Claude — INI-CET focused</p>
+            <p className="text-xs text-muted-foreground font-mono">Powered by Claude · INI-CET focused</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {messages.length > 0 && (
-            <button
-              onClick={clearChat}
-              title="Clear conversation"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors"
-            >
-              <Trash2 className="w-3.5 h-3.5" /> Clear
-            </button>
-          )}
-          {apiKey && (
-            <button
-              onClick={() => setShowKeyForm(v => !v)}
-              title="Manage API key"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors"
-            >
-              <Key className="w-3.5 h-3.5" />
-              {showKeyForm ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            </button>
-          )}
-        </div>
+        {messages.length > 0 && (
+          <button
+            onClick={clearChat}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" /> Clear
+          </button>
+        )}
       </div>
 
-      {/* Onboarding — no key yet */}
-      {!apiKey && (
-        <div className="flex-1 flex items-center justify-center py-8">
-          <div className="w-full max-w-md space-y-6">
-            {/* Hero */}
-            <div className="text-center space-y-2">
-              <div className="w-14 h-14 bg-violet-500/20 rounded-2xl flex items-center justify-center mx-auto">
-                <Bot className="w-7 h-7 text-violet-400" />
-              </div>
-              <h3 className="font-mono font-bold text-foreground uppercase tracking-wider">AI Doubt Solver</h3>
-              <p className="text-sm text-muted-foreground font-mono max-w-xs mx-auto">
-                Ask medical exam questions and get instant, exam-focused answers with mnemonics and MCQ tips.
-              </p>
-            </div>
-
-            {/* Feature pills */}
-            <div className="grid grid-cols-3 gap-3 text-center">
-              {[
-                { icon: Zap,         label: "Instant answers" },
-                { icon: ShieldCheck, label: "Key stays local" },
-                { icon: Bot,         label: "INI-CET tuned"   },
-              ].map(({ icon: Icon, label }) => (
-                <div key={label} className="bg-card border border-border rounded-xl p-3 space-y-1.5">
-                  <Icon className="w-4 h-4 text-violet-400 mx-auto" />
-                  <p className="text-[10px] font-mono text-muted-foreground">{label}</p>
-                </div>
+      {/* Chat area */}
+      <div className="flex-1 overflow-y-auto bg-card border border-border rounded-xl flex flex-col">
+        {messages.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
+            <Bot className="w-10 h-10 text-violet-400/50" />
+            <p className="text-sm text-muted-foreground font-mono text-center max-w-sm">
+              Ask anything about your INI-CET syllabus. Quick-start:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-xl">
+              {quickPrompts.map((p, i) => (
+                <button
+                  key={i}
+                  onClick={() => send(p)}
+                  className="text-left px-3 py-2.5 text-xs font-mono bg-background border border-border rounded-lg hover:border-violet-500/50 hover:bg-violet-500/5 transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  {p}
+                </button>
               ))}
             </div>
-
-            {/* Steps */}
-            <div className="bg-card border border-border rounded-xl p-5 space-y-4">
-              <p className="text-xs font-mono uppercase text-muted-foreground">Setup — 2 steps</p>
-
-              <div className="flex gap-3">
-                <span className="w-5 h-5 rounded-full bg-violet-600 text-white text-[10px] font-mono flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
-                <div>
-                  <p className="text-xs font-mono text-foreground mb-1">Get a free Anthropic API key</p>
-                  <p className="text-[11px] font-mono text-muted-foreground">
-                    Visit{" "}
-                    <span className="text-violet-400 select-all">console.anthropic.com</span>
-                    {" "}→ API Keys → Create Key.
-                    New accounts get free credits.
-                  </p>
-                  <a
-                    href="https://console.anthropic.com/settings/keys"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] font-mono text-violet-400 hover:text-violet-300 mt-1"
-                  >
-                    Open console <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <span className="w-5 h-5 rounded-full bg-violet-600 text-white text-[10px] font-mono flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
-                <div className="flex-1">
-                  <p className="text-xs font-mono text-foreground mb-2">Paste it below</p>
-                  <input
-                    type="password"
-                    value={keyInput}
-                    onChange={e => setKeyInput(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && saveKey()}
-                    placeholder="sk-ant-api03-…"
-                    className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 placeholder:text-muted-foreground/40"
-                  />
-                  {error && <p className="text-[11px] text-destructive font-mono mt-1.5">{error}</p>}
-                  <p className="text-[10px] text-muted-foreground font-mono mt-1.5">
-                    Stored only in this browser. Never sent anywhere except Anthropic.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={saveKey}
-                disabled={!keyInput.trim()}
-                className="w-full py-2.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-30 text-white text-sm font-mono rounded-lg transition-colors"
-              >
-                Connect AI Tutor
-              </button>
-            </div>
           </div>
-        </div>
-      )}
-
-      {/* Key management (when already set) */}
-      {apiKey && showKeyForm && (
-        <div className="bg-card border border-border rounded-xl p-4 shrink-0 flex items-center gap-3">
-          <Key className="w-4 h-4 text-violet-400 flex-shrink-0" />
-          <p className="text-xs font-mono text-muted-foreground flex-1">API key active — ending in …{apiKey.slice(-6)}</p>
-          <button
-            onClick={clearKey}
-            className="px-3 py-1.5 border border-destructive/50 text-destructive text-xs font-mono rounded-md hover:bg-destructive/10 transition-colors flex-shrink-0"
-          >
-            Remove
-          </button>
-          <button onClick={() => setShowKeyForm(false)} className="text-muted-foreground hover:text-foreground">
-            <ChevronUp className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Chat area */}
-      {apiKey && (
-        <>
-          <div className="flex-1 overflow-y-auto bg-card border border-border rounded-xl flex flex-col">
-            {messages.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
-                <Bot className="w-10 h-10 text-violet-400/50" />
-                <p className="text-sm text-muted-foreground font-mono text-center max-w-sm">
-                  Ask anything about your INI-CET syllabus. Quick-start:
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-xl">
-                  {quickPrompts.map((p, i) => (
-                    <button
-                      key={i}
-                      onClick={() => send(p)}
-                      className="text-left px-3 py-2.5 text-xs font-mono bg-background border border-border rounded-lg hover:border-violet-500/50 hover:bg-violet-500/5 transition-colors text-muted-foreground hover:text-foreground"
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4 p-4 overflow-y-auto">
-                {messages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    {msg.role === "assistant" && (
-                      <div className="w-7 h-7 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Bot className="w-4 h-4 text-violet-400" />
-                      </div>
-                    )}
-                    <div
-                      className={`max-w-[85%] rounded-xl px-4 py-3 text-sm font-mono leading-relaxed whitespace-pre-wrap ${
-                        msg.role === "user"
-                          ? "bg-primary text-primary-foreground rounded-tr-none"
-                          : "bg-background border border-border rounded-tl-none text-foreground/90"
-                      }`}
-                    >
-                      {msg.content || (
-                        streaming && i === messages.length - 1
-                          ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                          : null
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {error && (
-                  <div className="text-xs font-mono text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
-                    {error}
+        ) : (
+          <div className="flex flex-col gap-4 p-4 overflow-y-auto">
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                {msg.role === "assistant" && (
+                  <div className="w-7 h-7 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Bot className="w-4 h-4 text-violet-400" />
                   </div>
                 )}
-                <div ref={bottomRef} />
+                <div
+                  className={`max-w-[85%] rounded-xl px-4 py-3 text-sm font-mono leading-relaxed whitespace-pre-wrap ${
+                    msg.role === "user"
+                      ? "bg-primary text-primary-foreground rounded-tr-none"
+                      : "bg-background border border-border rounded-tl-none text-foreground/90"
+                  }`}
+                >
+                  {msg.content || (
+                    streaming && i === messages.length - 1
+                      ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                      : null
+                  )}
+                </div>
+              </div>
+            ))}
+            {error && (
+              <div className="text-xs font-mono text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
+                {error}
               </div>
             )}
+            <div ref={bottomRef} />
           </div>
+        )}
+      </div>
 
-          {/* Input bar */}
-          <div className="shrink-0 bg-card border border-border rounded-xl p-3 flex gap-2 items-end">
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              value={input}
-              onChange={e => {
-                setInput(e.target.value);
-                e.target.style.height = "auto";
-                e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask a doubt… (Enter to send, Shift+Enter for newline)"
-              disabled={streaming}
-              className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 resize-none overflow-y-auto placeholder:text-muted-foreground/40 disabled:opacity-50"
-              style={{ minHeight: "40px", maxHeight: "120px" }}
-            />
-            {streaming ? (
-              <button
-                onClick={stop}
-                className="flex-shrink-0 w-10 h-10 rounded-lg bg-destructive/20 hover:bg-destructive/30 text-destructive flex items-center justify-center transition-colors"
-                title="Stop generating"
-              >
-                <span className="w-3 h-3 rounded-sm bg-destructive" />
-              </button>
-            ) : (
-              <button
-                onClick={() => send(input)}
-                disabled={!input.trim()}
-                className="flex-shrink-0 w-10 h-10 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-30 text-white flex items-center justify-center transition-colors"
-                title="Send (Enter)"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        </>
-      )}
+      {/* Input bar */}
+      <div className="shrink-0 bg-card border border-border rounded-xl p-3 flex gap-2 items-end">
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          value={input}
+          onChange={e => {
+            setInput(e.target.value);
+            e.target.style.height = "auto";
+            e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+          }}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask a doubt… (Enter to send, Shift+Enter for newline)"
+          disabled={streaming}
+          className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 resize-none overflow-y-auto placeholder:text-muted-foreground/40 disabled:opacity-50"
+          style={{ minHeight: "40px", maxHeight: "120px" }}
+        />
+        {streaming ? (
+          <button
+            onClick={stop}
+            className="flex-shrink-0 w-10 h-10 rounded-lg bg-destructive/20 hover:bg-destructive/30 text-destructive flex items-center justify-center transition-colors"
+            title="Stop generating"
+          >
+            <span className="w-3 h-3 rounded-sm bg-destructive" />
+          </button>
+        ) : (
+          <button
+            onClick={() => send(input)}
+            disabled={!input.trim()}
+            className="flex-shrink-0 w-10 h-10 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-30 text-white flex items-center justify-center transition-colors"
+            title="Send (Enter)"
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -201,7 +201,12 @@ function StatsView({
 
 // ─── Main PYQBank ─────────────────────────────────────────────────────────────
 
-export function PYQBank() {
+interface PYQBankProps {
+  onCorrect?: () => void;
+  onWrong?: () => void;
+}
+
+export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
   const [attempts,    setAttempts]    = useState<Record<string, AttemptRecord>>(loadAttempts);
   const [subject,     setSubject]     = useState<string>("All");
   const [mode,        setMode]        = useState<FilterMode>("all");
@@ -284,6 +289,7 @@ export function PYQBank() {
     const next    = { ...attempts, [current.uid]: { selected: opt, correct } };
     setAttempts(next);
     saveAttempts(next);
+    if (correct) onCorrect?.(); else onWrong?.();
   };
 
   const resetAll = () => {
