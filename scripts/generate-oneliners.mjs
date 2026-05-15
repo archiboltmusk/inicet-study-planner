@@ -1,8 +1,9 @@
 /**
- * Daily INI-CET / NEET PG question generator.
+ * Daily INI-CET / NEET PG one-liner generator.
  *
- * Generates ~520 high-yield questions via Google Gemini (free tier) and writes
- * them to deploy/public/daily-questions.json — Vercel serves this as a static asset.
+ * Generates 20 high-yield one-liners per subject (13 subjects = 260/day) via
+ * Google Gemini (free tier) and writes them to deploy/public/oneliners.json.
+ * New batches are prepended so the most recent always appears first.
  *
  * Required env var:
  *   GEMINI_API_KEY
@@ -18,11 +19,11 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dir  = dirname(fileURLToPath(import.meta.url));
-const OUTPUT = join(__dir, "..", "deploy", "public", "daily-questions.json");
+const OUTPUT = join(__dir, "..", "deploy", "public", "oneliners.json");
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const BATCH_SIZE = 40; // per subject call (~520 total across 13 subjects)
+const PER_SUBJECT = 20;
 
 const SUBJECTS = [
   {
@@ -79,6 +80,9 @@ const SUBJECTS = [
   },
 ];
 
+// Valid categories for one-liners
+const VALID_CATEGORIES = ["DOC", "mechanism", "side-effect", "value", "classification"];
+
 // ─── Gemini client ────────────────────────────────────────────────────────────
 
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -86,50 +90,38 @@ const model = genai.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // ─── Prompt builder ───────────────────────────────────────────────────────────
 
-function buildPrompt(subject, batchDate) {
-  const textCount  = BATCH_SIZE - 5;
-  const imageCount = 5;
-  return `You are a senior medical educator creating a rank-1 INI-CET / NEET PG question bank.
+function buildPrompt(subject) {
+  return `You are a senior medical educator creating high-yield one-liners for INI-CET / NEET PG exam revision.
 
-Generate exactly ${BATCH_SIZE} MCQs for: **${subject.name}**
+Generate exactly ${PER_SUBJECT} one-liner facts for: **${subject.name}**
 Cover these topics proportionally: ${subject.topics}
 
-${textCount} of the questions should be standard text-based MCQs.
-${imageCount} of the questions should be IMAGE-BASED clinical scenario questions where a student would be shown an ECG, X-ray, histology slide, ophthalmoscopy image, or clinical photograph. For these, describe the key finding in the question stem (e.g. "A patient presents with an ECG showing wide-complex tachycardia with a right bundle branch block pattern..."). Mark these with "is_image_based": true and set "image_type" to one of: "ECG", "X-ray", "CT", "MRI", "histology", "fundoscopy", "clinical_photo", "ultrasound".
+Each one-liner must be a terse, memorable exam fact — the kind that appears frequently in MCQ stems or answer keys.
 
-Each question must:
-• Mirror the exact NEET PG / INI-CET / AIIMS PG pattern (2019–2024 papers)
-• Have ONE correct answer and THREE plausible distractors
-• Include a thorough explanation (mention WHY correct, and WHY each wrong option fails)
-• Include a concise mnemonic where one exists (null otherwise)
-• State the key testable concept in one sentence
-• Label difficulty: easy=pure recall, medium=application, hard=multi-step reasoning
-• Provide an approximate exam source like "INI-CET Nov 2023" or "AIIMS May 2022"
+Categories to use:
+- DOC        = drug of choice / investigation of choice / treatment of choice
+- mechanism  = how a drug/process works
+- side-effect = classic or distinguishing adverse effect
+- value      = a specific numeric/lab/threshold value to remember
+- classification = how something is staged, graded, or classified
 
 Return ONLY a valid JSON array — no markdown, no code fences, no commentary:
 [{
-  "topic": "string",
-  "question": "string",
-  "options": ["string","string","string","string"],
-  "correct_answer": 0,
-  "explanation": "string",
+  "subject": "${subject.name}",
+  "topic": "string (specific sub-topic)",
+  "fact": "string (the one-liner itself, concise and direct)",
   "mnemonic": "string or null",
-  "key_concept": "string",
-  "difficulty": "easy|medium|hard",
-  "exam_hint": "string",
-  "is_image_based": false,
-  "image_type": null
+  "category": "DOC|mechanism|side-effect|value|classification"
 }]`;
 }
 
 // ─── Per-subject generation ───────────────────────────────────────────────────
 
 async function generateForSubject(subject, batchDate) {
-  const prompt = buildPrompt(subject, batchDate);
-  const result = await model.generateContent(prompt);
+  const result = await model.generateContent(buildPrompt(subject));
   const raw    = result.response.text();
 
-  // Strip markdown code fences if model wraps with them
+  // Strip markdown code fences if the model wraps with them
   const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "");
   const match    = stripped.match(/\[[\s\S]*\]/);
   if (!match) throw new Error("No JSON array in response");
@@ -137,26 +129,17 @@ async function generateForSubject(subject, batchDate) {
   const parsed = JSON.parse(match[0]);
 
   return parsed
-    .filter(q =>
-      typeof q.question === "string" &&
-      Array.isArray(q.options) && q.options.length === 4 &&
-      typeof q.correct_answer === "number"
+    .filter(item =>
+      typeof item.fact === "string" && item.fact.trim().length > 0
     )
-    .map(q => ({
-      id:             randomUUID(),
-      subject:        subject.name,
-      topic:          q.topic            ?? subject.name,
-      question:       q.question,
-      options:        q.options,
-      correct_answer: Math.min(3, Math.max(0, Math.round(q.correct_answer))),
-      explanation:    q.explanation      ?? "",
-      mnemonic:       q.mnemonic         ?? null,
-      key_concept:    q.key_concept      ?? null,
-      difficulty:     ["easy","medium","hard"].includes(q.difficulty) ? q.difficulty : "medium",
-      exam_hint:      q.exam_hint        ?? null,
-      is_image_based: q.is_image_based   === true,
-      image_type:     q.image_type       ?? null,
-      batch_date:     batchDate,
+    .map(item => ({
+      id:         randomUUID(),
+      subject:    subject.name,
+      topic:      typeof item.topic === "string" ? item.topic.trim() : subject.name,
+      fact:       item.fact.trim(),
+      mnemonic:   typeof item.mnemonic === "string" ? item.mnemonic.trim() : null,
+      category:   VALID_CATEGORIES.includes(item.category) ? item.category : "DOC",
+      batch_date: batchDate,
     }));
 }
 
@@ -169,54 +152,53 @@ async function main() {
   const d = new Date();
   d.setDate(d.getDate() - offsetDays);
   const today = d.toISOString().slice(0, 10);
-  console.log(`\nINI-CET Daily Question Generator (Gemini) — batch ${today}${offsetDays > 0 ? ` (offset -${offsetDays}d)` : ""}\n`);
+  console.log(`\nINI-CET One-Liner Generator (Gemini) — batch ${today}${offsetDays > 0 ? ` (offset -${offsetDays}d)` : ""}\n`);
 
-  // ── Generate fresh questions ──────────────────────────────────────────────
-  let newQuestions = [];
+  // ── Generate fresh one-liners ─────────────────────────────────────────────
+  let newOneliners = [];
   for (const subject of SUBJECTS) {
     process.stdout.write(`  ${subject.name.padEnd(30)} ... `);
     try {
-      const qs = await generateForSubject(subject, today);
-      newQuestions.push(...qs);
-      const imgCount = qs.filter(q => q.is_image_based).length;
-      console.log(`OK ${qs.length} (${imgCount} image-based)`);
+      const items = await generateForSubject(subject, today);
+      newOneliners.push(...items);
+      console.log(`OK ${items.length}`);
     } catch (err) {
       console.log(`FAIL ${err.message}`);
     }
     // Respect Gemini free-tier rate limits (15 req/min)
     await new Promise(r => setTimeout(r, 4500));
   }
-  console.log(`\n  Generated: ${newQuestions.length} questions`);
+  console.log(`\n  Generated: ${newOneliners.length} one-liners`);
 
-  // ── Load existing questions and append (questions stack up over time) ────────
+  // ── Load existing one-liners and accumulate (rolling history) ────────────
   let existing = [];
   if (existsSync(OUTPUT)) {
     try {
       const file = JSON.parse(readFileSync(OUTPUT, "utf8"));
-      existing   = file.questions ?? [];
+      existing   = file.oneliners ?? [];
     } catch { /* ignore corrupt file */ }
   }
 
-  // Keep all previous questions — new ones prepended so today's batch shows first
-  const merged = [...newQuestions, ...existing];
+  // New ones prepended so today's batch shows first
+  const merged = [...newOneliners, ...existing];
 
-  // Count unique batches so we can show "Day N" in the UI
-  const batches = [...new Set(merged.map(q => q.batch_date))].sort();
+  // Count unique batches
+  const batches = [...new Set(merged.map(o => o.batch_date))].sort();
 
   // ── Write output ──────────────────────────────────────────────────────────
   const output = {
-    lastUpdated:  today,
-    totalCount:   merged.length,
-    todayCount:   newQuestions.length,
-    totalDays:    batches.length,
-    questions:    merged,
+    lastUpdated: today,
+    totalCount:  merged.length,
+    todayCount:  newOneliners.length,
+    totalDays:   batches.length,
+    oneliners:   merged,
   };
 
   writeFileSync(OUTPUT, JSON.stringify(output, null, 2));
-  console.log(`\nWrote ${merged.length} questions to deploy/public/daily-questions.json\n`);
+  console.log(`\nWrote ${merged.length} one-liners to deploy/public/oneliners.json\n`);
 
-  if (newQuestions.length < 100) {
-    console.error("Fewer than 100 questions generated — treating as failure.");
+  if (newOneliners.length < 100) {
+    console.error("Fewer than 100 one-liners generated — treating as failure.");
     process.exit(1);
   }
 }
