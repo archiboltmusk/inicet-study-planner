@@ -2,17 +2,17 @@
  * Daily INI-CET / NEET PG one-liner generator.
  *
  * Generates 20 high-yield one-liners per subject (13 subjects = 260/day) via
- * Google Gemini (free tier) and writes them to deploy/public/oneliners.json.
+ * Groq (free tier, Llama 3.3 70B) and writes them to deploy/public/oneliners.json.
  * New batches are prepended so the most recent always appears first.
  *
  * Required env var:
- *   GEMINI_API_KEY
+ *   GROQ_API_KEY   (free at console.groq.com — no billing required)
  *
  * Optional env var:
  *   BATCH_DATE_OFFSET   number of days to subtract from today (for bulk-seed)
  */
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import { randomUUID } from "crypto";
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "fs";
 import { join, dirname } from "path";
@@ -89,13 +89,11 @@ const SUBJECTS = [
   },
 ];
 
-// Valid categories for one-liners
 const VALID_CATEGORIES = ["DOC", "mechanism", "side-effect", "value", "classification"];
 
-// ─── Gemini client ────────────────────────────────────────────────────────────
+// ─── Groq client ─────────────────────────────────────────────────────────────
 
-const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genai.getGenerativeModel({ model: "gemini-1.5-flash" });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // ─── Prompt builder ───────────────────────────────────────────────────────────
 
@@ -135,10 +133,15 @@ Return ONLY a valid JSON array — no markdown, no code fences, no commentary:
 // ─── Per-subject generation ───────────────────────────────────────────────────
 
 async function generateForSubject(subject, batchDate) {
-  const result = await model.generateContent(buildPrompt(subject));
-  const raw    = result.response.text();
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    messages: [{ role: "user", content: buildPrompt(subject) }],
+    temperature: 0.6,
+    max_tokens: 4096,
+  });
 
-  // Strip markdown code fences if the model wraps with them
+  const raw = completion.choices[0]?.message?.content ?? "";
+
   const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "");
   const match    = stripped.match(/\[[\s\S]*\]/);
   if (!match) throw new Error("No JSON array in response");
@@ -163,13 +166,11 @@ async function generateForSubject(subject, batchDate) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  // BATCH_DATE_OFFSET lets the bulk-seed workflow simulate historical batches
-  // e.g. offset=3 means "generate as if this were 3 days ago"
   const offsetDays = parseInt(process.env.BATCH_DATE_OFFSET ?? "0");
   const d = new Date();
   d.setDate(d.getDate() - offsetDays);
   const today = d.toISOString().slice(0, 10);
-  console.log(`\nINI-CET One-Liner Generator (Gemini) — batch ${today}${offsetDays > 0 ? ` (offset -${offsetDays}d)` : ""}\n`);
+  console.log(`\nINI-CET One-Liner Generator (Groq/Llama) — batch ${today}${offsetDays > 0 ? ` (offset -${offsetDays}d)` : ""}\n`);
 
   // ── Generate fresh one-liners ─────────────────────────────────────────────
   let newOneliners = [];
@@ -182,12 +183,12 @@ async function main() {
     } catch (err) {
       console.log(`FAIL ${err.message}`);
     }
-    // Respect Gemini free-tier rate limits (15 req/min)
-    await new Promise(r => setTimeout(r, 4500));
+    // Groq free tier: 30 RPM — 2s gap is enough
+    await new Promise(r => setTimeout(r, 2000));
   }
   console.log(`\n  Generated: ${newOneliners.length} one-liners`);
 
-  // ── Load existing one-liners and accumulate (rolling history) ────────────
+  // ── Load existing one-liners and accumulate ───────────────────────────────
   let existing = [];
   if (existsSync(OUTPUT)) {
     try {
@@ -196,10 +197,7 @@ async function main() {
     } catch { /* ignore corrupt file */ }
   }
 
-  // New ones prepended so today's batch shows first
-  const merged = [...newOneliners, ...existing];
-
-  // Count unique batches
+  const merged  = [...newOneliners, ...existing];
   const batches = [...new Set(merged.map(o => o.batch_date))].sort();
 
   // ── Write output ──────────────────────────────────────────────────────────
