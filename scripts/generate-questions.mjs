@@ -13,12 +13,25 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { randomUUID } from "crypto";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dir  = dirname(fileURLToPath(import.meta.url));
 const OUTPUT = join(__dir, "..", "deploy", "public", "daily-questions.json");
+const NOTES_DIR = join(__dir, "..", "notes");
+
+// ─── Load student notes as source material ────────────────────────────────────
+
+function loadNotes() {
+  if (!existsSync(NOTES_DIR)) return "";
+  const files = readdirSync(NOTES_DIR).filter(f => f.endsWith(".md")).sort();
+  return files.map(f => readFileSync(join(NOTES_DIR, f), "utf8")).join("\n\n---\n\n");
+}
+
+const STUDENT_NOTES = loadNotes();
+const HAS_NOTES = STUDENT_NOTES.trim().length > 0;
+if (HAS_NOTES) console.log(`  Loaded ${STUDENT_NOTES.length} chars of student notes as source material\n`);
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -89,11 +102,21 @@ const model = genai.getGenerativeModel({ model: "gemini-1.5-flash" });
 function buildPrompt(subject, batchDate) {
   const textCount  = BATCH_SIZE - 5;
   const imageCount = 5;
+
+  // If student notes exist, inject them as primary source material
+  const notesBlock = HAS_NOTES ? `
+## STUDENT'S NOTES (Primary Source — prioritise testing these exact facts)
+${STUDENT_NOTES}
+
+---
+Use the student's notes above as your PRIMARY source. At least 60% of questions must directly test facts, tables, mnemonics, or concepts from these notes. The remaining questions can cover other high-yield topics for the subject.
+` : "";
+
   return `You are a senior medical educator creating a rank-1 INI-CET / NEET PG question bank.
 
 Generate exactly ${BATCH_SIZE} MCQs for: **${subject.name}**
 Cover these topics proportionally: ${subject.topics}
-
+${notesBlock}
 ${textCount} of the questions should be standard text-based MCQs.
 ${imageCount} of the questions should be IMAGE-BASED clinical scenario questions where a student would be shown an ECG, X-ray, histology slide, ophthalmoscopy image, or clinical photograph. For these, describe the key finding in the question stem (e.g. "A patient presents with an ECG showing wide-complex tachycardia with a right bundle branch block pattern..."). Mark these with "is_image_based": true and set "image_type" to one of: "ECG", "X-ray", "CT", "MRI", "histology", "fundoscopy", "clinical_photo", "ultrasound".
 

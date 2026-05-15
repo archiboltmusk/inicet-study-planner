@@ -14,12 +14,21 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { randomUUID } from "crypto";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
-const __dir  = dirname(fileURLToPath(import.meta.url));
-const OUTPUT = join(__dir, "..", "deploy", "public", "oneliners.json");
+const __dir   = dirname(fileURLToPath(import.meta.url));
+const OUTPUT  = join(__dir, "..", "deploy", "public", "oneliners.json");
+const NOTES_DIR = join(__dir, "..", "notes");
+
+function loadNotes() {
+  if (!existsSync(NOTES_DIR)) return "";
+  const files = readdirSync(NOTES_DIR).filter(f => f.endsWith(".md")).sort();
+  return files.map(f => readFileSync(join(NOTES_DIR, f), "utf8")).join("\n\n---\n\n");
+}
+const STUDENT_NOTES = loadNotes();
+const HAS_NOTES = STUDENT_NOTES.trim().length > 0;
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -91,11 +100,19 @@ const model = genai.getGenerativeModel({ model: "gemini-1.5-flash" });
 // ─── Prompt builder ───────────────────────────────────────────────────────────
 
 function buildPrompt(subject) {
+  const notesBlock = HAS_NOTES ? `
+## STUDENT'S NOTES (Primary Source)
+${STUDENT_NOTES}
+
+Prioritise creating one-liners that directly summarise or reinforce the facts, tables, and mnemonics above.
+---
+` : "";
+
   return `You are a senior medical educator creating high-yield one-liners for INI-CET / NEET PG exam revision.
 
 Generate exactly ${PER_SUBJECT} one-liner facts for: **${subject.name}**
 Cover these topics proportionally: ${subject.topics}
-
+${notesBlock}
 Each one-liner must be a terse, memorable exam fact — the kind that appears frequently in MCQ stems or answer keys.
 
 Categories to use:
