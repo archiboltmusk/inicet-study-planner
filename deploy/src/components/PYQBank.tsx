@@ -217,7 +217,6 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
   const [showStats,   setShowStats]   = useState<boolean>(false);
   const [search,      setSearch]      = useState<string>("");
 
-  // AI questions loaded from static JSON file (auto-published by GitHub Actions)
   const [aiQuestions, setAiQuestions] = useState<UnifiedQuestion[]>([]);
   const [aiMeta,      setAiMeta]      = useState<{ lastUpdated: string; todayCount: number; totalDays: number } | null>(null);
   const [loadingAI,   setLoadingAI]   = useState<boolean>(true);
@@ -225,14 +224,35 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
   const fetchAI = useCallback(async () => {
     setLoadingAI(true);
     try {
-      const res  = await fetch(`/daily-questions.json?v=${Date.now()}`);
+      const today = new Date().toISOString().slice(0, 10);
+      const res   = await fetch(`/api/daily-questions?date=${today}`);
       if (!res.ok) throw new Error("Not found");
-      const data = await res.json();
-      const qs   = (data.questions ?? []) as AIQuestion[];
+      const data  = await res.json();
+
+      // Map /api/daily-questions format → AIQuestion → UnifiedQuestion
+      type APIQ = { id: number; subject: string; topic: string; stem: string; options: string[]; answer: number; explanation: string; prediction: { confidence: string; rationale: string; topic_frequency: string } };
+      const confidenceToDifficulty = (c: string): "easy" | "medium" | "hard" =>
+        c === "high" ? "hard" : c === "medium" ? "medium" : "easy";
+
+      const qs: AIQuestion[] = ((data.questions ?? []) as APIQ[]).map(q => ({
+        id:             `ai_${today}_${q.id}`,
+        subject:        q.subject,
+        topic:          q.topic ?? "",
+        question:       q.stem,
+        options:        q.options,
+        correct_answer: q.answer,
+        explanation:    q.explanation,
+        mnemonic:       null,
+        key_concept:    q.prediction?.rationale ?? null,
+        difficulty:     confidenceToDifficulty(q.prediction?.confidence ?? "medium"),
+        exam_hint:      q.prediction?.topic_frequency ?? null,
+        batch_date:     today,
+      }));
+
       setAiQuestions(qs.map(aiToUnified));
-      setAiMeta({ lastUpdated: data.lastUpdated ?? "", todayCount: data.todayCount ?? 0, totalDays: data.totalDays ?? 1 });
+      setAiMeta({ lastUpdated: today, todayCount: qs.length, totalDays: 1 });
     } catch {
-      // File doesn't exist yet — first workflow run pending; silent fallback
+      // API not configured yet — silent fallback
     } finally {
       setLoadingAI(false);
     }
