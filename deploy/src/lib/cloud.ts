@@ -51,15 +51,18 @@ export async function fetchCloudData(userId: string): Promise<UserData | null> {
 /**
  * Upsert (insert or update) the user's data row in Supabase.
  * localStorage is always written first so the UI never waits for the network.
+ * Returns true on success, false on failure (error is logged).
  */
-export async function upsertCloudData(userId: string, patch: Partial<UserData>): Promise<void> {
+export async function upsertCloudData(userId: string, patch: Partial<UserData>): Promise<boolean> {
   const { error } = await supabase
     .from("user_data")
     .upsert({ user_id: userId, ...patch, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
 
   if (error) {
     console.warn("[cloud] upsertCloudData error:", error.message);
+    return false;
   }
+  return true;
 }
 
 /**

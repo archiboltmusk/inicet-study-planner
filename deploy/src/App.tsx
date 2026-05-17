@@ -279,7 +279,9 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
       streak:       streak.count,
       completed:    completedDays.length,
       updated_at:   new Date().toISOString(),
-    }, { onConflict: 'user_id' }).then(() => {});
+    }, { onConflict: 'user_id' }).then(({ error }) => {
+      if (error) console.warn('[leaderboard] sync failed:', error.message);
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalXP]);
 
@@ -380,8 +382,18 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        const data = JSON.parse(ev.target!.result as string) as Record<string, unknown>;
-        Object.entries(data).forEach(([k, v]) => localStorage.setItem(k, JSON.stringify(v)));
+        const raw = JSON.parse(ev.target!.result as string);
+        if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+          alert('Invalid backup file: expected a JSON object.');
+          return;
+        }
+        const data = raw as Record<string, unknown>;
+        const keys = Object.keys(data);
+        if (!keys.some(k => k.startsWith('neetpg_'))) {
+          alert('Invalid backup file: no NEET PG study data found.');
+          return;
+        }
+        keys.forEach(k => localStorage.setItem(k, JSON.stringify(data[k])));
         window.location.reload();
       } catch { alert('Invalid backup file.'); }
     };

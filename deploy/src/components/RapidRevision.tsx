@@ -193,15 +193,20 @@ export function RapidRevision({ onComplete }: { onComplete?: () => void } = {}) 
   // AI questions from /daily-questions.json
   const [aiQuestions, setAiQuestions] = useState<UnifiedQuestion[]>([]);
 
-  // Fetch AI questions on mount
+  // Fetch AI questions on mount — failures are non-fatal; local questions are used as fallback
   useEffect(() => {
     fetch(`/daily-questions.json?v=${Date.now()}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json() as Promise<{ questions?: AIQuestion[] }>;
+      })
       .then((data) => {
-        const qs = (data.questions ?? []) as AIQuestion[];
+        const qs = data.questions ?? [];
         setAiQuestions(qs.map(aiToUnified));
       })
-      .catch(() => {});
+      .catch((err: unknown) => {
+        console.warn('[RapidRevision] AI questions unavailable:', err instanceof Error ? err.message : err);
+      });
   }, []);
 
   const allLocal = useMemo(() => QUESTIONS.map(localToUnified), []);
