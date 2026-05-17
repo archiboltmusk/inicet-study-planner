@@ -178,7 +178,7 @@ export function ChatPanel({ studyContext, onFirstMessage }: Props) {
           </div>
           <div>
             <h2 className="font-mono font-bold text-foreground uppercase tracking-wider text-sm">AI Doubt Solver</h2>
-            <p className="text-xs text-muted-foreground font-mono">Powered by Claude · NEET PG focused</p>
+            <p className="text-xs text-muted-foreground font-mono">Powered by Gemini / Claude · NEET PG focused</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -204,8 +204,11 @@ export function ChatPanel({ studyContext, onFirstMessage }: Props) {
       {/* API Key input panel */}
       {showKeyInput && (
         <div className="shrink-0 bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex flex-col gap-2">
-          <p className="text-[11px] font-mono text-amber-400 font-bold uppercase">Anthropic API Key</p>
-          <p className="text-[11px] font-mono text-muted-foreground">Enter your key from console.anthropic.com. Stored locally, never sent to our servers.</p>
+          <p className="text-[11px] font-mono text-amber-400 font-bold uppercase">API Key (Gemini or Anthropic)</p>
+          <p className="text-[11px] font-mono text-muted-foreground">
+            Free: Gemini key from <span className="text-amber-400">aistudio.google.com/apikey</span> (starts with <span className="text-amber-400">AIza...</span>).
+            Paid: Anthropic key from console.anthropic.com. Stored locally only.
+          </p>
           <div className="flex gap-2">
             <input
               type="password"
@@ -214,7 +217,7 @@ export function ChatPanel({ studyContext, onFirstMessage }: Props) {
                 setApiKey(e.target.value);
                 safeSave('neetpg_ai_key', e.target.value);
               }}
-              placeholder="sk-ant-api03-..."
+              placeholder="AIza... (Gemini, free) or sk-ant-... (Anthropic)"
               className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-amber-500"
             />
             <button
@@ -226,7 +229,7 @@ export function ChatPanel({ studyContext, onFirstMessage }: Props) {
           </div>
           {!apiKey && (
             <p className="text-[10px] font-mono text-muted-foreground/60">
-              Without a key, the AI tutor requires ANTHROPIC_API_KEY to be set on the server.
+              Without a key, the server uses its configured provider (GEMINI_API_KEY if set).
             </p>
           )}
         </div>
