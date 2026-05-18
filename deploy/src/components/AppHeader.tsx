@@ -1,6 +1,7 @@
-import { Trophy, Flame, Sun, Moon, LogOut, LogIn, Target } from "lucide-react";
+import { Trophy, Flame, Sun, Moon, Target } from "lucide-react";
 import { StudyReminderBanner, StudyReminderBell } from "@/components/StudyReminder";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { HeaderAuth } from "@/components/HeaderAuth";
 
 export interface TimeLeft {
   days: number;
@@ -16,10 +17,6 @@ interface AppHeaderProps {
   isLightMode: boolean;
   onToggleTheme: () => void;
   studiedToday: boolean;
-  userInitial: string;
-  userLabel: string;
-  hasUser: boolean;
-  onSignOut: () => Promise<void>;
   onGoToRewards: () => void;
   examDateLabel: string;
   isPostExam: boolean;
@@ -27,8 +24,7 @@ interface AppHeaderProps {
 
 export function AppHeader({
   totalXP, streak, timeLeft, isLightMode, onToggleTheme,
-  studiedToday, userInitial, userLabel, hasUser, onSignOut,
-  onGoToRewards, examDateLabel, isPostExam,
+  studiedToday, onGoToRewards, examDateLabel, isPostExam,
 }: AppHeaderProps) {
   return (
     <header className="border-b border-border bg-card sticky top-0 z-10">
@@ -66,27 +62,7 @@ export function AppHeader({
 
           <StudyReminderBell studiedToday={studiedToday} />
 
-          <div className="flex items-center gap-1 border-l border-border pl-1 ml-0.5">
-            <div
-              className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0"
-              aria-hidden="true"
-            >
-              <span className="text-[10px] font-mono font-bold text-primary">{userInitial}</span>
-            </div>
-            <span className="hidden lg:block text-[11px] font-mono text-muted-foreground max-w-[130px] truncate">
-              {userLabel}
-            </span>
-            <button
-              onClick={onSignOut}
-              title={hasUser ? "Sign out" : "Switch account"}
-              className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded border border-transparent hover:border-border"
-              aria-label={hasUser ? "Sign out" : "Switch account"}
-            >
-              {hasUser
-                ? <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
-                : <LogIn  className="w-3.5 h-3.5" aria-hidden="true" />}
-            </button>
-          </div>
+          <HeaderAuth />
         </div>
       </div>
 

@@ -29,7 +29,6 @@ import { DailyBriefing } from "@/components/DailyBriefing";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { XPToastLayer, makeToastItem, type XPToastItem } from "@/components/XPToast";
 import { computeAdaptivePlan } from "@/lib/adaptive";
-import { LoginPanel } from "@/components/LoginPanel";
 import { useAuth } from "@/lib/auth";
 import { useCloudSync } from "@/lib/cloud";
 import { getAppStore, sel } from "@/lib/store";
@@ -126,10 +125,9 @@ function TabFallback() {
 interface StudyAppProps {
   prefix: string;
   user: User | null;
-  onSignOut: () => Promise<void>;
 }
 
-function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
+function StudyApp({ prefix, user }: StudyAppProps) {
   const appStore = getAppStore(prefix);
 
   // ── Persistent store ──────────────────────────────────────────────────────
@@ -181,8 +179,6 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
 
   const isPostExam   = examDate.getTime() <= Date.now();
   const studiedToday = streak.lastDate === new Date().toISOString().slice(0, 10);
-  const userInitial  = user?.email?.[0]?.toUpperCase() ?? 'G';
-  const userLabel    = user?.email ?? 'Guest';
   const flagBadge    = flagged.length || undefined;
   const selectedDay  = SCHEDULE.find(s => s.day === selectedDayId) ?? SCHEDULE[0];
 
@@ -390,19 +386,13 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
         isLightMode={isLightMode}
         onToggleTheme={() => setIsLightMode(m => !m)}
         studiedToday={studiedToday}
-        userInitial={userInitial}
-        userLabel={userLabel}
-        hasUser={!!user}
-        onSignOut={onSignOut}
         onGoToRewards={() => handleNavigate('rewards', 'rewards')}
         examDateLabel={examDateLabel}
         isPostExam={isPostExam}
       />
 
-      <div className="flex flex-1 overflow-hidden relative">
-        <LoginPanel />
-
-        <div className="pl-12 md:pl-0 flex flex-col flex-1 min-w-0 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
           <AppNav
             activeGroup={activeGroup}
             activeTab={activeTab}
@@ -712,7 +702,7 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
 // ── App ───────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const { user, loading, storagePrefix, signOut } = useAuth();
+  const { user, loading, storagePrefix } = useAuth();
 
   if (loading) {
     return (
@@ -732,7 +722,6 @@ export default function App() {
       key={storagePrefix}
       prefix={storagePrefix}
       user={user}
-      onSignOut={signOut}
     />
   );
 }
