@@ -24,7 +24,7 @@ export function AppNav({
   const showSubNav = activeGroupData.tabs.length > 1;
 
   return (
-    <div className="sticky top-[57px] z-[9] bg-background border-b border-border/50">
+    <div className="bg-background border-b border-border/50 shrink-0">
       <div className="px-4 md:px-6 py-2 flex items-center justify-between gap-3">
 
         <nav
