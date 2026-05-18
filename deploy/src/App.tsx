@@ -72,6 +72,12 @@ const SpecialtySeatTracker = mk(() => import("@/components/SpecialtySeatTracker"
 const GuidelinesFeed      = mk(() => import("@/components/GuidelinesFeed"),      "GuidelinesFeed");
 const GamificationPanel   = mk(() => import("@/components/GamificationPanel"),   "GamificationPanel");
 const ChatPanel           = mk(() => import("@/components/ChatPanel"),           "ChatPanel");
+const MicroBurst          = mk(() => import("@/components/MicroBurst"),          "MicroBurst");
+const CircadianPlanner    = mk(() => import("@/components/CircadianPlanner"),    "CircadianPlanner");
+const TopicPredictor      = mk(() => import("@/components/TopicPredictor"),      "TopicPredictor");
+const StudyRooms          = mk(() => import("@/components/StudyRooms"),          "StudyRooms");
+const BuddyMatch          = mk(() => import("@/components/BuddyMatch"),          "BuddyMatch");
+const StressAdaptive      = mk(() => import("@/components/StressAdaptive"),      "StressAdaptive");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -458,6 +464,20 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
           </div>
         </div>
 
+        {/* HOME — Circadian Planner */}
+        <div hidden={activeGroup !== 'home' || activeTab !== 'circadian'}>
+          {visitedTabs.has('circadian') && <Suspense fallback={<TabFallback />}>
+            <CircadianPlanner />
+          </Suspense>}
+        </div>
+
+        {/* HOME — Stress / Wellbeing */}
+        <div hidden={activeGroup !== 'home' || activeTab !== 'stress'}>
+          {visitedTabs.has('stress') && <Suspense fallback={<TabFallback />}>
+            <StressAdaptive />
+          </Suspense>}
+        </div>
+
         {/* HOME — Schedule */}
         <div hidden={activeGroup !== 'home' || activeTab !== 'schedule'}>
           <div className="flex flex-col gap-8 max-w-5xl mx-auto">
@@ -539,6 +559,11 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
         <div hidden={activeGroup !== 'practice' || activeTab !== 'imagequiz'}>
           {visitedTabs.has('imagequiz') && <Suspense fallback={<TabFallback />}>
             <ImageBank />
+          </Suspense>}
+        </div>
+        <div hidden={activeGroup !== 'practice' || activeTab !== 'microburst'}>
+          {visitedTabs.has('microburst') && <Suspense fallback={<TabFallback />}>
+            <MicroBurst />
           </Suspense>}
         </div>
 
@@ -642,6 +667,21 @@ function StudyApp({ prefix, user, onSignOut }: StudyAppProps) {
         <div hidden={activeGroup !== 'insights' || activeTab !== 'guidelines'}>
           {visitedTabs.has('guidelines') && <Suspense fallback={<TabFallback />}>
             <GuidelinesFeed />
+          </Suspense>}
+        </div>
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'topicpredict'}>
+          {visitedTabs.has('topicpredict') && <Suspense fallback={<TabFallback />}>
+            <TopicPredictor />
+          </Suspense>}
+        </div>
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'studyrooms'}>
+          {visitedTabs.has('studyrooms') && <Suspense fallback={<TabFallback />}>
+            <StudyRooms />
+          </Suspense>}
+        </div>
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'buddymatch'}>
+          {visitedTabs.has('buddymatch') && <Suspense fallback={<TabFallback />}>
+            <BuddyMatch />
           </Suspense>}
         </div>
 
