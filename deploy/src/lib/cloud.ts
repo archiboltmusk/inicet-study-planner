@@ -111,7 +111,8 @@ export async function fetchCloudData(userId: string): Promise<UserData | null> {
         // PGRST116 = row not found — that's fine on first login
         const syncError = new Error(error.message) as SyncError;
         syncError.code = error.code;
-        syncError.isNetworkError = true;
+        // Only mark as network error if it actually is one
+        syncError.isNetworkError = !error.message || error.message.includes("fetch") || error.message.includes("connection") || error.message.includes("ECONNREFUSED");
         throw syncError;
       }
       return data ?? null;
@@ -141,7 +142,8 @@ export async function upsertCloudData(userId: string, patch: Partial<UserData>):
         if (error) {
           const syncError = new Error(error.message) as SyncError;
           syncError.code = error.code;
-          syncError.isNetworkError = true;
+          // Only mark as network error if it actually is one
+          syncError.isNetworkError = !error.message || error.message.includes("fetch") || error.message.includes("connection") || error.message.includes("ECONNREFUSED");
           throw syncError;
         }
       },
