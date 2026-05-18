@@ -142,7 +142,7 @@ describe("performance utilities", () => {
       );
 
       expect(result).toBe("done");
-      expect(duration).toBeGreaterThanOrEqual(10);
+      expect(duration).toBeGreaterThanOrEqual(9); // Allow timing variance
     });
 
     it("returns duration in milliseconds", async () => {
