@@ -11,7 +11,7 @@ import {
   BookOpen,
   Zap,
 } from "lucide-react";
-import { QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS, Question } from "@/data/questions";
+import { QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS, Question, type QuestionSubject } from "@/data/questions";
 import { safeLoad, safeSave } from "@/lib/storage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -141,7 +141,7 @@ function FeedbackOverlay({
 
 export function SubjectDrill({ onComplete }: { onComplete?: () => void } = {}) {
   // Setup state
-  const [subject, setSubject] = useState<string>(QUESTION_SUBJECTS[0]);
+  const [subject, setSubject] = useState<QuestionSubject>(QUESTION_SUBJECTS[0] as QuestionSubject);
   const [count, setCount] = useState<CountOption>(50);
 
   // Session state

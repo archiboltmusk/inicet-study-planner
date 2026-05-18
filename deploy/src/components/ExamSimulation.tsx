@@ -13,7 +13,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { QUESTIONS, QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS, Question } from "@/data/questions";
+import { QUESTIONS, QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS, Question, type QuestionSubject } from "@/data/questions";
 
 // ─── Rank estimation (same brackets as RankPredictor) ────────────────────────
 function estimateRank(pct: number): {
@@ -68,7 +68,7 @@ const OPTION_LABELS = ["A", "B", "C", "D"] as const;
 export function ExamSimulation({ onComplete }: { onComplete?: () => void } = {}) {
   // ── Setup state ──
   const [numQuestions, setNumQuestions] = useState<50 | 100 | 200>(200);
-  const [subjectFilter, setSubjectFilter] = useState<string>("All subjects");
+  const [subjectFilter, setSubjectFilter] = useState<string | QuestionSubject>("All subjects");
 
   // ── Exam state ──
   const [phase, setPhase] = useState<Phase>("setup");
@@ -118,7 +118,7 @@ export function ExamSimulation({ onComplete }: { onComplete?: () => void } = {})
     const pool =
       subjectFilter === "All subjects"
         ? QUESTIONS
-        : (QUESTIONS_BY_SUBJECT.get(subjectFilter) ?? []);
+        : (QUESTIONS_BY_SUBJECT.get(subjectFilter as QuestionSubject) ?? []);
     const selected = shuffle(pool).slice(0, numQuestions);
     const total = selected.length;
     setExamQuestions(selected);

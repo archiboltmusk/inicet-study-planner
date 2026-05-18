@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { safeLoad, safeSave } from "@/lib/storage";
-import { QUESTIONS, QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS } from "@/data/questions";
+import { QUESTIONS, QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS, type QuestionSubject } from "@/data/questions";
 import { Sliders, Clock, Flag, CheckCircle, XCircle, Download, RotateCcw } from "lucide-react";
 
 interface MockResult {
@@ -32,7 +32,7 @@ type Screen = "setup" | "exam" | "results";
 
 export function CustomMockGenerator() {
   const [screen, setScreen] = useState<Screen>("setup");
-  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [selectedSubjects, setSelectedSubjects] = useState<QuestionSubject[]>([]);
   const [qCount, setQCount] = useState(25);
   const [timeMult, setTimeMult] = useState(100); // % of base time
 
@@ -68,7 +68,7 @@ export function CustomMockGenerator() {
   const baseTimeSec = actualQCount * 60;
   const totalTimeSec = Math.round(baseTimeSec * timeMult / 100);
 
-  const toggleSubject = (s: string) => {
+  const toggleSubject = (s: QuestionSubject) => {
     setSelectedSubjects(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
   };
 

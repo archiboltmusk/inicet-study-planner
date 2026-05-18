@@ -53,12 +53,20 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          "vendor-react":  ["react", "react-dom"],
-          "vendor-charts": ["recharts"],
-          "vendor-ai":     ["@anthropic-ai/sdk"],
+        manualChunks: (id) => {
+          // Vendor chunks
+          if (id.includes("node_modules/react")) return "vendor-react";
+          if (id.includes("node_modules/recharts")) return "vendor-charts";
+          if (id.includes("node_modules/@anthropic-ai")) return "vendor-ai";
+          if (id.includes("node_modules/pdfjs")) return "vendor-pdf";
+          if (id.includes("node_modules/zod")) return "vendor-utils";
+          if (id.includes("node_modules/zustand")) return "vendor-utils";
+          if (id.includes("node_modules/sonner")) return "vendor-utils";
+          if (id.includes("node_modules/lucide-react")) return "vendor-icons";
+          if (id.includes("node_modules/@supabase")) return "vendor-supabase";
         },
       },
     },

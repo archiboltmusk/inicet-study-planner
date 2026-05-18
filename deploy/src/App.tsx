@@ -12,6 +12,7 @@ import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
 import { SCHEDULE, EXAM_DATE } from "@/data/schedule";
+import type { QuestionSubject } from "@/data/questions";
 import { safeLoad, safeSave } from "@/lib/storage";
 import { SRCard } from "@/lib/sr";
 import { DayGrid } from "@/components/DayGrid";
@@ -40,7 +41,7 @@ import { supabase } from "@/lib/supabase";
 // ── Lazy-loaded tab components ────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mk = <T extends Record<string, unknown>>(fn: () => Promise<T>, name: keyof T) =>
-  lazy(() => fn().then(m => ({ default: m[name] as any })));
+  lazy(() => fn().then(m => ({ default: m[name] as any }))) as React.LazyExoticComponent<React.ComponentType<any>>;
 
 const PYQBank             = mk(() => import("@/components/PYQBank"),             "PYQBank");
 const SubjectDrill        = mk(() => import("@/components/SubjectDrill"),        "SubjectDrill");
@@ -152,7 +153,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   const [xpToasts,      setXpToasts]      = useState<XPToastItem[]>([]);
   const [activeGroup,   setActiveGroup]   = useState<NavGroup>('home');
   const [activeTab,     setActiveTab]     = useState<MainTab>('planner');
-  const [selectedSubject,  setSelectedSubject]  = useState<string>('All');
+  const [selectedSubject,  setSelectedSubject]  = useState<string | 'All' | 'Full Mock'>('All');
   const [selectedDayId,    setSelectedDayId]    = useState<number>(1);
   const [detailTab,        setDetailTab]        = useState<DetailTab>('TOPICS');
   const [timeLeft,         setTimeLeft]         = useState<TimeLeft>(() => calcTimeLeft(examDate));
