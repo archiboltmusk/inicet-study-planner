@@ -6036,8 +6036,8 @@ const RAW_QUESTIONS = [
     id: 598,
     subject: "Surgery",
     stem: "Most common complication of massive blood transfusion is:",
-    options: ["Hyperkalaemia", "Hypothermia", "Citrate toxicity (hypocalcaemia)", "All are complications of massive transfusion"],
-    answer: 3,
+    options: ["Hyperkalaemia", "Hypothermia", "Citrate toxicity (hypocalcaemia)", "Coagulopathy"],
+    answer: 1,
     explanation: "Massive transfusion (>10 units in 24h) complications: Hypothermia (cold blood), Citrate toxicity → hypocalcaemia, Hyperkalaemia (lysed RBCs release K⁺), Coagulopathy (dilutional), TACO, TRALI, Hyperglycaemia. Hypothermia is most common; hypocalcaemia causes cardiac arrhythmias.",
   },
   {
@@ -6813,7 +6813,7 @@ const RAW_QUESTIONS = [
     subject: "ENT/Ophthalmology",
     stem: "Tonsillar grade III hypertrophy means the tonsil extends:",
     options: ["Behind the anterior pillar only", "Between the anterior pillar and midline", "To the midline but not beyond", "Beyond the midline, meeting the contralateral tonsil"],
-    answer: 1,
+    answer: 2,
     explanation: "Tonsillar grading: Grade I = within tonsillar pillars. Grade II = behind anterior pillar (25–50% of oropharyngeal width). Grade III = extending to midline (75%). Grade IV = 'kissing tonsils' meeting or overlapping beyond the midline (100%). Grade III–IV may cause OSA, dysphagia — indication for tonsillectomy.",
   },
   {
@@ -6835,7 +6835,7 @@ const RAW_QUESTIONS = [
   {
     id: 696,
     subject: "ENT/Ophthalmology",
-    stem: "Which eye condition causes 'strawberry-red' macula on fundoscopy?",
+    stem: "Which eye condition causes a 'cherry-red spot' at the macula on fundoscopy?",
     options: ["Central retinal vein occlusion", "Central retinal artery occlusion", "Diabetic retinopathy", "Retinal detachment"],
     answer: 1,
     explanation: "Central retinal artery occlusion (CRAO): sudden painless loss of vision. Fundoscopy: pale, oedematous retina with 'cherry-red spot' (not strawberry-red) at the macula — because the foveal choroidal circulation (short posterior ciliary arteries) remains intact. Ophthalmological emergency. Treatment: immediate (IOP-lowering, globe massage, O₂ therapy) within 90 minutes.",
@@ -6968,7 +6968,7 @@ const RAW_QUESTIONS = [
     id: 712,
     subject: "Forensic Medicine",
     stem: "Section 304A of the Indian Penal Code (IPC) deals with:",
-    options: ["Grievous hurt", "Causing death by negligence (culpable homicide not amounting to murder)", "Abetment of suicide", "Murder"],
+    options: ["Grievous hurt", "Causing death by negligence", "Abetment of suicide", "Murder"],
     answer: 1,
     explanation: "IPC Section 304A: Causing death by negligence — applicable in cases of medical negligence leading to patient death. Punishment: imprisonment up to 2 years + fine. The act must be negligent or rash, not intentional. IPC 304 = Culpable homicide. IPC 302 = Murder. IPC 306 = Abetment of suicide. Medical practitioners commonly charged under 304A.",
   },
