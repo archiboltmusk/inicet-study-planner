@@ -785,9 +785,9 @@ const RAW_QUESTIONS = [
       "Junction of medial 1/3 and lateral 2/3 of a line from umbilicus to ASIS",
       "2 cm below the umbilicus in the midline",
     ],
-    answer: 2,
+    answer: 1,
     explanation:
-      "McBurney's point: 1/3 from the anterior superior iliac spine (lateral 1/3) on a line from ASIS to umbilicus. Maximum tenderness at this point is classic for acute appendicitis.",
+      "McBurney's point is at the junction of the medial 2/3 and lateral 1/3 of the line from umbilicus to ASIS — i.e., 1/3 of the distance from the right ASIS towards the umbilicus. Maximum tenderness here is the classic sign of acute appendicitis.",
   },
   {
     id: 61,
@@ -5991,9 +5991,14 @@ const RAW_QUESTIONS = [
     id: 593,
     subject: "Surgery",
     stem: "McBurney's point is located at:",
-    options: ["Junction of medial and lateral thirds of line from right ASIS to umbilicus", "Junction of lateral and medial thirds of line from right ASIS to umbilicus", "Centre of right iliac fossa", "Right costovertebral angle"],
+    options: [
+      "1/3 of the distance from umbilicus to right ASIS (medial third)",
+      "1/3 of the distance from right ASIS to umbilicus (lateral third)",
+      "Centre of right iliac fossa",
+      "Right costovertebral angle",
+    ],
     answer: 1,
-    explanation: "McBurney's point is at the junction of the lateral 1/3 and medial 2/3 of the line joining right anterior superior iliac spine (ASIS) to umbilicus. Maximal tenderness here suggests appendicitis. Rovsing's sign, psoas sign, obturator sign also positive in appendicitis.",
+    explanation: "McBurney's point is 1/3 of the way from the right ASIS along the line to the umbilicus — the lateral third of that line. It overlies the base of the appendix in most people. Maximal tenderness here is the classic sign of acute appendicitis. Rovsing's sign, psoas sign, and obturator sign are other positive findings.",
   },
   {
     id: 594,
