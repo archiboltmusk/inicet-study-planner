@@ -15,6 +15,23 @@ import {
 } from "lucide-react";
 import { QUESTIONS, QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS, Question, type QuestionSubject } from "@/data/questions";
 import { autoLogMistakes } from "@/lib/mistakeLogger";
+import { safeLoad, safeSave } from "@/lib/storage";
+
+const SIM_SCORES_KEY = "neetpg_sim_scores";
+interface SimScore { date: string; pct: number; total: number; correct: number; wrong: number; }
+
+function saveSimScore(score: SimScore): SimScore[] {
+  const existing = safeLoad<SimScore[]>(SIM_SCORES_KEY, []);
+  const updated = [score, ...existing].slice(0, 50);
+  safeSave(SIM_SCORES_KEY, updated);
+  return updated;
+}
+
+function computePercentile(scores: SimScore[], currentPct: number): number {
+  if (scores.length < 2) return 100;
+  const below = scores.filter(s => s.pct < currentPct).length;
+  return Math.round((below / scores.length) * 100);
+}
 
 // ─── Rank estimation (same brackets as RankPredictor) ────────────────────────
 function estimateRank(pct: number): {
@@ -94,6 +111,7 @@ export function ExamSimulation({ onComplete }: { onComplete?: () => void } = {})
 
   // ── Results state ──
   const [showReview, setShowReview] = useState(false);
+  const [simScores, setSimScores] = useState<SimScore[]>(() => safeLoad<SimScore[]>(SIM_SCORES_KEY, []));
 
   // ── Timer ─────────────────────────────────────────────────────────────────
   const stopTimer = useCallback(() => {
@@ -161,6 +179,13 @@ export function ExamSimulation({ onComplete }: { onComplete?: () => void } = {})
         explanation: q.explanation,
       }));
     autoLogMistakes(mistakes);
+    // Save score for percentile tracking
+    const correct = examQuestions.filter(q => answers[q.id] === q.answer).length;
+    const wrong   = examQuestions.filter(q => { const a = answers[q.id]; return a !== null && a !== undefined && a !== q.answer; }).length;
+    const total   = examQuestions.length;
+    const pct     = total > 0 ? Math.max(0, (correct - wrong / 3) / total * 100) : 0;
+    const updated = saveSimScore({ date: new Date().toISOString().slice(0, 10), pct, total, correct, wrong });
+    setSimScores(updated);
     setPhase("results");
     onComplete?.();
   }, [stopTimer, examQuestions, answers, onComplete]);
@@ -567,6 +592,10 @@ export function ExamSimulation({ onComplete }: { onComplete?: () => void } = {})
   // ─────────────────────────────────────────────────────────────────────────
   if (phase === "results" && results) {
     const { correct, wrong, unanswered, total, adjusted, pct, rank, subjectMap, avgTimeSecs, allowedSecs, timeOverrun } = results;
+    const percentile = computePercentile(simScores, Math.max(0, pct));
+    const trend = simScores.length >= 2
+      ? simScores[0].pct - simScores[1].pct
+      : null;
     const safePct = Math.max(0, pct);
 
     return (
@@ -644,6 +673,26 @@ export function ExamSimulation({ onComplete }: { onComplete?: () => void } = {})
               <p className="text-[10px] font-mono text-muted-foreground">Unanswered</p>
             </div>
           </div>
+
+          {/* Grand test percentile */}
+          {simScores.length >= 2 && (
+            <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-border bg-background/50 text-xs font-mono">
+              <div>
+                <p className="text-muted-foreground">Your mock history rank</p>
+                <p className="text-[10px] text-muted-foreground/60 mt-0.5">Based on {simScores.length} recorded attempts</p>
+              </div>
+              <div className="text-right">
+                <span className={`text-lg font-bold ${percentile >= 75 ? "text-emerald-400" : percentile >= 50 ? "text-yellow-400" : "text-destructive"}`}>
+                  {percentile}th %ile
+                </span>
+                {trend !== null && (
+                  <p className={`text-[10px] ${trend > 0 ? "text-emerald-400" : trend < 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                    {trend > 0 ? `↑ +${trend.toFixed(1)}%` : trend < 0 ? `↓ ${trend.toFixed(1)}%` : "→ unchanged"} vs last attempt
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Time-per-question */}
           {avgTimeSecs !== null && (
