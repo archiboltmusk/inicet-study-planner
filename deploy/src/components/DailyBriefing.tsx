@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
 import {
   ChevronDown, ChevronUp, Flame, Calendar, TrendingDown,
-  Zap, BookOpen, Target, AlertTriangle,
+  Zap, BookOpen, Target, AlertTriangle, Clock,
 } from "lucide-react";
 import { QUESTION_SUBJECTS } from "@/data/questions";
+import { safeLoad } from "@/lib/storage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -87,6 +88,65 @@ function getPlanDay(completedDays: number[]): number {
   return 28;
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getTodayMood(): number | null {
+  const log = safeLoad<Record<string, number>>("stress_log", {});
+  const today = new Date().toISOString().slice(0, 10);
+  return log[today] ?? null;
+}
+
+interface DayPlan {
+  blocks: Array<{ mins: number; label: string; action: string; tab: string }>;
+}
+
+function buildDayPlan(
+  weakSubjs: SubjectAccuracy[],
+  daysLeft: number,
+  mood: number | null,
+  planDay: number,
+): DayPlan {
+  const moodFactor = mood === null ? 1 : mood <= 2 ? 0.4 : mood === 3 ? 0.7 : 1;
+  const isRevPhase = planDay >= 19;
+  const isMockPhase = planDay >= 25;
+
+  const base = moodFactor < 0.5 ? "light" : moodFactor < 0.8 ? "normal" : "full";
+
+  const weakest = weakSubjs[0]?.subject ?? "your weakest subject";
+  const second  = weakSubjs[1]?.subject ?? weakest;
+
+  if (isMockPhase) {
+    return {
+      blocks: [
+        { mins: base === "light" ? 30 : 60, label: "Mock Test",       action: "Full 100-Q timed simulation", tab: "simulation" },
+        { mins: base === "light" ? 15 : 30, label: "Review wrongs",   action: "Go through mistake logbook",  tab: "mistakelogbook" },
+        { mins: base === "light" ? 10 : 20, label: "One-liners",      action: "High-yield rapid revision",   tab: "oneliners" },
+      ],
+    };
+  }
+
+  if (isRevPhase || daysLeft <= 7) {
+    return {
+      blocks: [
+        { mins: base === "light" ? 20 : 45, label: weakest,    action: `Drill 25 ${weakest} MCQs`,   tab: "drills" },
+        { mins: base === "light" ? 15 : 30, label: "PYQ Bank",  action: "20 PYQs from weak subjects", tab: "pyq"   },
+        { mins: base === "light" ? 10 : 20, label: "One-liners",action: "Quick revision sweep",       tab: "oneliners" },
+      ],
+    };
+  }
+
+  return {
+    blocks: [
+      { mins: base === "light" ? 15 : 45, label: "Today's chapter",  action: `Day ${planDay} topic blocks`,          tab: "planner"       },
+      { mins: base === "light" ? 15 : 30, label: weakest,            action: `25 ${weakest} MCQs (weak area)`,       tab: "drills"        },
+      { mins: base === "light" ?  5 : 20, label: second,             action: `10 ${second} rapid questions`,         tab: "rapid"         },
+      ...(base === "full"
+        ? [{ mins: 15, label: "One-liners", action: "5-min one-liner sweep", tab: "oneliners" }]
+        : []),
+    ],
+  };
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function DailyBriefing({
@@ -104,6 +164,12 @@ export function DailyBriefing({
   const top2Weak   = weakSubjs.slice(0, 2);
   const isBehind   = completedDays.length < planDay - 1;
   const studiedToday = streak.lastDate === TODAY_ISO;
+  const todayMood  = useMemo(() => getTodayMood(), []);
+  const dayPlan    = useMemo(
+    () => buildDayPlan(weakSubjs, daysLeft, todayMood, planDay),
+    [weakSubjs, daysLeft, todayMood, planDay],
+  );
+  const totalPlanMins = dayPlan.blocks.reduce((s, b) => s + b.mins, 0);
 
   const urgencyColor = getUrgencyColor(daysLeft);
   const urgencyBg    = getUrgencyBg(daysLeft);
@@ -199,6 +265,34 @@ export function DailyBriefing({
               </p>
             </div>
           )}
+
+          {/* 1b — Personalized today's plan */}
+          <div className="bg-background border border-border/60 rounded-xl px-4 py-3">
+            <p className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-2.5 flex items-center gap-1.5">
+              <Clock className="w-3 h-3 text-primary" />
+              Today's plan
+              <span className="ml-auto text-primary font-bold">{totalPlanMins} min</span>
+              {todayMood !== null && todayMood <= 2 && (
+                <span className="text-amber-400 text-[9px]">light mode (mood low)</span>
+              )}
+            </p>
+            <ol className="flex flex-col gap-1.5">
+              {dayPlan.blocks.map((block, i) => (
+                <li key={i} className="flex items-center gap-2 text-xs font-mono">
+                  <span className="w-5 h-5 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold shrink-0">
+                    {i + 1}
+                  </span>
+                  <button
+                    onClick={() => onGoToTab(block.tab)}
+                    className="flex-1 flex items-center justify-between text-left hover:text-primary transition-colors"
+                  >
+                    <span className="text-foreground/80">{block.action}</span>
+                    <span className="text-muted-foreground shrink-0 ml-2">{block.mins}m →</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
 
           {/* 2 — Streak status */}
           <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${
