@@ -82,6 +82,7 @@ const NeetPGMockTest      = mk(() => import("@/components/NeetPGMockTest"),     
 const WellnessTracker     = mk(() => import("@/components/WellnessTracker"),     "WellnessTracker");
 const ExamEveLockdown     = mk(() => import("@/components/ExamEveLockdown"),     "ExamEveLockdown");
 const CoreBTRSchedule     = mk(() => import("@/components/CoreBTRSchedule"),     "CoreBTRSchedule");
+const ZainabVoraTips      = mk(() => import("@/components/ZainabVoraTips"),      "ZainabVoraTips");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -725,6 +726,11 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         <div hidden={activeGroup !== 'insights' || activeTab !== 'buddymatch'}>
           {visitedTabs.has('buddymatch') && <Suspense fallback={<TabFallback />}>
             <BuddyMatch />
+          </Suspense>}
+        </div>
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'zainabvora'}>
+          {visitedTabs.has('zainabvora') && <Suspense fallback={<TabFallback />}>
+            <ZainabVoraTips />
           </Suspense>}
         </div>
 

@@ -5,7 +5,7 @@ import {
   CalendarCheck, Sliders, Calculator, Eye, StickyNote, FileText, Brain,
   BarChart2, BookMarked, Pill, XCircle, Award, ExternalLink, MessageSquare,
   LayoutGrid, TrendingUp, Stethoscope, ScrollText, Trophy, Home, GraduationCap,
-  Sparkles, Bot, Timer, Sun, Users, UserCheck, Heart, Radio, ClipboardList, ListOrdered,
+  Sparkles, Bot, Timer, Sun, Users, UserCheck, Heart, Radio, ClipboardList, ListOrdered, Star,
 } from "lucide-react";
 
 export type MainTab =
@@ -17,6 +17,7 @@ export type MainTab =
   | 'analytics' | 'toppers' | 'resources' | 'community' | 'weakheatmap'
   | 'cutoffhistory' | 'specialtyseats' | 'guidelines'
   | 'topicpredict' | 'studyrooms' | 'buddymatch'
+  | 'zainabvora'
   | 'rewards';
 
 export type NavGroup = 'home' | 'practice' | 'learn' | 'insights' | 'rewards';
@@ -100,6 +101,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
       { id: 'topicpredict',   label: 'Predict',     Icon: TrendingUp   },
       { id: 'studyrooms',     label: 'Study Rooms', Icon: Users        },
       { id: 'buddymatch',     label: 'Buddy Match', Icon: UserCheck    },
+      { id: 'zainabvora',     label: 'ZV Tips',     Icon: Star         },
     ],
   },
   {
