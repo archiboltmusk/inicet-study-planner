@@ -378,7 +378,7 @@ export function DailyBriefing({ completedDays, mcqScores, streak, examDate, onGo
                 PYQ Practice
               </button>
               <button
-                onClick={() => onGoToTab("oneliners")}
+                onClick={() => onGoToTab("rapid")}
                 className="flex items-center gap-2 px-3 py-2.5 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-mono rounded-xl hover:bg-yellow-500/20 transition-colors"
               >
                 <Zap className="w-3.5 h-3.5 shrink-0" />
