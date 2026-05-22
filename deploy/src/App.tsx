@@ -81,6 +81,7 @@ const StressAdaptive      = mk(() => import("@/components/StressAdaptive"),     
 const NeetPGMockTest      = mk(() => import("@/components/NeetPGMockTest"),      "NeetPGMockTest");
 const WellnessTracker     = mk(() => import("@/components/WellnessTracker"),     "WellnessTracker");
 const ExamEveLockdown     = mk(() => import("@/components/ExamEveLockdown"),     "ExamEveLockdown");
+const CoreBTRSchedule     = mk(() => import("@/components/CoreBTRSchedule"),     "CoreBTRSchedule");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -491,6 +492,13 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         <div hidden={activeGroup !== 'home' || activeTab !== 'circadian'}>
           {visitedTabs.has('circadian') && <Suspense fallback={<TabFallback />}>
             <CircadianPlanner />
+          </Suspense>}
+        </div>
+
+        {/* HOME — Core BTR Schedule */}
+        <div hidden={activeGroup !== 'home' || activeTab !== 'coreBTR'}>
+          {visitedTabs.has('coreBTR') && <Suspense fallback={<TabFallback />}>
+            <CoreBTRSchedule />
           </Suspense>}
         </div>
 

@@ -7848,6 +7848,300 @@ const RAW_QUESTIONS = [
     answer: 1,
     explanation: "Cyanide (HCN): bitter almonds odour (not detectable by ~40% of the population due to genetic anosmia). Organophosphates: garlic odour. H₂S: rotten eggs. Arsenic: garlic. Phosphorus: garlic/matches. Chloroform: sweetish. Cyanide mechanism: inhibits cytochrome c oxidase (Complex IV) → histotoxic hypoxia. Treatment: hydroxocobalamin (first-line), sodium thiosulphate + dicobalt edetate.",
   },
+
+  // ─── SURGERY — PYQ High-Yield (5) ────────────────────────────────────────
+  {
+    id: 3001,
+    subject: "Surgery",
+    stem: "The most common position of the appendix in adults is:",
+    options: ["Pelvic", "Retrocaecal", "Pre-ileal", "Post-ileal"],
+    answer: 1,
+    explanation:
+      "Retrocaecal (65–70%) is the most common position of the appendix. Pelvic (30%) is second most common. Position determines the clinical presentation of appendicitis. [INI-CET 2024]",
+  },
+  {
+    id: 3002,
+    subject: "Surgery",
+    stem: "The Whipple procedure (pancreaticoduodenectomy) involves resection of all EXCEPT:",
+    options: [
+      "Head of pancreas",
+      "Duodenum",
+      "Distal stomach (antrectomy)",
+      "Body and tail of pancreas",
+    ],
+    answer: 3,
+    explanation:
+      "Classic Whipple resects the head of pancreas, entire duodenum, distal stomach (antrectomy), distal common bile duct, and gallbladder. The body and tail of the pancreas are preserved. Pylorus-preserving variant retains the entire stomach. [NEET PG 2024]",
+  },
+  {
+    id: 3003,
+    subject: "Surgery",
+    stem: "Most common type of thyroid cancer is:",
+    options: ["Follicular carcinoma", "Papillary carcinoma", "Medullary carcinoma", "Anaplastic carcinoma"],
+    answer: 1,
+    explanation:
+      "Papillary carcinoma accounts for ~80% of all thyroid cancers. It has the best prognosis, spreads via lymphatics, and is characterised by 'Orphan Annie eye' nuclei and psammoma bodies on histology. [NEET PG 2024]",
+  },
+  {
+    id: 3004,
+    subject: "Surgery",
+    stem: "The most common content of an indirect inguinal hernia in an infant is:",
+    options: ["Omentum", "Urinary bladder", "Small intestine", "Sigmoid colon"],
+    answer: 2,
+    explanation:
+      "Small intestine (ileum) is the most common content of an indirect inguinal hernia in infants. Indirect hernias in children are due to a patent processus vaginalis. Omentum is more common in adults. [INI-CET 2024]",
+  },
+  {
+    id: 3005,
+    subject: "Surgery",
+    stem: "Sentinel lymph node biopsy in breast cancer is performed to assess the status of which nodal group?",
+    options: ["Internal mammary nodes", "Axillary nodes", "Supraclavicular nodes", "Infraclavicular nodes"],
+    answer: 1,
+    explanation:
+      "Sentinel lymph node biopsy (SLNB) assesses axillary nodal status (Level I/II). It uses blue dye ± Technetium-99m sulphur colloid. A negative SLNB avoids full axillary dissection, reducing lymphoedema. [AIIMS 2023]",
+  },
+
+  // ─── SURGERY — Orthopaedics PYQ High-Yield (5) ───────────────────────────
+  {
+    id: 3006,
+    subject: "Surgery",
+    stem: "The nerve most commonly injured in a fracture of the surgical neck of the humerus is:",
+    options: ["Radial nerve", "Axillary nerve", "Musculocutaneous nerve", "Median nerve"],
+    answer: 1,
+    explanation:
+      "The axillary nerve (C5, C6) winds around the surgical neck of the humerus and is most vulnerable in fractures at this site. Injury causes deltoid paralysis and loss of sensation over the 'regimental badge' area. [NEET PG 2024]",
+  },
+  {
+    id: 3007,
+    subject: "Surgery",
+    stem: "Congenital talipes equinovarus (CTEV) is characterised by all of the following EXCEPT:",
+    options: ["Equinus", "Varus", "Adduction of forefoot", "Abduction of forefoot"],
+    answer: 3,
+    explanation:
+      "CTEV (clubfoot) comprises: equinus (plantarflexion), varus (heel inversion), adduction of forefoot, and cavus (high arch). Abduction of the forefoot is NOT a component; in fact, treatment aims to abduct the forefoot (Ponseti method). [INI-CET 2024]",
+  },
+  {
+    id: 3008,
+    subject: "Surgery",
+    stem: "The most common cause of avascular necrosis (AVN) of the femoral head in adults is:",
+    options: ["Fracture neck of femur", "Steroid use", "Alcohol abuse", "Sickle cell disease"],
+    answer: 1,
+    explanation:
+      "Steroid use (prolonged corticosteroid therapy) is the most common cause of non-traumatic AVN of the femoral head. Trauma (fracture neck femur) is the most common overall cause. In examinations, steroid use is often cited as the most common cause in the context of non-traumatic AVN. [NEET PG 2024]",
+  },
+  {
+    id: 3009,
+    subject: "Surgery",
+    stem: "Codman triangle on X-ray is a feature of:",
+    options: ["Ewing's sarcoma", "Osteosarcoma", "Giant cell tumour", "Chondrosarcoma"],
+    answer: 1,
+    explanation:
+      "Codman triangle (periosteal elevation with new bone formation at the margins) is a classic X-ray feature of osteosarcoma. Ewing's sarcoma shows an 'onion-skin' periosteal reaction. Osteosarcoma also shows sunburst pattern and Codman triangle. [AIIMS 2023]",
+  },
+  {
+    id: 3010,
+    subject: "Surgery",
+    stem: "Posterior interosseous nerve (deep branch of radial nerve) is most commonly injured in fractures of:",
+    options: ["Distal radius", "Surgical neck of humerus", "Neck of radius", "Medial epicondyle of humerus"],
+    answer: 2,
+    explanation:
+      "The posterior interosseous nerve (deep branch of radial nerve) winds around the neck of the radius through the radial tunnel and is vulnerable to injury in fractures/dislocations of the proximal radius. It causes wrist drop without sensory loss. [INI-CET 2024]",
+  },
+
+  // ─── MEDICINE — Radiology PYQ High-Yield (3) ─────────────────────────────
+  {
+    id: 3011,
+    subject: "Medicine",
+    stem: "The X-ray finding of 'Hampton's hump' is seen in:",
+    options: ["Pneumothorax", "Pulmonary embolism", "Aortic dissection", "Pleural effusion"],
+    answer: 1,
+    explanation:
+      "Hampton's hump is a wedge-shaped pleural-based opacity on chest X-ray representing pulmonary infarction following pulmonary embolism. Westermark sign (oligaemia) is another X-ray sign of PE. [NEET PG 2024]",
+  },
+  {
+    id: 3012,
+    subject: "Medicine",
+    stem: "CT scan finding of 'double-wall sign' (Rigler's sign) indicates:",
+    options: ["Pneumoperitoneum", "Pneumothorax", "Bowel obstruction", "Splenic laceration"],
+    answer: 0,
+    explanation:
+      "Rigler's sign (double-wall sign) on plain X-ray/CT shows air on both sides of the bowel wall, indicating pneumoperitoneum (free intraperitoneal air). It is also called the 'football sign' when massive free air outlines the falciform ligament. [AIIMS 2023]",
+  },
+  {
+    id: 3013,
+    subject: "Medicine",
+    stem: "Which contrast agent is used for myelography?",
+    options: ["Barium sulphate", "Iohexol (Omnipaque)", "Gadolinium-DTPA", "Air"],
+    answer: 1,
+    explanation:
+      "Iohexol (Omnipaque) is a non-ionic, water-soluble, iodinated contrast agent used for myelography (intrathecal injection). Barium is used for GI studies. Gadolinium is an MRI contrast agent. [NEET PG 2024]",
+  },
+
+  // ─── MICROBIOLOGY — PYQ High-Yield (5) ───────────────────────────────────
+  {
+    id: 3014,
+    subject: "Microbiology",
+    stem: "The gold standard culture medium for isolation of Mycobacterium tuberculosis is:",
+    options: ["MacConkey agar", "Lowenstein-Jensen medium", "Thayer-Martin medium", "Chocolate agar"],
+    answer: 1,
+    explanation:
+      "Lowenstein-Jensen (LJ) medium (egg-based with malachite green) is the gold standard for MTB culture. BACTEC (liquid) is faster but LJ remains the reference. Results take 6–8 weeks on LJ. [INI-CET 2024]",
+  },
+  {
+    id: 3015,
+    subject: "Microbiology",
+    stem: "Negri bodies are seen in infections caused by:",
+    options: ["Herpes simplex virus", "Rabies virus", "Measles virus", "Varicella-zoster virus"],
+    answer: 1,
+    explanation:
+      "Negri bodies are pathognomonic intracytoplasmic inclusion bodies found in neurons (especially Purkinje cells of cerebellum and hippocampus) in rabies virus infection. They are composed of viral nucleocapsid material. [NEET PG 2024]",
+  },
+  {
+    id: 3016,
+    subject: "Microbiology",
+    stem: "The most reliable method for sterilisation of heat-labile biological material is:",
+    options: ["Autoclaving", "Dry heat oven", "Filtration (Seitz filter)", "Ultraviolet radiation"],
+    answer: 2,
+    explanation:
+      "Filtration through Seitz (asbestos) or membrane filters (0.22 μm) is the method used for sterilisation of heat-labile materials like sera, vaccines, and antibiotics. UV radiation only disinfects surfaces, not liquids. [AIIMS 2023]",
+  },
+  {
+    id: 3017,
+    subject: "Microbiology",
+    stem: "Tellurite blood agar (Hoyle's medium) is used for selective isolation of:",
+    options: ["Salmonella typhi", "Corynebacterium diphtheriae", "Vibrio cholerae", "Bordetella pertussis"],
+    answer: 1,
+    explanation:
+      "Hoyle's tellurite blood agar selectively isolates Corynebacterium diphtheriae (diphtheria bacillus), which produces black colonies (due to tellurite reduction). Bordet-Gengou is for Bordetella; TCBS for Vibrio; MacConkey/SS for Salmonella. [INI-CET 2024]",
+  },
+  {
+    id: 3018,
+    subject: "Microbiology",
+    stem: "Which antibiotic acts by inhibiting cell wall synthesis by binding to D-Ala-D-Ala terminus of peptidoglycan precursors?",
+    options: ["Penicillin", "Vancomycin", "Bacitracin", "Fosfomycin"],
+    answer: 1,
+    explanation:
+      "Vancomycin binds directly to the D-Ala-D-Ala terminus of the lipid-PP-pentapeptide precursor, inhibiting transglycosylation. Penicillins/cephalosporins bind PBPs (transpeptidases). Vancomycin is the drug for MRSA and Clostridioides difficile (oral). [NEET PG 2024]",
+  },
+
+  // ─── ANATOMY — PYQ High-Yield (4) ────────────────────────────────────────
+  {
+    id: 3019,
+    subject: "Anatomy",
+    stem: "The nerve supply of the diaphragm (motor) is predominantly from:",
+    options: ["Vagus nerve (CN X)", "Phrenic nerve (C3, C4, C5)", "Intercostal nerves (T7–T12)", "Sympathetic chain (T5–T10)"],
+    answer: 1,
+    explanation:
+      "The phrenic nerve (C3, C4, C5 — 'C3, 4, 5 keeps the diaphragm alive') provides the entire motor supply and central sensory supply to the diaphragm. Peripheral diaphragm sensation is from lower intercostal nerves. [NEET PG 2024]",
+  },
+  {
+    id: 3020,
+    subject: "Anatomy",
+    stem: "Artery of Adamkiewicz (arteria radicularis magna) is the major blood supply to:",
+    options: ["Cervical spinal cord", "Upper thoracic spinal cord", "Lower thoracic and lumbar spinal cord", "Sacral spinal cord"],
+    answer: 2,
+    explanation:
+      "The artery of Adamkiewicz (T9–L1, most often left T10) is the dominant radicular artery supplying the lower two-thirds of the spinal cord (lower thoracic and lumbosacral segments). Its injury during aortic surgery causes anterior spinal artery syndrome. [AIIMS 2023]",
+  },
+  {
+    id: 3021,
+    subject: "Anatomy",
+    stem: "Patent ductus arteriosus (PDA) results from failure of closure of which embryological structure?",
+    options: ["Ductus venosus", "Foramen ovale", "Ductus arteriosus", "Sinus venosus"],
+    answer: 2,
+    explanation:
+      "PDA results from persistent patency of the ductus arteriosus (connecting the pulmonary trunk to the descending aorta), which normally closes within 24–48 hours of birth due to increased oxygen tension and decreased prostaglandins. Treatment: indomethacin (COX inhibitor) or surgical ligation. [INI-CET 2024]",
+  },
+  {
+    id: 3022,
+    subject: "Anatomy",
+    stem: "A patient presents with inability to abduct the arm beyond 15° following a humeral neck fracture. Which structure is most likely injured?",
+    options: ["Suprascapular nerve", "Axillary nerve", "Long thoracic nerve", "Radial nerve"],
+    answer: 1,
+    explanation:
+      "The axillary nerve (C5, C6) supplies the deltoid (abduction 15°–90°) and teres minor. Its injury in surgical neck of humerus fracture causes paralysis of deltoid, leaving only supraspinatus to initiate abduction (0–15°). There is also sensory loss over the 'regimental badge' area. [NEET PG 2024]",
+  },
+
+  // ─── OBG — PYQ High-Yield (4) ────────────────────────────────────────────
+  {
+    id: 3023,
+    subject: "OBG",
+    stem: "Drug of choice for prevention of recurrent seizures in eclampsia is:",
+    options: ["Diazepam", "Phenytoin", "Magnesium sulphate", "Phenobarbitone"],
+    answer: 2,
+    explanation:
+      "Magnesium sulphate (MgSO4) is the DOC for both prevention and treatment of eclamptic seizures (Pritchard regimen or Zuspan IV regimen). It acts by blocking NMDA receptors and causing vasodilation. Monitor: urine output >25 mL/h, patellar reflexes present, RR >12/min. Antidote: calcium gluconate. [INI-CET 2024]",
+  },
+  {
+    id: 3024,
+    subject: "OBG",
+    stem: "The most common cause of primary postpartum haemorrhage (PPH) is:",
+    options: ["Retained placenta", "Uterine atony", "Genital tract lacerations", "Coagulation disorders"],
+    answer: 1,
+    explanation:
+      "Uterine atony accounts for approximately 80% of PPH cases and is the single most common cause. Risk factors: prolonged labour, multiparity, overdistension (twins, polyhydramnios), oxytocin use. Management: bimanual compression, oxytocin, misoprostol, ergometrine, tranexamic acid (TXA). [NEET PG 2024]",
+  },
+  {
+    id: 3025,
+    subject: "OBG",
+    stem: "The most common site of ectopic pregnancy is:",
+    options: ["Cervix", "Ovary", "Ampulla of fallopian tube", "Isthmus of fallopian tube"],
+    answer: 2,
+    explanation:
+      "The ampulla (55%) is the most common site of ectopic pregnancy, followed by the isthmus (25%). Isthmic ectopics rupture earlier (5–6 weeks) as the tube is narrower. Ampullary ectopics typically rupture at 8–12 weeks. Risk factor: PID, previous tubal surgery. [AIIMS 2023]",
+  },
+  {
+    id: 3026,
+    subject: "OBG",
+    stem: "A Bishop score of 6 or more indicates:",
+    options: [
+      "Cervix unfavourable — induction not advised",
+      "Cervix favourable — induction likely to succeed",
+      "Requirement for cervical cerclage",
+      "Need for caesarean section",
+    ],
+    answer: 1,
+    explanation:
+      "Bishop score assesses cervical ripeness (0–13). Score ≥6 = favourable cervix, induction likely to succeed. Score <6 = unfavourable, cervical ripening agents (misoprostol, dinoprostone, Foley catheter) should be used first. Score ≥8 = as good as spontaneous labour. [INI-CET 2024]",
+  },
+
+  // ─── PSM/Community Medicine — PYQ High-Yield (4) ─────────────────────────
+  {
+    id: 3027,
+    subject: "PSM/Community Medicine",
+    stem: "In a clinical trial, if the relative risk (RR) of an exposure is 0.4, what is the vaccine/preventive efficacy?",
+    options: ["40%", "60%", "80%", "0.4%"],
+    answer: 1,
+    explanation:
+      "Vaccine efficacy (VE) = 1 – RR = 1 – 0.4 = 0.6 = 60%. An RR of 0.4 means the exposed (vaccinated) group has 40% of the risk of the unexposed group, so the vaccine prevents 60% of cases. [NEET PG 2024]",
+  },
+  {
+    id: 3028,
+    subject: "PSM/Community Medicine",
+    stem: "As per the Universal Immunisation Programme (UIP) India, the Pentavalent vaccine covers all EXCEPT:",
+    options: ["Diphtheria", "Pertussis", "Haemophilus influenzae type b", "Typhoid"],
+    answer: 3,
+    explanation:
+      "The Pentavalent vaccine (DPT + HiB + Hepatitis B) covers Diphtheria, Pertussis (Whooping cough), Tetanus, Haemophilus influenzae type b, and Hepatitis B. Typhoid is NOT included. It is given at 6, 10, and 14 weeks. [INI-CET 2024]",
+  },
+  {
+    id: 3029,
+    subject: "PSM/Community Medicine",
+    stem: "In an epidemic curve, a sharp peak followed by rapid decline (common-source point epidemic) is characteristic of:",
+    options: ["Person-to-person transmission", "A single exposure at one point in time", "A continuous source over weeks", "Vector-borne transmission"],
+    answer: 1,
+    explanation:
+      "A point-source epidemic (single common source at one point in time) produces a sharp, narrow epidemic curve with rapid rise and fall within one incubation period. Propagated (person-to-person) epidemics show multiple successive peaks. [AIIMS 2023]",
+  },
+  {
+    id: 3030,
+    subject: "PSM/Community Medicine",
+    stem: "The RNTCP/NTEP target for case detection rate (CDR) for TB is:",
+    options: ["≥70%", "≥85%", "≥90%", "≥95%"],
+    answer: 1,
+    explanation:
+      "Under NTEP (formerly RNTCP), the target CDR for all forms of TB is ≥85%, and treatment success rate is ≥90%. India's TB incidence was 199/100,000 in 2023; the goal is elimination (< 1/million) by 2025, though this target has been revised to 2030. [NEET PG 2024]",
+  },
 ];
 
 

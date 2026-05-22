@@ -5,11 +5,11 @@ import {
   CalendarCheck, Sliders, Calculator, Eye, StickyNote, FileText, Brain,
   BarChart2, BookMarked, Pill, XCircle, Award, ExternalLink, MessageSquare,
   LayoutGrid, TrendingUp, Stethoscope, ScrollText, Trophy, Home, GraduationCap,
-  Sparkles, Bot, Timer, Sun, Users, UserCheck, Heart, Radio, ClipboardList,
+  Sparkles, Bot, Timer, Sun, Users, UserCheck, Heart, Radio, ClipboardList, ListOrdered,
 } from "lucide-react";
 
 export type MainTab =
-  | 'planner' | 'schedule' | 'circadian' | 'stress'
+  | 'planner' | 'schedule' | 'circadian' | 'stress' | 'coreBTR'
   | 'pyq' | 'drills' | 'rapid' | 'oneliners' | 'simulation' | 'revision'
   | 'dailyquiz' | 'aiquiz' | 'custommock' | 'psmcalc' | 'imagequiz' | 'microburst' | 'neetpg2026'
   | 'notes' | 'pdf' | 'ai' | 'mnemonics' | 'analysis' | 'flashcards'
@@ -40,10 +40,11 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: 'Home',
     Icon: Home,
     tabs: [
-      { id: 'planner',   label: 'Planner',   Icon: Calendar },
-      { id: 'schedule',  label: 'Schedule',  Icon: Clock    },
-      { id: 'circadian', label: 'Circadian', Icon: Sun      },
-      { id: 'stress',    label: 'Wellbeing', Icon: Heart    },
+      { id: 'planner',   label: 'Planner',   Icon: Calendar    },
+      { id: 'schedule',  label: 'Schedule',  Icon: Clock       },
+      { id: 'coreBTR',   label: 'Core BTR',  Icon: ListOrdered },
+      { id: 'circadian', label: 'Circadian', Icon: Sun         },
+      { id: 'stress',    label: 'Wellbeing', Icon: Heart       },
     ],
   },
   {
