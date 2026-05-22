@@ -447,7 +447,11 @@ function StudyApp({ prefix, user }: StudyAppProps) {
               mcqScores={mcqScores}
               streak={streak}
               examDate={examDate}
-              onGoToTab={(tab) => setActiveTab(tab as MainTab)}
+              onGoToTab={(tab) => {
+                const t = tab as MainTab;
+                const group = NAV_GROUPS.find(g => g.tabs.some(tb => tb.id === t));
+                handleNavigate((group?.id ?? 'home') as NavGroup, t);
+              }}
             />
             <div className="flex flex-col lg:flex-row gap-6">
               <DayGrid
