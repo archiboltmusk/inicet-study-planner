@@ -1,4 +1,9 @@
 import { z } from "zod";
+import { MEDICINE_QUESTIONS } from "./questions-medicine";
+import { SURGERY_OBG_QUESTIONS } from "./questions-surgery-obg";
+import { PHARMA_PATH_MICRO_QUESTIONS } from "./questions-pharma-path-micro";
+import { BASIC_SCIENCES_QUESTIONS } from "./questions-basic-sciences";
+import { CLINICAL_SPECIALTIES_QUESTIONS } from "./questions-clinical-specialties";
 
 export const QUESTION_SUBJECTS = [
   "Pharmacology",
@@ -8145,21 +8150,26 @@ const RAW_QUESTIONS = [
 ];
 
 
-// Validate every question at module load. In development a Zod error pinpoints
-// the exact question that has a bad field; in production the parse is a no-op
-// on valid data (every field already matches the schema).
-const parsed = z.array(QuestionSchema).safeParse(RAW_QUESTIONS);
+const ALL_RAW_QUESTIONS = [
+  ...RAW_QUESTIONS,
+  ...MEDICINE_QUESTIONS,
+  ...SURGERY_OBG_QUESTIONS,
+  ...PHARMA_PATH_MICRO_QUESTIONS,
+  ...BASIC_SCIENCES_QUESTIONS,
+  ...CLINICAL_SPECIALTIES_QUESTIONS,
+];
+
+const parsed = z.array(QuestionSchema).safeParse(ALL_RAW_QUESTIONS);
 if (!parsed.success) {
-  // Log a human-readable summary rather than crashing the app
   console.error(
     "[questions] Data validation failed. Fix the following before shipping:\n" +
     parsed.error.issues
-      .map(i => `  Q#${RAW_QUESTIONS[i.path[0] as number]?.id ?? "?"} [${i.path.join(".")}]: ${i.message}`)
+      .map(i => `  Q#${ALL_RAW_QUESTIONS[i.path[0] as number]?.id ?? "?"} [${i.path.join(".")}]: ${i.message}`)
       .join("\n")
   );
 }
 
-export const QUESTIONS: Question[] = parsed.success ? parsed.data : (RAW_QUESTIONS as Question[]);
+export const QUESTIONS: Question[] = parsed.success ? parsed.data : (ALL_RAW_QUESTIONS as Question[]);
 
 // Pre-built subject index for O(1) lookups — use this instead of QUESTIONS.filter()
 export const QUESTIONS_BY_SUBJECT: ReadonlyMap<QuestionSubject, Question[]> = new Map(
