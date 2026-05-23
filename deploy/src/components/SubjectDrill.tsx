@@ -44,6 +44,7 @@ interface UnifiedQuestion {
   answer: 0 | 1 | 2 | 3;
   explanation: string;
   isAI: boolean;
+  imageUrl?: string;
 }
 
 export interface DrillScore {
@@ -117,6 +118,7 @@ function localToUnified(q: Question): UnifiedQuestion {
     answer: q.answer,
     explanation: q.explanation,
     isAI: false,
+    imageUrl: q.imageUrl,
   };
 }
 
@@ -663,11 +665,21 @@ export function SubjectDrill({ onComplete }: { onComplete?: () => void } = {}) {
 
         {/* Question card */}
         <div className="p-5 space-y-4">
-          {/* Subject badge + stem */}
+          {/* Subject badge + image + stem */}
           <div className="relative">
             <span className="absolute top-0 right-0 text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400">
               {q.subject}
             </span>
+            {q.imageUrl && (
+              <div className="mb-3 rounded-xl overflow-hidden border border-border bg-black/20">
+                <img
+                  src={q.imageUrl}
+                  alt="Clinical image for this question"
+                  className="w-full max-h-64 object-contain"
+                  onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = "none"; }}
+                />
+              </div>
+            )}
             <p className="text-sm font-mono text-foreground leading-relaxed pr-28">
               {q.stem}
             </p>

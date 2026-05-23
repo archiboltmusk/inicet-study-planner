@@ -4,6 +4,7 @@ import { SURGERY_OBG_QUESTIONS } from "./questions-surgery-obg";
 import { PHARMA_PATH_MICRO_QUESTIONS } from "./questions-pharma-path-micro";
 import { BASIC_SCIENCES_QUESTIONS } from "./questions-basic-sciences";
 import { CLINICAL_SPECIALTIES_QUESTIONS } from "./questions-clinical-specialties";
+import { IMAGE_MCQS } from "./questions-image-mcqs";
 
 export const QUESTION_SUBJECTS = [
   "Pharmacology",
@@ -30,6 +31,7 @@ const QuestionSchema = z.object({
   options:     z.tuple([z.string(), z.string(), z.string(), z.string()]),
   answer:      z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
   explanation: z.string().min(5),
+  imageUrl:    z.string().optional(),
 });
 
 export type Question = z.infer<typeof QuestionSchema>;
@@ -8157,6 +8159,7 @@ const ALL_RAW_QUESTIONS = [
   ...PHARMA_PATH_MICRO_QUESTIONS,
   ...BASIC_SCIENCES_QUESTIONS,
   ...CLINICAL_SPECIALTIES_QUESTIONS,
+  ...IMAGE_MCQS,
 ];
 
 const parsed = z.array(QuestionSchema).safeParse(ALL_RAW_QUESTIONS);

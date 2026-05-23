@@ -24,6 +24,7 @@ interface UnifiedQuestion {
   difficulty: "easy" | "medium" | "hard";
   source?: ExamSource;
   year?: number;
+  imageUrl?: string;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -37,6 +38,7 @@ function localToUnified(q: Question): UnifiedQuestion {
     answer: q.answer,
     explanation: q.explanation,
     difficulty: "medium",
+    imageUrl: q.imageUrl,
   };
 }
 
@@ -388,6 +390,20 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
                 {qIndex + 1} / {pool.length}
               </span>
             </div>
+
+            {/* Image (if present) */}
+            {current.imageUrl && (
+              <div className="px-5 pt-4">
+                <div className="rounded-xl overflow-hidden border border-border bg-black/20">
+                  <img
+                    src={current.imageUrl}
+                    alt="Clinical image for this question"
+                    className="w-full max-h-72 object-contain"
+                    onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = "none"; }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Stem */}
             <div className="px-5 py-5">
