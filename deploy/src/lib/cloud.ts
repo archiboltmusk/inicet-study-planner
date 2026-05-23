@@ -7,7 +7,6 @@ import { executeWithRetry, type SyncError } from "@/lib/sync";
 type JsonValue = string | number | boolean | null | JsonValue[] | { [k: string]: JsonValue };
 
 // ── Offline mutation queue ────────────────────────────────────────────────────
-// Writes that fail while offline are stored here and re-attempted on reconnect.
 
 const QUEUE_KEY = "neetpg_pending_sync";
 
@@ -21,18 +20,14 @@ interface PendingWrite {
 function loadQueue(): PendingWrite[] {
   return safeLoad<PendingWrite[]>(QUEUE_KEY, []);
 }
-
 function saveQueue(q: PendingWrite[]): void {
   safeSave(QUEUE_KEY, q);
 }
-
 function enqueue(userId: string, key: string, value: JsonValue): void {
   const q = loadQueue().filter(p => !(p.userId === userId && p.key === key));
-  // Keep only the latest write per (userId, key) — older ones are superseded
   q.push({ userId, key, value, ts: Date.now() });
   saveQueue(q);
 }
-
 function dequeue(userId: string, key: string): void {
   saveQueue(loadQueue().filter(p => !(p.userId === userId && p.key === key)));
 }
@@ -56,15 +51,11 @@ async function flushQueue(): Promise<void> {
   }
 }
 
-// Register a one-time online listener that flushes pending writes when the
-// browser reconnects. Safe to call multiple times — listener is idempotent.
 let onlineListenerAttached = false;
 function ensureOnlineListener(): void {
   if (onlineListenerAttached) return;
   onlineListenerAttached = true;
-  window.addEventListener("online", () => {
-    void flushQueue();
-  });
+  window.addEventListener("online", () => { void flushQueue(); });
 }
 
 // ── Debounce helper ───────────────────────────────────────────────────────────
@@ -83,21 +74,92 @@ function useDebounce<A extends unknown[]>(fn: (...args: A) => void, ms: number):
 // ── UserData shape (mirrors Supabase user_data columns) ───────────────────────
 
 interface UserData {
-  completed_days: number[];
-  notes: Record<number, string>;
-  mcq_scores: Record<number, { attempted: number; correct: number }>;
-  flagged: { dayId: number; topicIdx: number }[];
-  sr_cards: Record<number, { ef: number; interval: number; repetitions: number; dueDate: string }>;
-  streak: { count: number; longest: number; lastDate: string };
-  exam_date: string | null;
+  // Core study state
+  completed_days:      number[];
+  notes:               Record<number, string>;
+  mcq_scores:          Record<number, { attempted: number; correct: number }>;
+  flagged:             { dayId: number; topicIdx: number }[];
+  sr_cards:            Record<number, { ef: number; interval: number; repetitions: number; dueDate: string }>;
+  streak:              { count: number; longest: number; lastDate: string };
+  exam_date:           string | null;
+  // Component-level data
+  todos_checked:       Record<string, string[]>;
+  mistake_logbook:     JsonValue[];
+  flashcards:          Record<string, JsonValue>;
+  revision_schedule:   JsonValue[];
+  mock_scores:         JsonValue[];
+  stress_log:          JsonValue[];
+  buddy_profile:       Record<string, JsonValue>;
+  circadian:           Record<string, string>;
+  guideline_bookmarks: string[];
+  known_oneliners:     string[];
+  drill_scores:        Record<string, JsonValue>;
+  ai_quiz_log:         JsonValue[];
+  custom_mock_history: JsonValue[];
+  explanation_ratings: Record<string, JsonValue>;
+  pomodoro_sessions:   JsonValue[];
+  pdf_history:         JsonValue[];
+  pdf_sr_cards:        Record<string, JsonValue>;
+  exam_eve:            Record<string, JsonValue>;
+  gamification:        Record<string, JsonValue>;
+  pyq_attempts:        Record<string, JsonValue>;
+}
+
+// ── Map: localStorage key → UserData column ───────────────────────────────────
+// Keys intentionally excluded from cloud sync:
+//   neetpg_ai_key          — user's Anthropic API key (never in cloud)
+//   neetpg_light_mode      — device-local UI preference
+//   neetpg_guest_mode      — auth state flag
+//   neetpg_pending_sync    — sync queue (meta)
+//   neetpg_reminder_fired_ — ephemeral daily flags
+//   neetpg_daily_checklist — legacy, replaced by unified_todos_v2
+
+const BULK_SYNC_KEYS: { local: string; cloud: keyof UserData }[] = [
+  { local: "unified_todos_v2",            cloud: "todos_checked"       },
+  { local: "neetpg_mistake_logbook",      cloud: "mistake_logbook"     },
+  { local: "neetpg_flashcards",           cloud: "flashcards"          },
+  { local: "neetpg_revision_schedule",    cloud: "revision_schedule"   },
+  { local: "neetpg_mock_scores",          cloud: "mock_scores"         },
+  { local: "stress_log",                  cloud: "stress_log"          },
+  { local: "buddy_profile",               cloud: "buddy_profile"       },
+  { local: "neetpg_guideline_bookmarks",  cloud: "guideline_bookmarks" },
+  { local: "neetpg_known_oneliners",      cloud: "known_oneliners"     },
+  { local: "neetpg_drill_scores",         cloud: "drill_scores"        },
+  { local: "neetpg_ai_quiz_log",          cloud: "ai_quiz_log"         },
+  { local: "neetpg_custom_mock_history",  cloud: "custom_mock_history" },
+  { local: "neetpg_explanation_ratings",  cloud: "explanation_ratings" },
+  { local: "neetpg_pomodoro_sessions",    cloud: "pomodoro_sessions"   },
+  { local: "neetpg_pdf_history",          cloud: "pdf_history"         },
+  { local: "neetpg_pdf_sr_cards",         cloud: "pdf_sr_cards"        },
+  { local: "neetpg_pyq_attempts",         cloud: "pyq_attempts"        },
+];
+
+// Circadian: two separate localStorage keys → one cloud column
+function readCircadianLocal(): Record<string, string> {
+  return {
+    wake:  safeLoad("circadian_wake",  ""),
+    sleep: safeLoad("circadian_sleep", ""),
+  };
+}
+function writeCircadianLocal(val: Record<string, string>): void {
+  if (val.wake)  safeSave("circadian_wake",  val.wake);
+  if (val.sleep) safeSave("circadian_sleep", val.sleep);
+}
+
+// Exam-eve: two separate localStorage keys → one cloud column
+function readExamEveLocal(): Record<string, JsonValue> {
+  return {
+    checklist: safeLoad("neetpg_exam_eve_checklist", {}),
+    dismissed: safeLoad("neetpg_exam_eve_dismissed", false),
+  };
+}
+function writeExamEveLocal(val: Record<string, JsonValue>): void {
+  if (val.checklist !== undefined) safeSave("neetpg_exam_eve_checklist", val.checklist);
+  if (val.dismissed !== undefined) safeSave("neetpg_exam_eve_dismissed", val.dismissed);
 }
 
 // ── Cloud read/write ──────────────────────────────────────────────────────────
 
-/**
- * Fetch the user's data row from Supabase with automatic retry.
- * Returns null if the row doesn't exist yet.
- */
 export async function fetchCloudData(userId: string): Promise<UserData | null> {
   return executeWithRetry(
     async () => {
@@ -108,29 +170,20 @@ export async function fetchCloudData(userId: string): Promise<UserData | null> {
         .single();
 
       if (error && error.code !== "PGRST116") {
-        // PGRST116 = row not found — that's fine on first login
         const syncError = new Error(error.message) as SyncError;
         syncError.code = error.code;
-        // Only mark as network error if it actually is one
-        syncError.isNetworkError = !error.message || error.message.includes("fetch") || error.message.includes("connection") || error.message.includes("ECONNREFUSED");
+        syncError.isNetworkError = !error.message || error.message.includes("fetch") || error.message.includes("connection");
         throw syncError;
       }
       return data ?? null;
     },
     {
       maxRetries: 3,
-      onError: (error) => {
-        console.error("[cloud] fetchCloudData error:", error.message);
-      },
+      onError: (error) => { console.error("[cloud] fetchCloudData error:", error.message); },
     }
   );
 }
 
-/**
- * Upsert (insert or update) the user's data row in Supabase with automatic retry.
- * localStorage is always written first so the UI never waits for the network.
- * Returns true on success. On failure, the write is queued for retry on reconnect.
- */
 export async function upsertCloudData(userId: string, patch: Partial<UserData>): Promise<boolean> {
   try {
     await executeWithRetry(
@@ -142,8 +195,7 @@ export async function upsertCloudData(userId: string, patch: Partial<UserData>):
         if (error) {
           const syncError = new Error(error.message) as SyncError;
           syncError.code = error.code;
-          // Only mark as network error if it actually is one
-          syncError.isNetworkError = !error.message || error.message.includes("fetch") || error.message.includes("connection") || error.message.includes("ECONNREFUSED");
+          syncError.isNetworkError = !error.message || error.message.includes("fetch") || error.message.includes("connection");
           throw syncError;
         }
       },
@@ -156,11 +208,10 @@ export async function upsertCloudData(userId: string, patch: Partial<UserData>):
   }
 }
 
-/**
- * Merge cloud data into localStorage on first login / reconnect.
- * Cloud wins for everything except streaks where we take the larger value.
- */
-export function mergeCloudIntoLocal(cloud: UserData): void {
+// ── Hydrate localStorage from cloud on login ──────────────────────────────────
+
+export function mergeCloudIntoLocal(cloud: Partial<UserData>): void {
+  // Core study data — cloud wins
   if (cloud.completed_days)  safeSave("neetpg_completed_days", cloud.completed_days);
   if (cloud.notes)           safeSave("neetpg_notes", cloud.notes);
   if (cloud.mcq_scores)      safeSave("neetpg_mcq_scores", cloud.mcq_scores);
@@ -168,46 +219,72 @@ export function mergeCloudIntoLocal(cloud: UserData): void {
   if (cloud.sr_cards)        safeSave("neetpg_sr_cards", cloud.sr_cards);
   if (cloud.exam_date)       safeSave("neetpg_exam_date", cloud.exam_date);
 
-  // Streak: take the longer streak to avoid punishing users who switch devices
+  // Streak: take the max to avoid punishing device switches
   if (cloud.streak) {
-    const local = safeLoad<{ count: number; longest: number; lastDate: string }>(
-      "neetpg_streak",
-      { count: 0, longest: 0, lastDate: "" }
-    );
-    const merged = {
+    const local = safeLoad("neetpg_streak", { count: 0, longest: 0, lastDate: "" });
+    safeSave("neetpg_streak", {
       count:    Math.max(local.count, cloud.streak.count),
       longest:  Math.max(local.longest, cloud.streak.longest),
       lastDate: local.lastDate > cloud.streak.lastDate ? local.lastDate : cloud.streak.lastDate,
-    };
-    safeSave("neetpg_streak", merged);
+    });
+  }
+
+  // Component-level data — cloud wins (overwrite local)
+  for (const { local, cloud: col } of BULK_SYNC_KEYS) {
+    const val = cloud[col];
+    if (val !== undefined && val !== null) safeSave(local, val);
+  }
+  if (cloud.circadian && (cloud.circadian.wake || cloud.circadian.sleep)) {
+    writeCircadianLocal(cloud.circadian);
+  }
+  if (cloud.exam_eve && Object.keys(cloud.exam_eve).length > 0) {
+    writeExamEveLocal(cloud.exam_eve);
   }
 }
 
-/**
- * Hook that syncs a single state slice to Supabase with a debounced write.
- * Failed writes are queued in localStorage and retried on next online event.
- */
+// ── Snapshot all tracked localStorage keys to Supabase ───────────────────────
+
+export async function snapshotToCloud(userId: string): Promise<boolean> {
+  const patch: Partial<UserData> = {};
+
+  for (const { local, cloud: col } of BULK_SYNC_KEYS) {
+    const val = localStorage.getItem(local);
+    if (val !== null) {
+      try { (patch as Record<string, JsonValue>)[col] = JSON.parse(val); }
+      catch { /* skip unparseable */ }
+    }
+  }
+
+  patch.circadian = readCircadianLocal();
+  patch.exam_eve  = readExamEveLocal();
+
+  if (Object.keys(patch).length === 0) return true;
+  const ok = await upsertCloudData(userId, patch);
+  if (!ok) {
+    for (const [key, value] of Object.entries(patch)) {
+      enqueue(userId, key, value as JsonValue);
+    }
+  }
+  return ok;
+}
+
+// ── Per-field sync hook (used for Zustand-managed core state) ─────────────────
+
 export function useCloudSync<T extends JsonValue>(
   key: keyof UserData,
   value: T,
-  ready: boolean   // only sync when user is logged in and initial load is done
+  ready: boolean
 ): void {
   const { user } = useAuth();
 
-  // Attach the online-reconnect flush listener once per app session
   useEffect(() => { ensureOnlineListener(); }, []);
 
   const syncToCloud = useCallback(
     async (v: T) => {
       if (!user) return;
       const ok = await upsertCloudData(user.id, { [key]: v } as Partial<UserData>);
-      if (!ok) {
-        // Queue for retry when connectivity is restored
-        enqueue(user.id, key, v as JsonValue);
-      } else {
-        // Successful write — clear any stale queued entry for this key
-        dequeue(user.id, key);
-      }
+      if (!ok) enqueue(user.id, key, v as JsonValue);
+      else     dequeue(user.id, key);
     },
     [user, key]
   );
@@ -218,4 +295,46 @@ export function useCloudSync<T extends JsonValue>(
     if (!ready || !user) return;
     debouncedSync(value);
   }, [value, ready, user, debouncedSync]);
+}
+
+// ── Bulk sync hook (used for component-level localStorage data) ───────────────
+// Call once in App.tsx. Syncs all tracked keys to Supabase:
+//   • On first mount (logged-in)
+//   • Every 60 seconds
+//   • When the tab regains focus (user returns from another tab/app)
+
+export function useBulkSync(ready: boolean): void {
+  const { user } = useAuth();
+  const lastSyncRef = useRef<number>(0);
+
+  useEffect(() => { ensureOnlineListener(); }, []);
+
+  const runSync = useCallback(async () => {
+    if (!user || !ready) return;
+    const now = Date.now();
+    if (now - lastSyncRef.current < 10_000) return; // debounce: min 10s between syncs
+    lastSyncRef.current = now;
+    await snapshotToCloud(user.id);
+  }, [user, ready]);
+
+  // Initial sync on login
+  useEffect(() => {
+    if (ready && user) void runSync();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
+
+  // Periodic sync every 60 seconds
+  useEffect(() => {
+    if (!ready || !user) return;
+    const interval = setInterval(() => { void runSync(); }, 60_000);
+    return () => clearInterval(interval);
+  }, [ready, user, runSync]);
+
+  // Sync when tab becomes visible again
+  useEffect(() => {
+    if (!ready || !user) return;
+    const handler = () => { if (document.visibilityState === "visible") void runSync(); };
+    document.addEventListener("visibilitychange", handler);
+    return () => document.removeEventListener("visibilitychange", handler);
+  }, [ready, user, runSync]);
 }

@@ -21,7 +21,7 @@ import { OnboardingModal } from "@/components/OnboardingModal";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { XPToastLayer, makeToastItem, type XPToastItem } from "@/components/XPToast";
 import { useAuth } from "@/lib/auth";
-import { useCloudSync } from "@/lib/cloud";
+import { useCloudSync, useBulkSync } from "@/lib/cloud";
 import { getAppStore, sel } from "@/lib/store";
 import type { StreakData } from "@/lib/store";
 import { computeBaseXP, XP_VALUES, getRank } from "@/lib/xp";
@@ -236,6 +236,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
 
   // ── Cloud sync ────────────────────────────────────────────────────────────
   const syncReady = !!user;
+  // Core Zustand state — synced per-field on every state change (debounced)
   useCloudSync('completed_days', completedDays as never, syncReady);
   useCloudSync('notes',           notes        as never, syncReady);
   useCloudSync('mcq_scores',      mcqScores    as never, syncReady);
@@ -243,6 +244,8 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   useCloudSync('sr_cards',        srCards      as never, syncReady);
   useCloudSync('streak',          streak       as never, syncReady);
   useCloudSync('exam_date',       examDateIso  as never, syncReady);
+  // Component-level localStorage data — bulk snapshot every 60s + on tab focus
+  useBulkSync(syncReady);
 
   // ── Side-effects ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -668,11 +671,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         <div hidden={activeGroup !== 'insights' || activeTab !== 'buddymatch'}>
           {visitedTabs.has('buddymatch') && <Suspense fallback={<TabFallback />}>
             <BuddyMatch onGoToStudyRooms={() => handleNavigate('insights', 'studyrooms')} />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'zainabvora'}>
-          {visitedTabs.has('zainabvora') && <Suspense fallback={<TabFallback />}>
-            <ZainabVoraTips />
           </Suspense>}
         </div>
         <div hidden={activeGroup !== 'insights' || activeTab !== 'zainabvora'}>
