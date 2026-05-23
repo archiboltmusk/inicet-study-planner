@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
 import {
-  Calendar, Clock, Zap, BookOpen, Crosshair, Layers, FlaskConical, Flag,
+  Calendar, Zap, BookOpen, Crosshair, Layers, FlaskConical, Flag,
   CalendarCheck, Sliders, Calculator, Eye, StickyNote, FileText, Brain,
   BarChart2, BookMarked, Pill, XCircle, Award, ExternalLink, MessageSquare,
   LayoutGrid, TrendingUp, Stethoscope, ScrollText, Trophy, Home, GraduationCap,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 export type MainTab =
-  | 'planner' | 'schedule' | 'circadian' | 'stress' | 'coreBTR' | 'marrow' | 'todolist'
+  | 'planner' | 'circadian' | 'stress' | 'coreBTR' | 'marrow' | 'todolist'
   | 'pyq' | 'drills' | 'rapid' | 'oneliners' | 'simulation' | 'revision'
   | 'dailyquiz' | 'aiquiz' | 'custommock' | 'psmcalc' | 'imagequiz' | 'microburst' | 'neetpg2026'
   | 'notes' | 'pdf' | 'ai' | 'mnemonics' | 'analysis' | 'flashcards'
@@ -44,7 +44,6 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     tabs: [
       { id: 'todolist',  label: 'Daily Plan', Icon: ListChecks   },
       { id: 'planner',   label: 'Planner',   Icon: Calendar    },
-      { id: 'schedule',  label: 'Schedule',  Icon: Clock       },
       { id: 'coreBTR',   label: 'Core BTR',  Icon: ListOrdered   },
       { id: 'marrow',    label: 'Marrow',    Icon: GraduationCap },
       { id: 'circadian', label: 'Circadian', Icon: Sun           },

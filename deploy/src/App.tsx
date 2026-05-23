@@ -15,21 +15,11 @@ import { SCHEDULE, EXAM_DATE } from "@/data/schedule";
 import type { QuestionSubject } from "@/data/questions";
 import { safeLoad, safeSave } from "@/lib/storage";
 import { SRCard } from "@/lib/sr";
-import { DayGrid } from "@/components/DayGrid";
-import { DayDetail, DetailTab } from "@/components/DayDetail";
-import { DailyScheduleView } from "@/components/DailyScheduleView";
 import { NotesView } from "@/components/NotesView";
 import { RevisionList } from "@/components/RevisionList";
-import { MockScoreTracker } from "@/components/MockScoreTracker";
-import { RankPredictor } from "@/components/RankPredictor";
 import { OnboardingModal } from "@/components/OnboardingModal";
-import { AdaptiveSuggestions } from "@/components/AdaptiveSuggestions";
-import { AdaptivePlanPanel } from "@/components/AdaptivePlanPanel";
-import { ExamDateConfig } from "@/components/ExamDateConfig";
-import { DailyBriefing } from "@/components/DailyBriefing";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { XPToastLayer, makeToastItem, type XPToastItem } from "@/components/XPToast";
-import { computeAdaptivePlan } from "@/lib/adaptive";
 import { useAuth } from "@/lib/auth";
 import { useCloudSync } from "@/lib/cloud";
 import { getAppStore, sel } from "@/lib/store";
@@ -164,13 +154,12 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   const [todoListIso,   setTodoListIso]   = useState<string | null>(null);
   const [selectedSubject,  setSelectedSubject]  = useState<string | 'All' | 'Full Mock'>('All');
   const [selectedDayId,    setSelectedDayId]    = useState<number>(1);
-  const [detailTab,        setDetailTab]        = useState<DetailTab>('TOPICS');
   const [timeLeft,         setTimeLeft]         = useState<TimeLeft>(() => calcTimeLeft(examDate));
   const [showOnboarding,   setShowOnboarding]   = useState<boolean>(() => !localStorage.getItem(`${prefix}onboarded`));
   const [isLightMode,      setIsLightMode]      = useState<boolean>(() => safeLoad('neetpg_light_mode', false));
   const [commandOpen,      setCommandOpen]      = useState(false);
 
-  const [visitedTabs, setVisitedTabs] = useState<Set<MainTab>>(() => new Set<MainTab>(['planner', 'schedule', 'todolist']));
+  const [visitedTabs, setVisitedTabs] = useState<Set<MainTab>>(() => new Set<MainTab>(['planner', 'todolist']));
   useEffect(() => {
     setVisitedTabs(prev => prev.has(activeTab) ? prev : new Set([...prev, activeTab]));
   }, [activeTab]);
@@ -191,11 +180,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   const studiedToday = streak.lastDate === new Date().toISOString().slice(0, 10);
   const flagBadge    = flagged.length || undefined;
   const selectedDay  = SCHEDULE.find(s => s.day === selectedDayId) ?? SCHEDULE[0];
-
-  const adaptivePlan = useMemo(
-    () => computeAdaptivePlan(mcqScores, completedDays),
-    [mcqScores, completedDays]
-  );
 
   const filteredSchedule = useMemo(() => {
     if (selectedSubject === 'All') return SCHEDULE;
@@ -389,10 +373,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   // ── Keyboard shortcuts ────────────────────────────────────────────────────
   useKeyboardShortcuts({
     onCommandPalette: () => setCommandOpen(true),
-    onPrevDay: selectedDayId > 1 && activeGroup === 'home' && activeTab === 'planner'
-      ? () => setSelectedDayId(d => d - 1) : undefined,
-    onNextDay: selectedDayId < 28 && activeGroup === 'home' && activeTab === 'planner'
-      ? () => setSelectedDayId(d => d + 1) : undefined,
   });
 
   return (
@@ -502,31 +482,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
               </Suspense>
             </div>
           )}
-        </div>
-
-        {/* HOME — Schedule */}
-        <div hidden={activeGroup !== 'home' || activeTab !== 'schedule'}>
-          <div className="flex flex-col gap-8 max-w-5xl mx-auto">
-            <DailyScheduleView />
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="bg-card border border-border rounded-xl p-6">
-                <MockScoreTracker />
-              </div>
-              <RankPredictor />
-              <PomodoroTimer />
-            </div>
-            <AdaptiveSuggestions
-              pyqAttempts={pyqAttempts}
-              mcqScores={mcqScores}
-              completedDays={completedDays}
-              onGoToTab={(tab) => setActiveTab(tab as MainTab)}
-            />
-            <ExamDateConfig
-              currentExamDate={examDate}
-              onSave={handleExamDateSave}
-              isPostExam={isPostExam}
-            />
-          </div>
         </div>
 
         {/* PRACTICE */}
