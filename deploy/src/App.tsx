@@ -85,6 +85,7 @@ const CoreBTRSchedule     = mk(() => import("@/components/CoreBTRSchedule"),    
 const ZainabVoraTips      = mk(() => import("@/components/ZainabVoraTips"),      "ZainabVoraTips");
 const MarrowSchedule      = mk(() => import("@/components/MarrowSchedule"),      "MarrowSchedule");
 const DailyTodoList       = mk(() => import("@/components/DailyTodoList"),       "DailyTodoList");
+const PlannerCalendar     = mk(() => import("@/components/PlannerCalendar"),     "PlannerCalendar");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -159,7 +160,8 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   );
   const [xpToasts,      setXpToasts]      = useState<XPToastItem[]>([]);
   const [activeGroup,   setActiveGroup]   = useState<NavGroup>('home');
-  const [activeTab,     setActiveTab]     = useState<MainTab>('planner');
+  const [activeTab,     setActiveTab]     = useState<MainTab>('todolist');
+  const [todoListIso,   setTodoListIso]   = useState<string | null>(null);
   const [selectedSubject,  setSelectedSubject]  = useState<string | 'All' | 'Full Mock'>('All');
   const [selectedDayId,    setSelectedDayId]    = useState<number>(1);
   const [detailTab,        setDetailTab]        = useState<DetailTab>('TOPICS');
@@ -438,61 +440,16 @@ function StudyApp({ prefix, user }: StudyAppProps) {
 
           <main id="main-content" className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl mx-auto w-full">
 
-        {/* HOME — Planner */}
+        {/* HOME — 100-Day Journey Map (replaces old 28-day BTR grid) */}
         <div hidden={activeGroup !== 'home' || activeTab !== 'planner'}>
-          <div className="flex flex-col gap-6">
-            <Suspense fallback={null}>
-              <ExamEveLockdown examDate={examDate} />
-            </Suspense>
-            <DailyBriefing
-              completedDays={completedDays}
-              mcqScores={mcqScores}
-              streak={streak}
-              examDate={examDate}
-              onGoToTab={(tab) => {
-                const t = tab as MainTab;
-                const group = NAV_GROUPS.find(g => g.tabs.some(tb => tb.id === t));
-                handleNavigate((group?.id ?? 'home') as NavGroup, t);
+          {visitedTabs.has('planner') && <Suspense fallback={<TabFallback />}>
+            <PlannerCalendar
+              onGoToDailyPlan={(iso: string) => {
+                setTodoListIso(iso);
+                handleNavigate('home', 'todolist');
               }}
             />
-            <div className="flex flex-col lg:flex-row gap-6">
-              <DayGrid
-                schedule={SCHEDULE}
-                filteredSchedule={filteredSchedule}
-                completedDays={completedDays}
-                notes={notes}
-                selectedDayId={selectedDayId}
-                onSelectDay={setSelectedDayId}
-                selectedSubject={selectedSubject}
-                onSelectSubject={setSelectedSubject}
-                urgentDays={adaptivePlan.urgentRemainingDays}
-                missedDays={adaptivePlan.missedBlitzDays}
-              />
-              <DayDetail
-                day={selectedDay}
-                detailTab={detailTab}
-                onSetDetailTab={setDetailTab}
-                completedDays={completedDays}
-                onToggleCompletion={toggleDayCompletion}
-                notes={notes}
-                onUpdateNote={updateNote}
-                mcqScores={mcqScores}
-                onSaveMcqScore={saveMcqScore}
-                onSelectDay={setSelectedDayId}
-                flagged={flagged}
-                onToggleFlag={toggleFlag}
-                onPrevDay={() => setSelectedDayId(d => d - 1)}
-                onNextDay={() => setSelectedDayId(d => d + 1)}
-                canGoPrev={selectedDayId > 1}
-                canGoNext={selectedDayId < 28}
-              />
-            </div>
-            <AdaptivePlanPanel
-              mcqScores={mcqScores}
-              completedDays={completedDays}
-              onSelectDay={setSelectedDayId}
-            />
-          </div>
+          </Suspense>}
         </div>
 
         {/* HOME — Circadian Planner */}
@@ -509,11 +466,10 @@ function StudyApp({ prefix, user }: StudyAppProps) {
           </Suspense>}
         </div>
 
-        {/* HOME — Marrow Schedule */}
         {/* HOME — Daily Unified To-Do List */}
         <div hidden={activeGroup !== 'home' || activeTab !== 'todolist'}>
           {visitedTabs.has('todolist') && <Suspense fallback={<TabFallback />}>
-            <DailyTodoList />
+            <DailyTodoList initialIso={todoListIso ?? undefined} />
           </Suspense>}
         </div>
 

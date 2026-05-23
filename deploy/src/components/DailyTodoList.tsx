@@ -387,10 +387,12 @@ function getDayType(marrow: MarrowDay | null): { label: string; emoji: string; c
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function DailyTodoList() {
+interface Props { initialIso?: string; }
+
+export function DailyTodoList({ initialIso }: Props) {
   const todayIso = isoOf(new Date());
 
-  const [currentIso, setCurrentIso] = useState(todayIso);
+  const [currentIso, setCurrentIso] = useState(initialIso ?? todayIso);
   const [checked, setChecked]       = useState<Record<string, string[]>>(loadChecked);
 
   const marrow = useMemo(() => getMarrowDay(currentIso), [currentIso]);
