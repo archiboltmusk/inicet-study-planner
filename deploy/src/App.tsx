@@ -84,6 +84,7 @@ const ExamEveLockdown     = mk(() => import("@/components/ExamEveLockdown"),    
 const CoreBTRSchedule     = mk(() => import("@/components/CoreBTRSchedule"),     "CoreBTRSchedule");
 const ZainabVoraTips      = mk(() => import("@/components/ZainabVoraTips"),      "ZainabVoraTips");
 const MarrowSchedule      = mk(() => import("@/components/MarrowSchedule"),      "MarrowSchedule");
+const DailyTodoList       = mk(() => import("@/components/DailyTodoList"),       "DailyTodoList");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -167,7 +168,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   const [isLightMode,      setIsLightMode]      = useState<boolean>(() => safeLoad('neetpg_light_mode', false));
   const [commandOpen,      setCommandOpen]      = useState(false);
 
-  const [visitedTabs, setVisitedTabs] = useState<Set<MainTab>>(() => new Set<MainTab>(['planner', 'schedule']));
+  const [visitedTabs, setVisitedTabs] = useState<Set<MainTab>>(() => new Set<MainTab>(['planner', 'schedule', 'todolist']));
   useEffect(() => {
     setVisitedTabs(prev => prev.has(activeTab) ? prev : new Set([...prev, activeTab]));
   }, [activeTab]);
@@ -509,6 +510,13 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         </div>
 
         {/* HOME — Marrow Schedule */}
+        {/* HOME — Daily Unified To-Do List */}
+        <div hidden={activeGroup !== 'home' || activeTab !== 'todolist'}>
+          {visitedTabs.has('todolist') && <Suspense fallback={<TabFallback />}>
+            <DailyTodoList />
+          </Suspense>}
+        </div>
+
         <div hidden={activeGroup !== 'home' || activeTab !== 'marrow'}>
           {visitedTabs.has('marrow') && <Suspense fallback={<TabFallback />}>
             <MarrowSchedule
