@@ -491,44 +491,121 @@ function DayRow({
 }
 
 // ─── Core BTR Complement Box ──────────────────────────────────────────────────
+// Shows the matching Core BTR subject for today so both schedules stay in sync.
+
+const BTR_START_ISO = "2026-05-23"; // Core BTR Day 1
+
+const BTR_SUBJECTS: string[] = [
+  "Medicine","Medicine","Medicine","Medicine",
+  "Surgery","Surgery",
+  "Pathology","Pathology",
+  "Pharmacology","Pharmacology",
+  "OBG","OBG",
+  "Paediatrics",
+  "PSM","PSM",
+  "Microbiology","Microbiology",
+  "Forensic Medicine",
+  "Revision","Revision","Revision","Revision","Revision","Revision",
+  "Image Bank",
+  "Full Mock","Full Mock","Full Mock",
+  "Exam Eve",
+];
+
+const SUBJECT_FOCUS: Record<string, string[]> = {
+  "Medicine":         ["Cardiology • Respiratory • Nephrology • Neuro • Endocrinology • GI • Haematology",
+                       "Solve 30+ Medicine PYQs on today's topics", "Write 5 high-yield one-liners"],
+  "Surgery":          ["GI Surgery • Hernias • Trauma • Oncosurgery • Vascular",
+                       "Solve 30+ Surgery PYQs", "Revise surgical anatomy landmarks"],
+  "Pathology":        ["General Path • Haematopathology • Systemic Pathology",
+                       "Solve 30+ Pathology PYQs", "Revise tumour markers & autoantibody chart"],
+  "Pharmacology":     ["ANS • CVS • CNS • Antimicrobials • Anticancer",
+                       "Solve 30+ Pharmacology PYQs", "Revise drug of choice list"],
+  "OBG":              ["Obstetrics: APH, PPH, pre-eclampsia • Gynaecology: cervical, ovarian, PCOS",
+                       "Solve 30+ OBG PYQs", "Revise Bishop score & PPH 4Ts"],
+  "Paediatrics":      ["Neonatology • Malnutrition • UIP 2024 • Paediatric infections",
+                       "Solve 30+ Paediatrics PYQs", "Revise developmental milestones"],
+  "PSM":              ["Epidemiology • Biostatistics • National Programmes • Vector-borne",
+                       "Solve 30+ PSM PYQs", "Revise NFHS-5 key stats"],
+  "Microbiology":     ["Bacteriology • Virology • Parasitology • Mycology",
+                       "Solve 30+ Microbiology PYQs", "Revise staining techniques"],
+  "Forensic Medicine":["Thanatology • Wounds • Toxicology • Sexual offences • Legal",
+                       "Solve 30+ Forensic PYQs", "Revise NDPS & MHCA 2017 sections"],
+  "Revision":         ["Re-attempt all incorrect MCQs", "80-Q timed subject mock",
+                       "India-specific one-pager review"],
+  "Image Bank":       ["50 histopathology images rapid ID", "30 radiology CXR/CT/X-ray",
+                       "20 clinical photos & peripheral smears"],
+  "Full Mock":        ["200-Q strict timed exam simulation", "Tag answers: SURE/UNSURE/GUESS",
+                       "Post-mock: analyse weak areas immediately"],
+  "Exam Eve":         ["Read cheat sheets only — max 2 hours", "Pack bag, valid ID, admit card",
+                       "Sleep by 9:30 PM — you are ready"],
+};
+
+function getBTRSubjectForDate(isoDate: string): string | null {
+  const start = new Date(BTR_START_ISO + "T00:00:00");
+  const target = new Date(isoDate + "T00:00:00");
+  const dayIdx = Math.round((target.getTime() - start.getTime()) / 86400000);
+  if (dayIdx < 0 || dayIdx >= BTR_SUBJECTS.length) return null;
+  return BTR_SUBJECTS[dayIdx];
+}
 
 function BTRComplementBox() {
   const today = getTodayMarrowDay();
-  if (!today || today.activities.length === 0) return null;
+  if (!today) return null;
 
-  const subjects = [...new Set(today.activities.filter(a => a.drillSubject).map(a => a.subject))];
-  const tips: Record<string, string[]> = {
-    "Medicine":          ["Revise cardiology one-liners", "Solve 20 Medicine PYQs", "Check Core BTR Medicine phase"],
-    "Surgery":           ["Revise surgical anatomy landmarks", "Solve 20 Surgery PYQs", "Do Surgery rapid revision"],
-    "Anatomy":           ["Revise nerve injury mnemonics", "Solve 20 Anatomy PYQs", "Do Anatomy rapid revision"],
-    "Biochemistry":      ["Revise metabolic pathways", "Solve 20 Biochemistry PYQs", "Do Biochemistry rapid revision"],
-    "Physiology":        ["Revise normal values table", "Solve 20 Physiology PYQs", "Do Physiology rapid revision"],
-    "Pharmacology":      ["Revise drug of choice list", "Solve 20 Pharmacology PYQs", "Do Pharmacology rapid revision"],
-    "Microbiology":      ["Revise staining techniques", "Solve 20 Microbiology PYQs", "Do Microbiology rapid revision"],
-    "Pathology":         ["Revise tumour markers", "Solve 20 Pathology PYQs", "Do Pathology rapid revision"],
-    "Community Medicine":["Revise national programme stats", "Solve 20 PSM PYQs", "Do PSM rapid revision"],
-    "Forensic Medicine": ["Revise medicolegal sections", "Solve 20 Forensic PYQs", "Do Forensic rapid revision"],
-    "OBG":               ["Revise partogram & labour stages", "Solve 20 OBG PYQs", "Do OBG rapid revision"],
-    "Paediatrics":       ["Revise developmental milestones", "Solve 20 Paediatrics PYQs", "Do Paeds rapid revision"],
-    "ENT":               ["Revise ENT anatomy", "Solve 20 ENT/Ophthalmology PYQs", "Do ENT rapid revision"],
-    "Ophthalmology":     ["Revise fundoscopy signs", "Solve 20 ENT/Ophthalmology PYQs", "Do Ophthalmology rapid revision"],
-  };
-  const allTips = subjects.flatMap(s => tips[s] ?? []);
+  const btrSubject = getBTRSubjectForDate(today.iso);
+  const marrowSubjects = [...new Set(today.activities.map(a => a.subject))];
+
+  // Check alignment — same subjects on both schedules
+  const isAligned = btrSubject && marrowSubjects.some(s =>
+    s === btrSubject || (btrSubject === "PSM" && s === "Community Medicine")
+  );
+
+  const focusTips = btrSubject ? (SUBJECT_FOCUS[btrSubject] ?? []) : [];
 
   return (
     <div className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-4">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-3">
         <Star className="w-4 h-4 text-violet-400" />
-        <p className="text-xs font-mono font-bold text-violet-400">Core BTR Boost for Today</p>
-        <span className="text-[9px] font-mono text-violet-400/60 ml-auto">Completely fixed plan</span>
+        <p className="text-xs font-mono font-bold text-violet-400">Core BTR · Today</p>
+        <span className="text-[9px] font-mono text-violet-400/60 ml-auto border border-violet-500/30 px-1.5 py-0.5 rounded-full">
+          🔒 Completely fixed plan
+        </span>
       </div>
-      <ul className="space-y-1.5">
-        {allTips.slice(0, 4).map((tip, i) => (
-          <li key={i} className="flex items-start gap-1.5 text-[10px] font-mono text-foreground/80">
-            <span className="text-violet-400 shrink-0">▸</span>{tip}
-          </li>
-        ))}
-      </ul>
+
+      {btrSubject && (
+        <div className={`flex items-center gap-2 mb-3 px-3 py-2 rounded-lg border ${
+          isAligned
+            ? "bg-emerald-500/10 border-emerald-500/30"
+            : "bg-amber-500/10 border-amber-500/30"
+        }`}>
+          <span className="text-sm">{isAligned ? "✅" : "📌"}</span>
+          <div className="min-w-0">
+            <p className={`text-[10px] font-mono font-bold ${isAligned ? "text-emerald-400" : "text-amber-400"}`}>
+              BTR today: <span className="font-normal">{btrSubject}</span>
+              {isAligned && " · Aligned with Marrow ✓"}
+            </p>
+            {!isAligned && marrowSubjects.length > 0 && (
+              <p className="text-[9px] font-mono text-muted-foreground">
+                Marrow: {marrowSubjects.join(", ")} · You can customise Marrow to match BTR
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {focusTips.length > 0 && (
+        <ul className="space-y-1.5">
+          {focusTips.map((tip, i) => (
+            <li key={i} className="flex items-start gap-1.5 text-[10px] font-mono text-foreground/80">
+              <span className="text-violet-400 shrink-0">▸</span>{tip}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {!btrSubject && (
+        <p className="text-[10px] font-mono text-muted-foreground">Core BTR 28-day plan starts May 23, 2026.</p>
+      )}
     </div>
   );
 }
