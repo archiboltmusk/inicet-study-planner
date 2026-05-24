@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { safeLoad, safeSave } from "@/lib/storage";
+import { autoLogMistakes } from "@/lib/mistakeLogger";
 import { QUESTIONS, QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS, type QuestionSubject } from "@/data/questions";
 import { Sliders, Clock, Flag, CheckCircle, XCircle, Download, RotateCcw } from "lucide-react";
 
@@ -104,15 +105,21 @@ export function CustomMockGenerator() {
     const timeTaken = Math.round((Date.now() - startTime) / 1000);
     let correct = 0, wrong = 0;
     const breakdown: Record<string, { total: number; correct: number; wrong: number }> = {};
+    const mistakes: Parameters<typeof autoLogMistakes>[0] = [];
     for (let i = 0; i < qs.length; i++) {
       const q = qs[i];
       if (!breakdown[q.subject]) breakdown[q.subject] = { total: 0, correct: 0, wrong: 0 };
       breakdown[q.subject].total++;
       if (ans[i] !== null) {
         if (ans[i] === q.answer) { correct++; breakdown[q.subject].correct++; }
-        else { wrong++; breakdown[q.subject].wrong++; }
+        else {
+          wrong++;
+          breakdown[q.subject].wrong++;
+          mistakes.push({ subject: q.subject, question: q.stem, correctAnswer: q.options[q.answer], myAnswer: q.options[ans[i] as 0|1|2|3], explanation: q.explanation ?? "" });
+        }
       }
     }
+    if (mistakes.length > 0) autoLogMistakes(mistakes);
     const adjusted = correct - wrong * 0.25;
     const res: MockResult = {
       date: new Date().toISOString(),

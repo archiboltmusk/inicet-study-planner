@@ -3,6 +3,7 @@ import { Clock, ChevronLeft, ChevronRight, CheckCircle, Circle, Flag, BarChart3 
 import { ALL_NEET_PG_2026_QUESTIONS, NEET_PG_2026_META, NeetPGQuestion } from "@/data/neetPG2026Questions";
 import { TestAnalyticsDashboard } from "./TestAnalyticsDashboard";
 import { MockTest } from "@/lib/mockAnalytics";
+import { autoLogMistakes } from "@/lib/mistakeLogger";
 
 type Phase = "config" | "test" | "results";
 
@@ -93,6 +94,14 @@ export function NeetPGMockTest() {
     setElapsedMs(elapsed);
     const test = buildMockTest(questions, responses, elapsed);
     setMockTest(test);
+    const mistakes: Parameters<typeof autoLogMistakes>[0] = [];
+    for (const q of questions) {
+      const resp = responses.get(q.id);
+      if (resp !== undefined && resp !== q.answer) {
+        mistakes.push({ subject: q.subject, question: q.question, correctAnswer: q.options[q.answer] ?? q.answer, myAnswer: q.options[resp] ?? resp, explanation: q.rationale ?? "" });
+      }
+    }
+    if (mistakes.length > 0) autoLogMistakes(mistakes);
     setPhase("results");
   }, [questions, responses]);
 
