@@ -414,6 +414,7 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
   const [adaptiveMode,  setAdaptiveMode]  = useState<boolean>(false);
   const [adaptivePool,  setAdaptivePool]  = useState<UnifiedQuestion[] | null>(null);
   const [drillMode,     setDrillMode]     = useState<boolean>(false);
+  const [qConfidence,   setQConfidence]   = useState<Record<string, 1|2|3>>(() => safeLoad("neetpg_q_confidence", {}));
 
   const allQuestions = useMemo<UnifiedQuestion[]>(() => {
     const base = QUESTIONS.map(localToUnified);
@@ -450,6 +451,11 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     setSelectedOpt(null);
   };
 
+  const SUBJECT_CANON: Record<string, string> = {
+    "PSM/Community Medicine": "PSM",
+    "ENT/Ophthalmology": "ENT",
+  };
+
   const select = (opt: number) => {
     if (revealed || !current) return;
     setSelectedOpt(opt);
@@ -457,6 +463,10 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     const next    = { ...attempts, [current.uid]: { selected: opt, correct } };
     setAttempts(next);
     saveAttempts(next);
+    const today = new Date().toISOString().slice(0, 10);
+    const canonSubj = SUBJECT_CANON[current.subject] ?? current.subject;
+    const lp = safeLoad<Record<string, string>>("neetpg_subject_last_practiced", {});
+    safeSave("neetpg_subject_last_practiced", { ...lp, [canonSubj]: today });
     if (correct) {
       onCorrect?.();
     } else {
@@ -469,6 +479,12 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     const next = { ...qNotes, [uid]: text };
     setQNotes(next);
     safeSave("neetpg_q_notes", next);
+  };
+
+  const saveConfidence = (uid: string, rating: 1|2|3) => {
+    const next = { ...qConfidence, [uid]: rating } as Record<string, 1|2|3>;
+    setQConfidence(next);
+    safeSave("neetpg_q_confidence", next);
   };
 
   const resetAll = () => {
@@ -497,6 +513,15 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     allQuestions.filter(q => attempts[q.uid] && !attempts[q.uid].correct).length,
     [allQuestions, attempts]
   );
+
+  const subjectCoverage = useMemo(() => {
+    const map: Record<string, { done: number; total: number }> = {};
+    for (const s of QUESTION_SUBJECTS) {
+      const qs = allQuestions.filter(q => q.subject === s);
+      map[s] = { done: qs.filter(q => attempts[q.uid]).length, total: qs.length };
+    }
+    return map;
+  }, [allQuestions, attempts]);
 
   const totalAttempted = Object.keys(attempts).length;
   const totalCorrect   = Object.values(attempts).filter(a => a.correct).length;
@@ -593,17 +618,23 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
       <div className="flex flex-col gap-2 shrink-0">
         {/* Subject */}
         <div className="flex flex-wrap gap-1.5">
-          {["All", ...QUESTION_SUBJECTS].map(s => (
-            <button
-              key={s}
-              onClick={() => { setSubject(s); setQIndex(0); setSelectedOpt(null); deactivateAdaptive(); }}
-              className={`px-2.5 py-1 text-[11px] font-mono rounded-full border transition-colors ${
-                subject === s && !adaptiveMode ? "bg-secondary text-secondary-foreground border-secondary" : "text-muted-foreground border-border hover:border-muted-foreground"
-              }`}
-            >
-              {s}
-            </button>
-          ))}
+          {["All", ...QUESTION_SUBJECTS].map(s => {
+            const cov = s !== "All" ? subjectCoverage[s] : null;
+            return (
+              <button
+                key={s}
+                onClick={() => { setSubject(s); setQIndex(0); setSelectedOpt(null); deactivateAdaptive(); }}
+                className={`px-2.5 py-1 text-[11px] font-mono rounded-full border transition-colors ${
+                  subject === s && !adaptiveMode ? "bg-secondary text-secondary-foreground border-secondary" : "text-muted-foreground border-border hover:border-muted-foreground"
+                }`}
+              >
+                {s}
+                {cov && cov.done > 0 && (
+                  <span className="text-[9px] opacity-60 ml-0.5">{cov.done}/{cov.total}</span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Exam source filter */}
@@ -777,6 +808,32 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
               <div className="mx-5 mb-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-3">
                 <p className="text-[11px] font-mono text-emerald-400 uppercase tracking-wider mb-1.5">Explanation</p>
                 <p className="text-sm font-mono text-foreground/80 leading-relaxed">{current.explanation}</p>
+              </div>
+            )}
+
+            {/* Confidence rating */}
+            {revealed && (
+              <div className="mx-5 mb-2 flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-mono text-muted-foreground">Confidence:</span>
+                {([1, 2, 3] as const).map(r => {
+                  const labels: Record<number, string> = { 1: "Guessed", 2: "Knew it", 3: "Solid" };
+                  const isActive = qConfidence[current.uid] === r;
+                  return (
+                    <button
+                      key={r}
+                      onClick={() => saveConfidence(current.uid, r)}
+                      className={`px-2.5 py-1 text-[10px] font-mono rounded border transition-colors ${
+                        isActive
+                          ? r === 1 ? "text-foreground border-muted-foreground bg-muted/40"
+                            : r === 2 ? "text-amber-300 border-amber-500 bg-amber-500/20"
+                            : "text-emerald-300 border-emerald-500 bg-emerald-500/20"
+                          : "text-muted-foreground border-muted-foreground/30 hover:border-muted-foreground"
+                      }`}
+                    >
+                      {labels[r]}
+                    </button>
+                  );
+                })}
               </div>
             )}
 

@@ -87,6 +87,17 @@ const MISTAKE_TO_SUBJECT: Record<string, string> = {
 
 const FIRST_READ_KEY = "neetpg_first_read";
 
+function daysAgoNum(dateStr: string): number {
+  const today = new Date().toISOString().slice(0, 10);
+  return Math.max(0, Math.round((new Date(today).getTime() - new Date(dateStr).getTime()) / 86400000));
+}
+function daysAgoLabel(dateStr: string): string {
+  const d = daysAgoNum(dateStr);
+  if (d === 0) return "Today";
+  if (d === 1) return "1d ago";
+  return `${d}d ago`;
+}
+
 // ── Scoring helpers ────────────────────────────────────────────────────────────
 
 interface SubjectStats {
@@ -187,6 +198,10 @@ export function SmartStart({ flagged, onNavigate }: SmartStartProps) {
 
   const hasData = Object.keys(pyqAttempts).length > 0 || mistakes.length > 0;
 
+  const lastPracticed = useMemo(() =>
+    safeLoad<Record<string, string>>("neetpg_subject_last_practiced", {}),
+    []
+  );
   const mastery = useMemo(() => calcAllMastery(SUBJECTS.map(s => s.name)), [pyqAttempts, mistakes]);
   const stats = useMemo(() => buildStats(pyqAttempts, mistakes), [pyqAttempts, mistakes]);
   const sorted = useMemo(() => [...stats].sort((a, b) => b.urgency - a.urgency), [stats]);
@@ -264,6 +279,14 @@ export function SmartStart({ flagged, onNavigate }: SmartStartProps) {
                     {mastery[s.name]}
                   </span>
                 )}
+                {lastPracticed[s.name] && (() => {
+                  const d = daysAgoNum(lastPracticed[s.name]);
+                  return (
+                    <span className={`text-[9px] font-mono flex-shrink-0 ${d === 0 ? "text-emerald-400" : d <= 6 ? "text-amber-400" : "text-red-400"}`}>
+                      {daysAgoLabel(lastPracticed[s.name])}
+                    </span>
+                  );
+                })()}
                 <span className="text-[10px] font-mono text-muted-foreground flex-shrink-0">
                   {s.weight}%
                 </span>
@@ -377,6 +400,7 @@ export function SmartStart({ flagged, onNavigate }: SmartStartProps) {
                 <div className="text-sm font-medium text-foreground">{s.name}</div>
                 <div className="text-[11px] text-muted-foreground mt-0.5">
                   {s.reasons.join(" · ")}
+                  {lastPracticed[s.name] ? ` · ${daysAgoLabel(lastPracticed[s.name])}` : ""}
                 </div>
               </div>
               {s.accuracy !== null && (

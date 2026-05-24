@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { QUESTIONS, QUESTION_SUBJECTS } from "@/data/questions";
 import type { Question } from "@/data/questions";
 import { Zap, ChevronDown } from "lucide-react";
+import { safeLoad, safeSave } from "@/lib/storage";
 
 type Phase = "select" | "question" | "done";
 
@@ -80,6 +81,9 @@ export function MicroBurst() {
     ];
     resultsRef.current = updated;
     setResults(updated);
+    const uid = `local-${q.id}`;
+    const existing = safeLoad<Record<string, { selected: number; correct: boolean }>>("neetpg_pyq_attempts", {});
+    safeSave("neetpg_pyq_attempts", { ...existing, [uid]: { selected: sel ?? -1, correct: isCorrect } });
     if (idx + 1 < qs.length) {
       const nextIdx = idx + 1;
       qIdxRef.current = nextIdx;
