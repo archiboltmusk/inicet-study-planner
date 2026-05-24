@@ -146,7 +146,7 @@ interface PYQBankProps {
   onWrong?: () => void;
 }
 
-const EXAM_SOURCES: ExamSource[] = ["AIIMS", "PGIMER", "JIPMER", "INI-CET"];
+const EXAM_SOURCES: ExamSource[] = ["NEET-PG", "AIIMS", "PGIMER", "JIPMER", "INI-CET"];
 
 export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
   const [attempts,    setAttempts]    = useState<Record<string, AttemptRecord>>(loadAttempts);
