@@ -9,10 +9,11 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
-import { TrendingUp, Activity, Calendar, Flame, Trophy, Target, Clock, Brain } from "lucide-react";
+import { TrendingUp, Activity, Calendar, Flame, Trophy, Target, Clock, Brain, Zap } from "lucide-react";
 import { SCHEDULE } from "@/data/schedule";
 import { calcAllMastery } from "@/lib/mastery";
 import { QUESTION_SUBJECTS } from "@/data/questions";
+import { safeLoad } from "@/lib/storage";
 
 export interface McqScore {
   attempted: number;
@@ -496,9 +497,52 @@ export function AnalyticsPanel({ mcqScores, completedDays, streak, examDate }: P
         </div>
       </div>
 
-      {/* ── Section 6: Subject Mastery Scores ─────────────────────────────────── */}
+      {/* ── Section 6: Rapid Revision Sparkline ───────────────────────────────── */}
+      <RapidSparkline />
+
+      {/* ── Section 7: Subject Mastery Scores ─────────────────────────────────── */}
       <MasterySection />
 
+    </div>
+  );
+}
+
+function RapidSparkline() {
+  type SessionEntry = { date: string; correct: number; total: number };
+  const log = useMemo(() => safeLoad<SessionEntry[]>("neetpg_rapid_session_log", []), []);
+  const last7 = log.slice(0, 7).reverse();
+  if (last7.length < 2) return null;
+
+  const avgAcc = last7.reduce((sum, e) => sum + (e.total > 0 ? e.correct / e.total : 0), 0) / last7.length;
+
+  return (
+    <div className="bg-card border border-border rounded-xl p-5">
+      <div className="flex items-center gap-2 mb-1">
+        <Zap className="w-4 h-4 text-amber-400" />
+        <h3 className="text-xs uppercase text-muted-foreground font-mono">Rapid Revision — Recent Sessions</h3>
+        <span className={`text-[10px] font-mono font-bold ml-auto ${avgAcc >= 0.7 ? "text-emerald-400" : avgAcc >= 0.5 ? "text-amber-400" : "text-red-400"}`}>
+          avg {Math.round(avgAcc * 100)}%
+        </span>
+      </div>
+      <p className="text-[10px] text-muted-foreground mb-4">Last {last7.length} rapid drill sessions</p>
+      <div className="flex items-end gap-1.5 h-10">
+        {last7.map((entry, i) => {
+          const pct = entry.total > 0 ? entry.correct / entry.total : 0;
+          const color = pct >= 0.7 ? "bg-emerald-500" : pct >= 0.5 ? "bg-amber-500" : "bg-red-500";
+          return (
+            <div
+              key={i}
+              title={`${entry.date}: ${Math.round(pct * 100)}% (${entry.correct}/${entry.total})`}
+              className={`flex-1 ${color} rounded-sm cursor-default`}
+              style={{ height: `${Math.max(8, pct * 100)}%` }}
+            />
+          );
+        })}
+      </div>
+      <div className="flex items-center justify-between mt-2 text-[10px] font-mono text-muted-foreground">
+        <span>{last7[0]?.date}</span>
+        <span>{last7[last7.length - 1]?.date}</span>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { safeLoad } from "@/lib/storage";
 import { QUESTIONS } from "@/data/questions";
 import { SPECIFIC_PYQS } from "@/data/pyqSpecific";
+import { calcAllMastery } from "@/lib/mastery";
 import { Activity, AlertTriangle, TrendingUp, TrendingDown, Minus, CheckCircle, Zap, BookOpen, RotateCcw } from "lucide-react";
 
 // ── Data types ─────────────────────────────────────────────────────────────────
@@ -37,6 +38,7 @@ function clamp(v: number, lo: number, hi: number) { return Math.max(lo, Math.min
 interface SubjectGap {
   subject: string;
   gapScore: number;       // 0–100, higher = bigger gap
+  masteryScore: number | null;
   pyqAccuracy: number;    // 0–1
   pyqAttempted: number;
   mistakeCount: number;
@@ -152,6 +154,8 @@ export function GapDiagnostic() {
       ...Object.keys(lowEFBySubject),
     ]);
 
+    const masteryScores = calcAllMastery(Array.from(allSubjects));
+
     const gaps: SubjectGap[] = [];
     for (const subject of allSubjects) {
       const p = pyq[subject];
@@ -171,6 +175,8 @@ export function GapDiagnostic() {
         .slice(0, 3)
         .map(([t]) => t);
 
+      const masteryScore = masteryScores[subject] ?? null;
+
       // Gap score formula (0–100)
       let gapScore = 0;
       if (pyqAttempted >= 3) {
@@ -182,6 +188,7 @@ export function GapDiagnostic() {
       gapScore += clamp((mistakeCount / maxMistakes) * 30, 0, 30);
       gapScore += clamp(lowEFTopics.length * 5, 0, 20);
       if (mockAccuracy !== null) gapScore += (1 - mockAccuracy) * 10;
+      if (masteryScore !== null) gapScore -= masteryScore * 0.1;
       gapScore = clamp(Math.round(gapScore), 0, 100);
 
       // Trend
@@ -194,7 +201,7 @@ export function GapDiagnostic() {
       }
 
       const draft: SubjectGap = {
-        subject, gapScore, pyqAccuracy: pyqAcc, pyqAttempted,
+        subject, gapScore, masteryScore, pyqAccuracy: pyqAcc, pyqAttempted,
         mistakeCount, lowEFTopics, recentMistakes,
         mockAccuracy, trend, topMistakeTopics, fixActions: [],
       };
@@ -418,6 +425,9 @@ function GapCard({ gap }: { gap: SubjectGap }) {
             {gap.pyqAttempted > 0 && <span>PYQ: {pct}% ({gap.pyqAttempted} Qs)</span>}
             {gap.mistakeCount > 0 && <span>{gap.mistakeCount} mistakes logged</span>}
             {gap.mockAccuracy !== null && <span>Mock: {Math.round(gap.mockAccuracy * 100)}%</span>}
+            {gap.masteryScore !== null && (
+              <span>Mastery: <span className={`font-bold ${gap.masteryScore >= 70 ? "text-emerald-400" : gap.masteryScore >= 50 ? "text-amber-400" : "text-rose-400"}`}>{gap.masteryScore}</span></span>
+            )}
           </div>
         </div>
         <div className="text-right shrink-0">
