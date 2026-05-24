@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { CLOUD_SYNC_EVENT } from "@/lib/cloud";
 import {
   CheckCircle2, Circle, ChevronLeft, ChevronRight, Calendar,
   Flame, Lock, Star, Trophy, GraduationCap, Zap, BookOpen,
@@ -394,6 +395,15 @@ export function DailyTodoList({ initialIso }: Props) {
 
   const [currentIso, setCurrentIso] = useState(initialIso ?? todayIso);
   const [checked, setChecked]       = useState<Record<string, string[]>>(loadChecked);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ev = e as CustomEvent<{ columns: string[] }>;
+      if (ev.detail.columns.includes("todos_checked")) setChecked(loadChecked());
+    };
+    window.addEventListener(CLOUD_SYNC_EVENT, handler);
+    return () => window.removeEventListener(CLOUD_SYNC_EVENT, handler);
+  }, []);
 
   const marrow = useMemo(() => getMarrowDay(currentIso), [currentIso]);
   const btr    = useMemo(() => getBTRDay(currentIso), [currentIso]);

@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
+import { CLOUD_SYNC_EVENT } from "@/lib/cloud";
 import {
   Download, Search, RotateCcw, BookOpen, Clock, FileText,
   ChevronRight, Star, AlertCircle,
@@ -90,6 +91,15 @@ export function NotesEditor() {
   const [search, setSearch]       = useState("");
   const [reviewIdx, setReviewIdx] = useState<number | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ev = e as CustomEvent<{ columns: string[] }>;
+      if (ev.detail.columns.includes("subject_notes")) setStore(load());
+    };
+    window.addEventListener(CLOUD_SYNC_EVENT, handler);
+    return () => window.removeEventListener(CLOUD_SYNC_EVENT, handler);
+  }, []);
 
   // SM-2 due queue
   const dueSubjects = useMemo(() =>

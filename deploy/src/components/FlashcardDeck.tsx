@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { safeLoad, safeSave } from "@/lib/storage";
+import { CLOUD_SYNC_EVENT } from "@/lib/cloud";
 import { Plus, RotateCcw, CheckCircle } from "lucide-react";
 
 interface Flashcard {
@@ -123,6 +124,17 @@ export function FlashcardDeck() {
   const [subjectFilter, setSubjectFilter] = useState("All");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ front: "", back: "", subject: "Medicine" });
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ev = e as CustomEvent<{ columns: string[] }>;
+      if (ev.detail.columns.includes("flashcards")) {
+        setCards(safeLoad<Flashcard[]>(STORAGE_KEY, []));
+      }
+    };
+    window.addEventListener(CLOUD_SYNC_EVENT, handler);
+    return () => window.removeEventListener(CLOUD_SYNC_EVENT, handler);
+  }, []);
 
   const saveCards = (updated: Flashcard[]) => {
     setCards(updated);

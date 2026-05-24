@@ -1,10 +1,40 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { safeSave, safeLoad } from "@/lib/storage";
 import { executeWithRetry, type SyncError } from "@/lib/sync";
+import { getAppStore } from "@/lib/store";
 
 type JsonValue = string | number | boolean | null | JsonValue[] | { [k: string]: JsonValue };
+
+// ── Realtime sync constants & module state ────────────────────────────────────
+
+export const CLOUD_SYNC_EVENT = "neetpg_cloud_sync";
+
+// Tracks when WE last wrote to Supabase so we can suppress self-echoes from
+// Realtime (Supabase broadcasts every change back to all subscribers, including
+// the writer). Any incoming event whose updated_at is within 5 s of our last
+// write is assumed to be our own echo and is dropped.
+let _lastWriteTs = 0;
+
+// Module-level realtime connection status for the SyncStatus indicator.
+let _rtConnected = false;
+const _rtListeners = new Set<() => void>();
+function _setRtConnected(v: boolean): void {
+  if (_rtConnected === v) return;
+  _rtConnected = v;
+  _rtListeners.forEach(fn => fn());
+}
+
+export function useRealtimeSyncStatus(): boolean {
+  const [connected, setConnected] = useState(_rtConnected);
+  useEffect(() => {
+    const handler = () => setConnected(_rtConnected);
+    _rtListeners.add(handler);
+    return () => { _rtListeners.delete(handler); };
+  }, []);
+  return connected;
+}
 
 // ── Offline mutation queue ────────────────────────────────────────────────────
 
@@ -183,6 +213,7 @@ export async function fetchCloudData(userId: string): Promise<UserData | null> {
 }
 
 export async function upsertCloudData(userId: string, patch: Partial<UserData>): Promise<boolean> {
+  _lastWriteTs = Date.now();
   try {
     await executeWithRetry(
       async () => {
@@ -335,4 +366,76 @@ export function useBulkSync(ready: boolean): void {
     document.addEventListener("visibilitychange", handler);
     return () => document.removeEventListener("visibilitychange", handler);
   }, [ready, user, runSync]);
+}
+
+// ── Realtime multi-device sync hook (premium only) ────────────────────────────
+// Subscribes to postgres_changes on user_data for the current user.
+// When another device writes, the new row arrives here, is merged into
+// localStorage, and pushed into the Zustand store so all components re-render.
+
+export function useRealtimeSync(isPremium: boolean, prefix: string): void {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user || !isPremium) {
+      _setRtConnected(false);
+      return;
+    }
+
+    const store = getAppStore(prefix);
+
+    const channel = supabase
+      .channel(`rtdb:${user.id}`)
+      .on(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        "postgres_changes" as any,
+        {
+          event:  "UPDATE",
+          schema: "public",
+          table:  "user_data",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: Partial<UserData> & { updated_at?: string } }) => {
+          const row = payload.new;
+
+          // Suppress self-echo: skip if this is our own write bouncing back
+          const rowTs = row.updated_at ? new Date(row.updated_at).getTime() : 0;
+          if (rowTs > 0 && rowTs <= _lastWriteTs + 5000) return;
+
+          // 1. Merge all bulk localStorage keys from the incoming row
+          mergeCloudIntoLocal(row);
+
+          // 2. Push core state directly into the Zustand store so components
+          //    using useStore() re-render immediately without a page refresh.
+          const s = store.getState();
+          if (row.completed_days) s.setCompletedDays(row.completed_days as number[]);
+          if (row.notes)          s.setNotes(row.notes as Record<number, string>);
+          if (row.mcq_scores)     s.setMcqScores(row.mcq_scores as Record<number, { attempted: number; correct: number }>);
+          if (row.flagged)        s.setFlagged(row.flagged as Parameters<typeof s.setFlagged>[0]);
+          if (row.sr_cards)       s.setSrCards(row.sr_cards as Parameters<typeof s.setSrCards>[0]);
+          if (row.exam_date)      s.setExamDateIso(row.exam_date);
+          if (row.streak) {
+            const cs = row.streak as { count: number; longest: number; lastDate: string };
+            s.setStreak(local => ({
+              count:    Math.max(local.count,   cs.count),
+              longest:  Math.max(local.longest, cs.longest),
+              lastDate: local.lastDate > cs.lastDate ? local.lastDate : cs.lastDate,
+            }));
+          }
+
+          // 3. Notify components that manage their own localStorage state
+          //    (RevisionScheduler, DailyTodoList, FlashcardDeck, NotesEditor, …)
+          const changed = Object.keys(row).filter(k => k !== "user_id" && k !== "updated_at");
+          window.dispatchEvent(new CustomEvent(CLOUD_SYNC_EVENT, { detail: { columns: changed } }));
+        }
+      )
+      .subscribe((status: string) => {
+        _setRtConnected(status === "SUBSCRIBED");
+      });
+
+    return () => {
+      void supabase.removeChannel(channel);
+      _setRtConnected(false);
+    };
+  }, [user?.id, isPremium, prefix]);
 }
