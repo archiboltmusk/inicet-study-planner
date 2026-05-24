@@ -384,7 +384,7 @@ export function FitnessWellness() {
           {RECOVERY_TIPS.map(tip => (
             <div key={tip.title} className="bg-card border border-border rounded-xl p-4 flex gap-4">
               <div className="w-9 h-9 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                <tip.icon className={`w-4.5 h-4.5 ${tip.color}`} />
+                <tip.icon className={`w-5 h-5 ${tip.color}`} />
               </div>
               <div>
                 <div className="text-sm font-semibold text-foreground">{tip.title}</div>
