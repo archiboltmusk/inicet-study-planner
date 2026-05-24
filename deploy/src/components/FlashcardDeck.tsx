@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { safeLoad, safeSave } from "@/lib/storage";
 import { CLOUD_SYNC_EVENT } from "@/lib/cloud";
+import { MISTAKE_STORAGE_KEY } from "@/lib/mistakeLogger";
+import type { StoredEntry } from "@/lib/mistakeLogger";
 import { Plus, RotateCcw, CheckCircle } from "lucide-react";
 
 interface Flashcard {
@@ -134,6 +136,38 @@ export function FlashcardDeck() {
     };
     window.addEventListener(CLOUD_SYNC_EVENT, handler);
     return () => window.removeEventListener(CLOUD_SYNC_EVENT, handler);
+  }, []);
+
+  useEffect(() => {
+    const syncMistakes = () => {
+      const mistakes = safeLoad<StoredEntry[]>(MISTAKE_STORAGE_KEY, []);
+      if (mistakes.length === 0) return;
+      const existingCards = safeLoad<Flashcard[]>(STORAGE_KEY, []);
+      const existingIds = new Set(existingCards.map(c => c.id));
+      const today = new Date().toISOString().slice(0, 10);
+      const newCards: Flashcard[] = [];
+      for (const m of mistakes) {
+        const id = `mistake-${m.id}`;
+        if (!existingIds.has(id)) {
+          newCards.push({
+            id,
+            front: m.question.slice(0, 200),
+            back: `${m.correctAnswer}\n\n${m.whyWrong.slice(0, 250)}`,
+            subject: m.subject,
+            interval: 1, easeFactor: 2.5, repetitions: 0,
+            dueDate: today, created: today,
+          });
+        }
+      }
+      if (newCards.length > 0) {
+        const merged = [...existingCards, ...newCards];
+        setCards(merged);
+        safeSave(STORAGE_KEY, merged);
+      }
+    };
+    syncMistakes();
+    window.addEventListener("mistakeLogUpdate", syncMistakes);
+    return () => window.removeEventListener("mistakeLogUpdate", syncMistakes);
   }, []);
 
   const saveCards = (updated: Flashcard[]) => {

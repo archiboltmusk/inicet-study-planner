@@ -9,7 +9,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { QUESTIONS_BY_SUBJECT, QUESTION_SUBJECTS, Question } from "@/data/questions";
-import { safeLoad } from "@/lib/storage";
+import { safeLoad, safeSave } from "@/lib/storage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -281,6 +281,11 @@ export function RapidRevision({ onComplete }: { onComplete?: () => void } = {}) 
             next[currentIdx] = null; // null = expired = wrong
             return next;
           });
+          const timedQ = questions[currentIdx];
+          if (timedQ) {
+            const ex = safeLoad<Record<string, AttemptRecord>>("neetpg_pyq_attempts", {});
+            safeSave("neetpg_pyq_attempts", { ...ex, [timedQ.uid]: { selected: -1, correct: false } });
+          }
           setFlash("wrong");
           setPhase("flash");
           setTimeout(() => advanceRef.current(), FLASH_MS);
@@ -291,6 +296,19 @@ export function RapidRevision({ onComplete }: { onComplete?: () => void } = {}) 
     }, 1000);
     return stopTimer;
   }, [phase, currentIdx, stopTimer]);
+
+  // Log session results to neetpg_rapid_session_log when complete
+  useEffect(() => {
+    if (phase !== "summary" || !summary) return;
+    const today = new Date().toISOString().slice(0, 10);
+    type SessionEntry = { date: string; correct: number; total: number };
+    const log = safeLoad<SessionEntry[]>("neetpg_rapid_session_log", []);
+    safeSave("neetpg_rapid_session_log", [
+      { date: today, correct: summary.correct, total: summary.total },
+      ...log,
+    ].slice(0, 30));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   // Handle answer selection
   const selectAnswer = (opt: number) => {
@@ -303,6 +321,8 @@ export function RapidRevision({ onComplete }: { onComplete?: () => void } = {}) 
       next[currentIdx] = opt;
       return next;
     });
+    const existing = safeLoad<Record<string, AttemptRecord>>("neetpg_pyq_attempts", {});
+    safeSave("neetpg_pyq_attempts", { ...existing, [q.uid]: { selected: opt, correct } });
     setFlash(correct ? "correct" : "wrong");
     setPhase("flash");
     setTimeout(() => advanceRef.current(), FLASH_MS);
