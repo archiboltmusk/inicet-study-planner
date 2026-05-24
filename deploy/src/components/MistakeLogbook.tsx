@@ -64,16 +64,23 @@ function entryToDbRow(e: MistakeEntry, userId: string) {
   };
 }
 
-const SUBJECTS = ["Medicine","Surgery","Pharmacology","Physiology","Biochemistry","Pathology","Anatomy","Microbiology","OBG","Paediatrics","PSM","Forensic","ENT/Ophth/Derm"];
+const SUBJECTS = [
+  "Medicine","Surgery","Pharmacology","Physiology","Biochemistry","Pathology",
+  "Anatomy","Microbiology","OBG","Paediatrics","PSM","Forensic Medicine",
+  "ENT","Ophthalmology","Radiology","Orthopaedics","Dermatology","Psychiatry","Anaesthesia",
+];
 
 const SUBJECT_COLORS: Record<string, string> = {
-  Medicine:"bg-blue-500/20 text-blue-400",Pharmacology:"bg-violet-500/20 text-violet-400",
-  Microbiology:"bg-green-500/20 text-green-400",OBG:"bg-pink-500/20 text-pink-400",
-  Paediatrics:"bg-cyan-500/20 text-cyan-400",PSM:"bg-amber-500/20 text-amber-400",
-  Surgery:"bg-orange-500/20 text-orange-400",Pathology:"bg-rose-500/20 text-rose-400",
-  Forensic:"bg-gray-500/20 text-gray-400",Anatomy:"bg-yellow-500/20 text-yellow-400",
-  Physiology:"bg-teal-500/20 text-teal-400",Biochemistry:"bg-indigo-500/20 text-indigo-400",
-  "ENT/Ophth/Derm":"bg-lime-500/20 text-lime-400",
+  Medicine:"bg-blue-500/20 text-blue-400",Surgery:"bg-orange-500/20 text-orange-400",
+  Pharmacology:"bg-violet-500/20 text-violet-400",Physiology:"bg-teal-500/20 text-teal-400",
+  Biochemistry:"bg-indigo-500/20 text-indigo-400",Pathology:"bg-rose-500/20 text-rose-400",
+  Anatomy:"bg-yellow-500/20 text-yellow-400",Microbiology:"bg-green-500/20 text-green-400",
+  OBG:"bg-pink-500/20 text-pink-400",Paediatrics:"bg-cyan-500/20 text-cyan-400",
+  PSM:"bg-amber-500/20 text-amber-400","Forensic Medicine":"bg-gray-500/20 text-gray-400",
+  ENT:"bg-lime-500/20 text-lime-400",Ophthalmology:"bg-sky-500/20 text-sky-400",
+  Radiology:"bg-slate-500/20 text-slate-400",Orthopaedics:"bg-stone-500/20 text-stone-400",
+  Dermatology:"bg-fuchsia-500/20 text-fuchsia-400",Psychiatry:"bg-purple-500/20 text-purple-400",
+  Anaesthesia:"bg-emerald-500/20 text-emerald-400",
 };
 
 function getWeekKey(date: string): string {

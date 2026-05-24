@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { safeLoad, safeSave } from "@/lib/storage";
 import { QUESTIONS } from "@/data/questions";
+import { SPECIFIC_PYQS } from "@/data/pyqSpecific";
 import { MISTAKE_STORAGE_KEY } from "@/lib/mistakeLogger";
 import {
   Target, CheckCircle2, Circle, BookOpen, StickyNote,
@@ -102,12 +103,22 @@ function buildStats(
   pyqAttempts: Record<string, { selected: number; correct: boolean }>,
   mistakes: MistakeEntry[],
 ): SubjectStats[] {
-  // PYQ accuracy per subject
+  // PYQ accuracy per subject (base questions + specific PYQs)
   const pyqBySubj = new Map<string, { attempted: number; correct: number }>();
   for (const q of QUESTIONS) {
     const canon = PYQ_TO_SUBJECT[q.subject];
     if (!canon) continue;
     const attempt = pyqAttempts[String(q.id)];
+    if (!attempt) continue;
+    const cur = pyqBySubj.get(canon) ?? { attempted: 0, correct: 0 };
+    cur.attempted++;
+    if (attempt.correct) cur.correct++;
+    pyqBySubj.set(canon, cur);
+  }
+  for (const q of SPECIFIC_PYQS) {
+    const canon = PYQ_TO_SUBJECT[q.subject] ?? q.subject;
+    if (!canon) continue;
+    const attempt = pyqAttempts[q.id];
     if (!attempt) continue;
     const cur = pyqBySubj.get(canon) ?? { attempted: 0, correct: 0 };
     cur.attempted++;

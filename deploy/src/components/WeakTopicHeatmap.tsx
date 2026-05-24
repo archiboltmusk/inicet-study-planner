@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { safeLoad } from "@/lib/storage";
 import { QUESTIONS } from "@/data/questions";
+import { SPECIFIC_PYQS } from "@/data/pyqSpecific";
 import { LayoutGrid, AlertTriangle } from "lucide-react";
 
 interface PyqAttempts {
-  [id: number]: { selected: number; correct: boolean };
+  [id: string]: { selected: number; correct: boolean };
 }
 
 interface WeakTopicHeatmapProps {
@@ -29,6 +30,13 @@ export function WeakTopicHeatmap({ onGoToSubject }: WeakTopicHeatmapProps) {
   const subjectStats = useMemo(() => {
     const map: Record<string, { total: number; correct: number }> = {};
     for (const q of QUESTIONS) {
+      const attempt = pyqAttempts[String(q.id)];
+      if (!attempt) continue;
+      if (!map[q.subject]) map[q.subject] = { total: 0, correct: 0 };
+      map[q.subject].total++;
+      if (attempt.correct) map[q.subject].correct++;
+    }
+    for (const q of SPECIFIC_PYQS) {
       const attempt = pyqAttempts[q.id];
       if (!attempt) continue;
       if (!map[q.subject]) map[q.subject] = { total: 0, correct: 0 };

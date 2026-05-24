@@ -59,16 +59,20 @@ const IN7   = addDays(TODAY, 7);
 
 const SUBJECTS = [
   "Medicine","Surgery","Pharmacology","Physiology","Biochemistry","Pathology",
-  "Anatomy","Microbiology","OBG","Paediatrics","PSM","Forensic","ENT/Ophth/Derm",
+  "Anatomy","Microbiology","OBG","Paediatrics","PSM","Forensic Medicine",
+  "ENT","Ophthalmology","Radiology","Orthopaedics","Dermatology","Psychiatry","Anaesthesia",
   "Revision","Full Mock",
 ];
 
 const SUBJECT_COLORS: Record<string, string> = {
-  Medicine:"text-blue-400",Pharmacology:"text-violet-400",Microbiology:"text-green-400",
-  OBG:"text-pink-400",Paediatrics:"text-cyan-400",PSM:"text-amber-400",
-  Surgery:"text-orange-400",Pathology:"text-rose-400",Forensic:"text-gray-400",
-  Anatomy:"text-yellow-400",Physiology:"text-teal-400",Biochemistry:"text-indigo-400",
-  "ENT/Ophth/Derm":"text-lime-400",Revision:"text-amber-400","Full Mock":"text-cyan-400",
+  Medicine:"text-blue-400",Surgery:"text-orange-400",Pharmacology:"text-violet-400",
+  Physiology:"text-teal-400",Biochemistry:"text-indigo-400",Pathology:"text-rose-400",
+  Anatomy:"text-yellow-400",Microbiology:"text-green-400",OBG:"text-pink-400",
+  Paediatrics:"text-cyan-400",PSM:"text-amber-400","Forensic Medicine":"text-gray-400",
+  ENT:"text-lime-400",Ophthalmology:"text-sky-400",Radiology:"text-slate-400",
+  Orthopaedics:"text-stone-400",Dermatology:"text-fuchsia-400",
+  Psychiatry:"text-purple-400",Anaesthesia:"text-emerald-400",
+  Revision:"text-amber-400","Full Mock":"text-cyan-400",
 };
 
 const QUALITY_BUTTONS = [

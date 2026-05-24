@@ -190,14 +190,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
     return SCHEDULE.filter(s => s.subject === selectedSubject);
   }, [selectedSubject]);
 
-  const studyContext = useMemo(() => ({
-    completedDays,
-    mcqScores,
-    flaggedCount: flagged.length,
-    currentDayFocus: selectedDay ? `Day ${selectedDay.day} — ${selectedDay.subject}: ${selectedDay.focus}` : '',
-    examDate,
-  }), [completedDays, mcqScores, flagged.length, selectedDay, examDate]);
-
   // ── Achievement check ─────────────────────────────────────────────────────
   useEffect(() => {
     const mcqCorrect   = Object.values(mcqScores).reduce((s, v) => s + (v.correct ?? 0), 0);
@@ -394,7 +386,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   const handleExamDateSave   = useCallback((date: Date) => appStore.getState().setExamDateIso(date.toISOString()), [appStore]);
   const handlePYQCorrect     = useCallback(() => gainXP(XP_VALUES.pyq_correct, 'PYQ correct'), [gainXP]);
   const handlePYQWrong       = useCallback(() => gainXP(XP_VALUES.pyq_wrong,   'PYQ attempt'), [gainXP]);
-  const handleAIChat         = useCallback(() => gainXP(XP_VALUES.ai_chat,     'AI tutor'),    [gainXP]);
   const handleOnboardingDone = () => { localStorage.setItem(`${prefix}onboarded`, '1'); setShowOnboarding(false); };
 
   // ── Nav helpers ───────────────────────────────────────────────────────────

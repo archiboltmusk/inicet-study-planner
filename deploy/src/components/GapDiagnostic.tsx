@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { safeLoad } from "@/lib/storage";
 import { QUESTIONS } from "@/data/questions";
+import { SPECIFIC_PYQS } from "@/data/pyqSpecific";
 import { Activity, AlertTriangle, TrendingUp, TrendingDown, Minus, CheckCircle, Zap, BookOpen, RotateCcw } from "lucide-react";
 
 // ── Data types ─────────────────────────────────────────────────────────────────
@@ -90,10 +91,17 @@ export function GapDiagnostic() {
   // ── Build subject data ──────────────────────────────────────────────────────
 
   const subjectGaps = useMemo<SubjectGap[]>(() => {
-    // 1. PYQ accuracy per subject
+    // 1. PYQ accuracy per subject (base questions + specific PYQs)
     const pyq: Record<string, { total: number; correct: number }> = {};
     for (const q of QUESTIONS) {
-      const a = pyqAttempts[String(q.id)] ?? pyqAttempts[q.id as unknown as string];
+      const a = pyqAttempts[String(q.id)];
+      if (!a) continue;
+      if (!pyq[q.subject]) pyq[q.subject] = { total: 0, correct: 0 };
+      pyq[q.subject].total++;
+      if (a.correct) pyq[q.subject].correct++;
+    }
+    for (const q of SPECIFIC_PYQS) {
+      const a = pyqAttempts[q.id];
       if (!a) continue;
       if (!pyq[q.subject]) pyq[q.subject] = { total: 0, correct: 0 };
       pyq[q.subject].total++;
