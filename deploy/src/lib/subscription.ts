@@ -124,10 +124,12 @@ export async function startCheckout(
   }
 
   const authHeader = `Bearer ${session.access_token}`;
+  const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)
+    ?? "https://fkqazoltrxmwlareblpi.supabase.co";
 
   // 1. Create order server-side
   const orderRes = await fetch(
-    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-order`,
+    `${supabaseUrl}/functions/v1/create-order`,
     {
       method: "POST",
       headers: { Authorization: authHeader, "Content-Type": "application/json" },
@@ -156,7 +158,7 @@ export async function startCheckout(
     handler: async (response) => {
       // 3. Verify payment server-side
       const verifyRes = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`,
+        `${supabaseUrl}/functions/v1/verify-payment`,
         {
           method: "POST",
           headers: { Authorization: authHeader, "Content-Type": "application/json" },
