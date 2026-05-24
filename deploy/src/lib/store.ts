@@ -21,9 +21,13 @@ interface StudyState {
   setCompletedDays: (days: number[]) => void;
   toggleDayCompletion: (day: number) => void;
   updateNote: (day: number, text: string) => void;
+  setNotes: (n: Record<number, string>) => void;
   saveMcqScore: (day: number, attempted: number, correct: number) => void;
+  setMcqScores: (s: Record<number, { attempted: number; correct: number }>) => void;
   toggleFlag: (dayId: number, topicIdx: number) => void;
+  setFlagged: (f: FlaggedTopic[]) => void;
   updateSrCard: (dayId: number, card: SRCard) => void;
+  setSrCards: (c: Record<number, SRCard>) => void;
   setStreak: (fn: (s: StreakData) => StreakData) => void;
   setExamDateIso: (iso: string) => void;
 }
@@ -73,8 +77,12 @@ function buildStore(prefix: string) {
         updateNote: (day, text) =>
           set((s) => ({ notes: { ...s.notes, [day]: text } })),
 
+        setNotes: (n) => set({ notes: n }),
+
         saveMcqScore: (day, attempted, correct) =>
           set((s) => ({ mcqScores: { ...s.mcqScores, [day]: { attempted, correct } } })),
+
+        setMcqScores: (s) => set({ mcqScores: s }),
 
         toggleFlag: (dayId, topicIdx) =>
           set((s) => ({
@@ -83,8 +91,12 @@ function buildStore(prefix: string) {
               : [...s.flagged, { dayId, topicIdx }],
           })),
 
+        setFlagged: (f) => set({ flagged: f }),
+
         updateSrCard: (dayId, card) =>
           set((s) => ({ srCards: { ...s.srCards, [dayId]: card } })),
+
+        setSrCards: (c) => set({ srCards: c }),
 
         setStreak: (fn) => set((s) => ({ streak: fn(s.streak) })),
 

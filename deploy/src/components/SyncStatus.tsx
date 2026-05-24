@@ -1,10 +1,13 @@
 import { useAuth } from "@/lib/auth";
+import { useSubscription } from "@/lib/subscription";
 import { useSync } from "@/lib/useSync";
-import { fetchCloudData } from "@/lib/cloud";
+import { fetchCloudData, useRealtimeSyncStatus } from "@/lib/cloud";
 import { Check, AlertCircle, Wifi, WifiOff, RotateCw } from "lucide-react";
 
 export function SyncStatus() {
   const { user } = useAuth();
+  const { isPremium } = useSubscription();
+  const rtConnected = useRealtimeSyncStatus();
 
   // Only show sync status if user is logged in
   if (!user) return null;
@@ -21,6 +24,13 @@ export function SyncStatus() {
 
   return (
     <div className="flex items-center gap-2 text-xs text-gray-400">
+      {/* Realtime live indicator (premium only) */}
+      {isPremium && rtConnected && (
+        <div className="flex items-center gap-1 text-emerald-500 font-medium" title="Real-time sync active — all devices stay in sync">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="hidden sm:inline">Live</span>
+        </div>
+      )}
       {/* Status Indicator */}
       <div className="flex items-center">
         {isSyncing && (

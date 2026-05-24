@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { CLOUD_SYNC_EVENT } from "@/lib/cloud";
 import { safeLoad, safeSave } from "@/lib/storage";
 import { CalendarCheck, Plus, Trash2, Edit2, Check, X, Brain } from "lucide-react";
 
@@ -106,6 +107,17 @@ export function RevisionScheduler() {
   const [editId, setEditId]           = useState<string | null>(null);
   const [editForm, setEditForm]       = useState({ subject: SUBJECTS[0], topicName: "", notes: "" });
   const [form, setForm]               = useState({ subject: SUBJECTS[0], topicName: "", studiedDate: TODAY, notes: "" });
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ev = e as CustomEvent<{ columns: string[] }>;
+      if (ev.detail.columns.includes("revision_schedule")) {
+        setTopics(safeLoad<Partial<ScheduledTopic>[]>(REVISION_SCHEDULER_KEY, []).map(migrateEntry));
+      }
+    };
+    window.addEventListener(CLOUD_SYNC_EVENT, handler);
+    return () => window.removeEventListener(CLOUD_SYNC_EVENT, handler);
+  }, []);
 
   const save = (updated: ScheduledTopic[]) => {
     setTopics(updated);

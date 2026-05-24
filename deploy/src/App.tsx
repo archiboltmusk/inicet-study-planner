@@ -19,7 +19,7 @@ import { OnboardingModal } from "@/components/OnboardingModal";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { XPToastLayer, makeToastItem, type XPToastItem } from "@/components/XPToast";
 import { useAuth } from "@/lib/auth";
-import { useCloudSync, useBulkSync } from "@/lib/cloud";
+import { useCloudSync, useBulkSync, useRealtimeSync } from "@/lib/cloud";
 import { useSubscription } from "@/lib/subscription";
 import { PremiumGate } from "@/components/PremiumGate";
 import { getAppStore, sel } from "@/lib/store";
@@ -406,6 +406,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
   // ── Subscription / premium ────────────────────────────────────────────────
   const { isPremium } = useSubscription();
   const goToUpgrade   = useCallback(() => handleNavigate('rewards', 'upgrade'), [handleNavigate]);
+  useRealtimeSync(isPremium, prefix);
 
   // Keep mistakeLogger aware of auth/premium state so autoLogMistakes can
   // write to Supabase for premium users
