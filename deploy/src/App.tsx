@@ -62,7 +62,7 @@ const CutoffHistory       = mk(() => import("@/components/CutoffHistory"),      
 const SpecialtySeatTracker = mk(() => import("@/components/SpecialtySeatTracker"), "SpecialtySeatTracker");
 const GuidelinesFeed      = mk(() => import("@/components/GuidelinesFeed"),      "GuidelinesFeed");
 const GamificationPanel   = mk(() => import("@/components/GamificationPanel"),   "GamificationPanel");
-const ChatPanel           = mk(() => import("@/components/ChatPanel"),           "ChatPanel");
+const SmartStart          = mk(() => import("@/components/SmartStart"),          "SmartStart");
 const MicroBurst          = mk(() => import("@/components/MicroBurst"),          "MicroBurst");
 const CircadianPlanner    = mk(() => import("@/components/CircadianPlanner"),    "CircadianPlanner");
 const TopicPredictor      = mk(() => import("@/components/TopicPredictor"),      "TopicPredictor");
@@ -506,6 +506,13 @@ function StudyApp({ prefix, user }: StudyAppProps) {
           </Suspense>}
         </div>
 
+        {/* HOME — Smart Focus / Where to Start */}
+        <div hidden={activeGroup !== 'home' || activeTab !== 'smartstart'}>
+          {visitedTabs.has('smartstart') && <Suspense fallback={<TabFallback />}>
+            <SmartStart flagged={flagged} onNavigate={handleNavigate} />
+          </Suspense>}
+        </div>
+
         <div hidden={activeGroup !== 'home' || activeTab !== 'marrow'}>
           {visitedTabs.has('marrow') && <Suspense fallback={<TabFallback />}>
             <MarrowSchedule
@@ -670,16 +677,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             <MistakeLogbook />
           </Suspense>}
         </div>
-        <div hidden={activeGroup !== 'learn' || activeTab !== 'aichat'}>
-          {visitedTabs.has('aichat') && (
-            <PremiumGate isPremium={isPremium} feature="Clinical Socratic Engine" onUpgrade={goToUpgrade}>
-              <Suspense fallback={<TabFallback />}>
-                <ChatPanel studyContext={studyContext} onFirstMessage={handleAIChat} />
-              </Suspense>
-            </PremiumGate>
-          )}
-        </div>
-
         {/* INSIGHTS */}
         <div hidden={activeGroup !== 'insights' || activeTab !== 'analytics'}>
           {visitedTabs.has('analytics') && (
