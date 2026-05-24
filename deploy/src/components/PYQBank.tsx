@@ -6,6 +6,7 @@ import {
 import { QUESTIONS, QUESTION_SUBJECTS, Question } from "@/data/questions";
 import { SPECIFIC_PYQS, type ExamSource } from "@/data/pyqSpecific";
 import { safeLoad, safeSave } from "@/lib/storage";
+import { autoLogMistakes } from "@/lib/mistakeLogger";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -198,7 +199,18 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     const next    = { ...attempts, [current.uid]: { selected: opt, correct } };
     setAttempts(next);
     saveAttempts(next);
-    if (correct) onCorrect?.(); else onWrong?.();
+    if (correct) {
+      onCorrect?.();
+    } else {
+      onWrong?.();
+      autoLogMistakes([{
+        subject:       current.subject,
+        question:      current.stem,
+        correctAnswer: current.options[current.answer],
+        myAnswer:      current.options[opt as 0|1|2|3],
+        explanation:   current.explanation,
+      }]);
+    }
   };
 
   const resetAll = () => {

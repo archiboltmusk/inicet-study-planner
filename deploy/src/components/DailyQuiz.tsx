@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { safeLoad, safeSave } from "@/lib/storage";
+import { autoLogMistakes } from "@/lib/mistakeLogger";
 import { QUESTIONS } from "@/data/questions";
 import { CalendarCheck, Flame } from "lucide-react";
 
@@ -113,6 +114,15 @@ export function DailyQuiz() {
     const updated = [...answers];
     updated[qIdx] = optIdx;
     setAnswers(updated);
+    if (currentQ && optIdx !== currentQ.answer) {
+      autoLogMistakes([{
+        subject:       currentQ.subject,
+        question:      currentQ.stem,
+        correctAnswer: currentQ.options[currentQ.answer],
+        myAnswer:      currentQ.options[optIdx],
+        explanation:   currentQ.explanation,
+      }]);
+    }
   };
 
   const handleNext = () => {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Sparkles, Flame, CalendarCheck, TrendingUp, RefreshCw, AlertCircle } from "lucide-react";
 import { safeLoad, safeSave } from "@/lib/storage";
+import { autoLogMistakes } from "@/lib/mistakeLogger";
 
 interface PredictionMeta {
   confidence: "high" | "medium" | "low";
@@ -130,6 +131,16 @@ export function AIPredictedQuiz() {
     const updated = [...answers];
     updated[qIdx] = optIdx;
     setAnswers(updated);
+    const q = questions[qIdx];
+    if (q && optIdx !== q.answer) {
+      autoLogMistakes([{
+        subject:       q.subject,
+        question:      q.stem,
+        correctAnswer: q.options[q.answer],
+        myAnswer:      q.options[optIdx],
+        explanation:   q.explanation,
+      }]);
+    }
   };
 
   const handleNext = () => {
