@@ -29,6 +29,7 @@ import { checkAchievements } from "@/lib/achievements";
 import { supabase } from "@/lib/supabase";
 import { setMistakeLoggerCtx } from "@/lib/mistakeLogger";
 import { REVISION_SCHEDULER_KEY, type ScheduledTopic } from "@/components/RevisionScheduler";
+import { DailyReport, useDailyReport } from "@/components/DailyReport";
 
 // ── Lazy-loaded tab components ────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -172,6 +173,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
     [completedDays, mcqScores, notes, streak]
   );
   const totalXP = baseXP + bonusXP;
+  const [showDailyReport, dismissDailyReport] = useDailyReport(totalXP);
 
   const examDateLabel = useMemo(() =>
     examDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase(),
@@ -421,6 +423,9 @@ function StudyApp({ prefix, user }: StudyAppProps) {
     <div className="h-screen bg-background text-foreground flex flex-col font-sans overflow-hidden">
       <Toaster position="bottom-right" richColors />
       {showOnboarding && <OnboardingModal onDone={handleOnboardingDone} />}
+      {showDailyReport && !showOnboarding && (
+        <DailyReport totalXP={totalXP} streak={streak} onDismiss={dismissDailyReport} />
+      )}
       <XPToastLayer items={xpToasts} onDismiss={dismissToast} />
       <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} onNavigate={handleNavigate} />
 

@@ -3,6 +3,7 @@ import { safeLoad, safeSave } from "@/lib/storage";
 import { QUESTIONS } from "@/data/questions";
 import { SPECIFIC_PYQS } from "@/data/pyqSpecific";
 import { MISTAKE_STORAGE_KEY } from "@/lib/mistakeLogger";
+import { calcAllMastery } from "@/lib/mastery";
 import {
   Target, CheckCircle2, Circle, BookOpen, StickyNote,
   AlertTriangle, TrendingUp, ChevronRight,
@@ -186,6 +187,7 @@ export function SmartStart({ flagged, onNavigate }: SmartStartProps) {
 
   const hasData = Object.keys(pyqAttempts).length > 0 || mistakes.length > 0;
 
+  const mastery = useMemo(() => calcAllMastery(SUBJECTS.map(s => s.name)), [pyqAttempts, mistakes]);
   const stats = useMemo(() => buildStats(pyqAttempts, mistakes), [pyqAttempts, mistakes]);
   const sorted = useMemo(() => [...stats].sort((a, b) => b.urgency - a.urgency), [stats]);
 
@@ -254,11 +256,16 @@ export function SmartStart({ flagged, onNavigate }: SmartStartProps) {
                 <span className={`flex-1 text-sm font-medium ${done ? "text-primary line-through decoration-primary/40" : "text-foreground"}`}>
                   {s.name}
                 </span>
+                {mastery[s.name] !== null && mastery[s.name] !== undefined && (
+                  <span className={`text-[10px] font-mono font-bold flex-shrink-0 ${
+                    (mastery[s.name] ?? 0) >= 70 ? "text-emerald-400" :
+                    (mastery[s.name] ?? 0) >= 50 ? "text-amber-400" : "text-red-400"
+                  }`}>
+                    {mastery[s.name]}
+                  </span>
+                )}
                 <span className="text-[10px] font-mono text-muted-foreground flex-shrink-0">
                   {s.weight}%
-                </span>
-                <span className="text-[10px] font-mono text-muted-foreground/50 flex-shrink-0 ml-1">
-                  #{i + 1}
                 </span>
               </button>
             );
@@ -318,6 +325,16 @@ export function SmartStart({ flagged, onNavigate }: SmartStartProps) {
                       style={{ width: `${top.accuracy * 100}%` }}
                     />
                   </div>
+                </div>
+              )}
+              {/* Mastery score */}
+              {mastery[top.name] !== null && mastery[top.name] !== undefined && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground">Mastery score</span>
+                  <span className={`text-sm font-mono font-bold ${
+                    (mastery[top.name] ?? 0) >= 70 ? "text-emerald-400" :
+                    (mastery[top.name] ?? 0) >= 50 ? "text-amber-400" : "text-red-400"
+                  }`}>{mastery[top.name]}/100</span>
                 </div>
               )}
 
