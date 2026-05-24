@@ -22,6 +22,17 @@ type KnownFilter = "all" | "unknown" | "known";
 
 const KNOWN_KEY = "neetpg_known_oneliners";
 
+const FALLBACK_ONELINERS: OneLiner[] = [
+  { id: "fb-1", subject: "Medicine",      topic: "Diabetes",        fact: "HbA1c ≥6.5% confirms diabetes. Treatment target: <7% (ADA). <8% acceptable in elderly/complex.", mnemonic: null, category: "value",     batch_date: "2024-01-01" },
+  { id: "fb-2", subject: "Pharmacology",  topic: "Antibiotics",     fact: "DOC for MRSA: Vancomycin (IV). Linezolid for VRE and MRSA alternatives. TMP-SMX for community MRSA skin infections.", mnemonic: null, category: "DOC",       batch_date: "2024-01-01" },
+  { id: "fb-3", subject: "PSM",           topic: "Vital Statistics", fact: "India IMR (SRS 2020): 28/1000 live births. MMR (SRS 2018-20): 97/100,000 live births. TFR: 2.0 (below replacement).", mnemonic: null, category: "value",     batch_date: "2024-01-01" },
+  { id: "fb-4", subject: "OBG",           topic: "Pre-eclampsia",   fact: "Pre-eclampsia: BP ≥140/90 after 20 weeks + proteinuria ≥300mg/24h. DOC for prevention in high-risk: low-dose aspirin 75-150mg.", mnemonic: null, category: "DOC",       batch_date: "2024-01-01" },
+  { id: "fb-5", subject: "Pathology",     topic: "Tumour Markers",  fact: "AFP elevated in: HCC, yolk sac tumour, NTDs (maternal). CEA: colorectal ca. CA-125: ovarian ca. PSA: prostate ca.", mnemonic: null, category: "value",     batch_date: "2024-01-01" },
+  { id: "fb-6", subject: "Microbiology",  topic: "Hepatitis B",     fact: "Anti-HBs alone = vaccinated or recovered. HBsAg + Anti-HBc IgM = acute HBV. HBsAg + Anti-HBc IgG, Anti-HBs negative = chronic.", mnemonic: null, category: "mechanism", batch_date: "2024-01-01" },
+  { id: "fb-7", subject: "Paediatrics",   topic: "Nutrition",       fact: "SAM: MUAC <11.5 cm or W/H Z-score <−3. MAM: MUAC 11.5-12.5 cm. Normal: MUAC ≥12.5 cm (6-59 months).", mnemonic: null, category: "value",     batch_date: "2024-01-01" },
+  { id: "fb-8", subject: "Surgery",       topic: "Burns",           fact: "Parkland formula: 4ml × kg × %TBSA. Half in first 8h (from time of burn), half in next 16h. Use Ringer's lactate.", mnemonic: "4×Weight×%TBSA, half in 8h", category: "value", batch_date: "2024-01-01" },
+];
+
 function loadKnown(): Set<string> {
   const arr = safeLoad<string[]>(KNOWN_KEY, []);
   return new Set(arr);
@@ -93,7 +104,7 @@ export function OneLinerBank() {
       const data = await res.json();
       setOneLiners((data.oneliners ?? data) as OneLiner[]);
     } catch {
-      setNotFound(true);
+      setOneLiners(FALLBACK_ONELINERS);
     } finally {
       setLoading(false);
     }
