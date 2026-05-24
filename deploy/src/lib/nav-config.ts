@@ -12,7 +12,7 @@ import {
 export type MainTab =
   | 'planner' | 'circadian' | 'stress' | 'coreBTR' | 'marrow' | 'todolist' | 'smartstart'
   | 'pyq' | 'drills' | 'rapid' | 'oneliners' | 'simulation' | 'revision'
-  | 'dailyquiz' | 'custommock' | 'psmcalc' | 'imagequiz' | 'microburst' | 'neetpg2026'
+  | 'custommock' | 'psmcalc' | 'imagequiz' | 'microburst' | 'neetpg2026'
   | 'notes' | 'ai' | 'mnemonics' | 'analysis' | 'flashcards'
   | 'doctable' | 'revschedule' | 'mistakelogbook'
   | 'analytics' | 'toppers' | 'resources' | 'community' | 'weakheatmap' | 'gapdiagnostic'
@@ -62,7 +62,6 @@ export const NAV_GROUPS: NavGroupConfig[] = [
       { id: 'oneliners',  label: 'One-liners', Icon: Layers       },
       { id: 'simulation', label: 'Simulate',   Icon: FlaskConical },
       { id: 'revision',   label: 'Revision',   Icon: Flag         },
-      { id: 'dailyquiz',  label: 'Daily Quiz', Icon: CalendarCheck},
       { id: 'custommock', label: 'Custom Mock',Icon: Sliders      },
       { id: 'psmcalc',    label: 'PSM Calc',   Icon: Calculator   },
       { id: 'imagequiz',  label: 'Image Bank', Icon: Eye          },
