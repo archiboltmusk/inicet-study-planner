@@ -28,8 +28,8 @@ export function PremiumGate({ isPremium, feature, onUpgrade, children }: Props) 
 
       <p className="text-slate-400 max-w-sm mb-8 leading-relaxed">
         {notLoggedIn
-          ? "Sign in and upgrade to unlock this feature and everything the planner has to offer."
-          : `Unlock ${feature} and all other premium features — less than one Marrow mock costs.`}
+          ? "Sign in and upgrade to access the intelligence layer — the part of the planner that actively manages your brain, not just your schedule."
+          : `${feature} is part of the Premium intelligence layer. Less than one Marrow mock costs — and unlike a mock, this adapts to your specific weak points.`}
       </p>
 
       <button

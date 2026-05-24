@@ -518,7 +518,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         </div>
         <div hidden={activeGroup !== 'practice' || activeTab !== 'simulation'}>
           {visitedTabs.has('simulation') && (
-            <PremiumGate isPremium={isPremium} feature="Exam Simulation" onUpgrade={goToUpgrade}>
+            <PremiumGate isPremium={isPremium} feature="High-Fidelity Exam Drills" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <ExamSimulation onComplete={handleSimComplete} />
               </Suspense>
@@ -539,7 +539,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         </div>
         <div hidden={activeGroup !== 'practice' || activeTab !== 'aiquiz'}>
           {visitedTabs.has('aiquiz') && (
-            <PremiumGate isPremium={isPremium} feature="AI Quiz" onUpgrade={goToUpgrade}>
+            <PremiumGate isPremium={isPremium} feature="Clinical Socratic Engine" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <AIPredictedQuiz />
               </Suspense>
@@ -548,7 +548,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         </div>
         <div hidden={activeGroup !== 'practice' || activeTab !== 'custommock'}>
           {visitedTabs.has('custommock') && (
-            <PremiumGate isPremium={isPremium} feature="Custom Mock" onUpgrade={goToUpgrade}>
+            <PremiumGate isPremium={isPremium} feature="High-Fidelity Exam Drills" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <CustomMockGenerator />
               </Suspense>
@@ -599,7 +599,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         </div>
         <div hidden={activeGroup !== 'learn' || activeTab !== 'flashcards'}>
           {visitedTabs.has('flashcards') && (
-            <PremiumGate isPremium={isPremium} feature="Flashcard Deck" onUpgrade={goToUpgrade}>
+            <PremiumGate isPremium={isPremium} feature="Dynamic Retention Protocol" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <FlashcardDeck />
               </Suspense>
@@ -613,7 +613,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         </div>
         <div hidden={activeGroup !== 'learn' || activeTab !== 'revschedule'}>
           {visitedTabs.has('revschedule') && (
-            <PremiumGate isPremium={isPremium} feature="Revision Scheduler" onUpgrade={goToUpgrade}>
+            <PremiumGate isPremium={isPremium} feature="Dynamic Retention Protocol" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <RevisionScheduler />
               </Suspense>
@@ -627,7 +627,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         </div>
         <div hidden={activeGroup !== 'learn' || activeTab !== 'aichat'}>
           {visitedTabs.has('aichat') && (
-            <PremiumGate isPremium={isPremium} feature="AI Chat Tutor" onUpgrade={goToUpgrade}>
+            <PremiumGate isPremium={isPremium} feature="Clinical Socratic Engine" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <ChatPanel studyContext={studyContext} onFirstMessage={handleAIChat} />
               </Suspense>
@@ -638,7 +638,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         {/* INSIGHTS */}
         <div hidden={activeGroup !== 'insights' || activeTab !== 'analytics'}>
           {visitedTabs.has('analytics') && (
-            <PremiumGate isPremium={isPremium} feature="Analytics" onUpgrade={goToUpgrade}>
+            <PremiumGate isPremium={isPremium} feature="Vulnerability Heatmap & Diagnostics" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <div className="flex flex-col gap-6">
                   <AnalyticsPanel mcqScores={mcqScores} completedDays={completedDays} streak={streak} examDate={examDate} />
@@ -665,7 +665,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         </div>
         <div hidden={activeGroup !== 'insights' || activeTab !== 'weakheatmap'}>
           {visitedTabs.has('weakheatmap') && (
-            <PremiumGate isPremium={isPremium} feature="Weak Area Heatmap" onUpgrade={goToUpgrade}>
+            <PremiumGate isPremium={isPremium} feature="Vulnerability Heatmap & Diagnostics" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <WeakTopicHeatmap onGoToSubject={() => handleNavigate('practice', 'pyq')} />
               </Suspense>

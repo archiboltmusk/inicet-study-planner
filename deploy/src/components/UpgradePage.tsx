@@ -7,12 +7,12 @@ import { useSubscription, startCheckout, PLANS, type Plan } from "@/lib/subscrip
 import { useAuth } from "@/lib/auth";
 
 const PREMIUM_FEATURES = [
-  { icon: Sparkles,      label: "AI Quiz",              desc: "Unlimited AI-generated MCQs tailored to your weak spots" },
-  { icon: Brain,         label: "AI Chat Tutor",         desc: "Ask anything, get instant high-yield explanations" },
-  { icon: CalendarCheck, label: "Spaced Repetition",     desc: "SM-2 scheduling across notes and flashcards — never forget again" },
-  { icon: Zap,           label: "Flashcard Deck",        desc: "Active recall with scientifically optimised review intervals" },
-  { icon: BarChart2,     label: "Deep Analytics",        desc: "Subject-wise heatmaps, accuracy trends, time distribution" },
-  { icon: FlaskConical,  label: "Full Simulations",      desc: "Timed full-length mocks with adaptive scoring" },
+  { icon: Sparkles,      label: "Clinical Socratic Engine",       desc: "An Anthropic-powered tutor that grills you on clinical scenarios until you own the concept — not just recognise it." },
+  { icon: Brain,         label: "Clinical Socratic Engine",       desc: "On-demand AI chat that forces active recall. Free users read static notes. You get interrogated until the answer is instinctive." },
+  { icon: CalendarCheck, label: "Dynamic Retention Protocol",     desc: "SM-2 algorithm pings you exactly on the day your memory decay hits the critical threshold — Micro, Pharma, Patho included." },
+  { icon: Zap,           label: "Dynamic Retention Protocol",     desc: "Flashcards scheduled by decay curve, not gut feeling. Never manually guess when to revise again." },
+  { icon: BarChart2,     label: "Vulnerability Heatmap & Diagnostics", desc: "Actively diagnoses where you are bleeding marks. Visual heatmap of high-yield subjects that need immediate triage." },
+  { icon: FlaskConical,  label: "High-Fidelity Exam Drills",      desc: "Adaptive, timed INI-CET simulations that replicate the exact cognitive fatigue of the real exam — not casual practice." },
 ];
 
 const FREE_FEATURES = [
@@ -81,9 +81,10 @@ export function UpgradePage() {
           </div>
         </div>
         <h1 className="text-3xl font-bold text-white">INICET Planner Premium</h1>
-        <p className="text-slate-400 max-w-sm mx-auto">
-          The algorithmic edge between you and Rank 1. One subscription, zero
-          cognitive overhead.
+        <p className="text-slate-400 max-w-md mx-auto leading-relaxed">
+          The free tier organises your desk. The premium tier actively manages your brain.
+          Let the algorithm handle revision scheduling, diagnose your weak subjects,
+          and run adaptive drills — so you focus on studying, not planning.
         </p>
       </div>
 
@@ -170,7 +171,7 @@ export function UpgradePage() {
 
       {/* Premium features */}
       <div>
-        <h2 className="text-base font-semibold text-slate-300 mb-4">What you unlock</h2>
+        <h2 className="text-base font-semibold text-slate-300 mb-4">The Premium Intelligence Layer</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {PREMIUM_FEATURES.map(({ icon: Icon, label, desc }) => (
             <div key={label} className="flex gap-3 bg-slate-800/50 rounded-xl p-3">
