@@ -115,13 +115,7 @@ export function DailyQuiz() {
     updated[qIdx] = optIdx;
     setAnswers(updated);
     if (currentQ && optIdx !== currentQ.answer) {
-      autoLogMistakes([{
-        subject:       currentQ.subject,
-        question:      currentQ.stem,
-        correctAnswer: currentQ.options[currentQ.answer],
-        myAnswer:      currentQ.options[optIdx],
-        explanation:   currentQ.explanation,
-      }]);
+      autoLogMistakes([{ subject: currentQ.subject, question: currentQ.stem, correctAnswer: currentQ.options[currentQ.answer], myAnswer: currentQ.options[optIdx], explanation: currentQ.explanation }]);
     }
   };
 

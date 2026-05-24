@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { safeLoad, safeSave } from "@/lib/storage";
 import { Plus, Trash2, Eye, EyeOff, CheckCircle, Download, BookOpen } from "lucide-react";
 
@@ -46,6 +46,12 @@ type ReviewStep = "question" | "revealed";
 
 export function MistakeLogbook() {
   const [entries, setEntries] = useState<MistakeEntry[]>(() => safeLoad<MistakeEntry[]>(STORAGE_KEY, []));
+
+  useEffect(() => {
+    const refresh = () => setEntries(safeLoad<MistakeEntry[]>(STORAGE_KEY, []));
+    window.addEventListener("mistakeLogUpdate", refresh);
+    return () => window.removeEventListener("mistakeLogUpdate", refresh);
+  }, []);
   const [subjectFilter, setSubjectFilter] = useState("All");
   const [reviewMode, setReviewMode] = useState(false);
   const [reviewIdx, setReviewIdx] = useState(0);

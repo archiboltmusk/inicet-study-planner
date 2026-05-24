@@ -133,13 +133,7 @@ export function AIPredictedQuiz() {
     setAnswers(updated);
     const q = questions[qIdx];
     if (q && optIdx !== q.answer) {
-      autoLogMistakes([{
-        subject:       q.subject,
-        question:      q.stem,
-        correctAnswer: q.options[q.answer],
-        myAnswer:      q.options[optIdx],
-        explanation:   q.explanation,
-      }]);
+      autoLogMistakes([{ subject: q.subject, question: q.stem, correctAnswer: q.options[q.answer], myAnswer: q.options[optIdx], explanation: q.explanation }]);
     }
   };
 

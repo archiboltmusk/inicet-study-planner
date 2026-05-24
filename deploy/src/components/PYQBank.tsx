@@ -203,13 +203,7 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
       onCorrect?.();
     } else {
       onWrong?.();
-      autoLogMistakes([{
-        subject:       current.subject,
-        question:      current.stem,
-        correctAnswer: current.options[current.answer],
-        myAnswer:      current.options[opt as 0|1|2|3],
-        explanation:   current.explanation,
-      }]);
+      autoLogMistakes([{ subject: current.subject, question: current.stem, correctAnswer: current.options[current.answer], myAnswer: current.options[opt as 0|1|2|3], explanation: current.explanation }]);
     }
   };
 

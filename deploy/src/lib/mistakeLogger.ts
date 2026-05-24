@@ -40,4 +40,5 @@ export function autoLogMistakes(mistakes: AutoMistake[]): void {
     source: "auto",
   }));
   safeSave(KEY, [...newEntries, ...existing]);
+  window.dispatchEvent(new CustomEvent("mistakeLogUpdate"));
 }
