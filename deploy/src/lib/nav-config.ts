@@ -5,16 +5,16 @@ import {
   CalendarCheck, Sliders, Calculator, Eye, StickyNote, Brain,
   BarChart2, BookMarked, Pill, XCircle, Award, ExternalLink, MessageSquare,
   LayoutGrid, TrendingUp, Stethoscope, ScrollText, Trophy, Home, GraduationCap,
-  Sparkles, Bot, Timer, Sun, Users, UserCheck, Heart, Radio, ClipboardList,
-  ListOrdered, Star, ListChecks, Crown, Activity,
+  Sparkles, Timer, Sun, Users, UserCheck, Heart, Radio, ClipboardList,
+  ListOrdered, Star, ListChecks, Crown, Activity, Target,
 } from "lucide-react";
 
 export type MainTab =
-  | 'planner' | 'circadian' | 'stress' | 'coreBTR' | 'marrow' | 'todolist'
+  | 'planner' | 'circadian' | 'stress' | 'coreBTR' | 'marrow' | 'todolist' | 'smartstart'
   | 'pyq' | 'drills' | 'rapid' | 'oneliners' | 'simulation' | 'revision'
   | 'dailyquiz' | 'aiquiz' | 'custommock' | 'psmcalc' | 'imagequiz' | 'microburst' | 'neetpg2026'
   | 'notes' | 'ai' | 'mnemonics' | 'analysis' | 'flashcards'
-  | 'doctable' | 'revschedule' | 'mistakelogbook' | 'aichat'
+  | 'doctable' | 'revschedule' | 'mistakelogbook'
   | 'analytics' | 'toppers' | 'resources' | 'community' | 'weakheatmap' | 'gapdiagnostic'
   | 'cutoffhistory' | 'specialtyseats' | 'guidelines'
   | 'topicpredict' | 'studyrooms' | 'buddymatch'
@@ -42,12 +42,13 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: 'Home',
     Icon: Home,
     tabs: [
-      { id: 'todolist',  label: 'Daily Plan', Icon: ListChecks   },
-      { id: 'planner',   label: 'Planner',   Icon: Calendar    },
-      { id: 'coreBTR',   label: 'Core BTR',  Icon: ListOrdered   },
-      { id: 'marrow',    label: 'Marrow',    Icon: GraduationCap },
-      { id: 'circadian', label: 'Circadian', Icon: Sun           },
-      { id: 'stress',    label: 'Wellbeing', Icon: Heart       },
+      { id: 'todolist',   label: 'Daily Plan', Icon: ListChecks   },
+      { id: 'smartstart', label: 'Focus',       Icon: Target       },
+      { id: 'planner',    label: 'Planner',     Icon: Calendar     },
+      { id: 'coreBTR',    label: 'Core BTR',    Icon: ListOrdered  },
+      { id: 'marrow',     label: 'Marrow',      Icon: GraduationCap},
+      { id: 'circadian',  label: 'Circadian',   Icon: Sun          },
+      { id: 'stress',     label: 'Wellbeing',   Icon: Heart        },
     ],
   },
   {
@@ -83,7 +84,6 @@ export const NAV_GROUPS: NavGroupConfig[] = [
       { id: 'doctable',       label: 'DOC Table',  Icon: Pill         },
       { id: 'revschedule',    label: 'Rev Sched',  Icon: CalendarCheck},
       { id: 'mistakelogbook', label: 'Logbook',    Icon: XCircle      },
-      { id: 'aichat',         label: 'AI Chat',    Icon: Bot          },
     ],
   },
   {
