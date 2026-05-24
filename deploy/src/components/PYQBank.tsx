@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   BookOpen, CheckCircle, XCircle, Shuffle, ChevronLeft, ChevronRight,
-  RotateCcw, TrendingUp, Search,
+  RotateCcw, TrendingUp, Search, Zap, Pencil, Clock, Trophy,
 } from "lucide-react";
 import { QUESTIONS, QUESTION_SUBJECTS, Question } from "@/data/questions";
 import { SPECIFIC_PYQS, type ExamSource } from "@/data/pyqSpecific";
@@ -49,12 +49,62 @@ function loadAttempts(): Record<string, AttemptRecord> {
 function saveAttempts(a: Record<string, AttemptRecord>) {
   safeSave("neetpg_pyq_attempts", a);
 }
+function loadNotes(): Record<string, string> {
+  return safeLoad("neetpg_q_notes", {});
+}
 
 const DIFF_COLORS: Record<string, string> = {
   easy:   "text-emerald-400 border-emerald-500/40 bg-emerald-500/10",
   medium: "text-yellow-400  border-yellow-500/40  bg-yellow-500/10",
   hard:   "text-destructive border-destructive/40  bg-destructive/10",
 };
+
+// ─── Adaptive pool builder ─────────────────────────────────────────────────────
+
+function buildAdaptivePool(
+  allQuestions: UnifiedQuestion[],
+  attempts: Record<string, AttemptRecord>,
+): UnifiedQuestion[] {
+  // Accuracy per subject
+  const subjAcc: Record<string, { correct: number; total: number }> = {};
+  for (const [uid, att] of Object.entries(attempts)) {
+    const q = allQuestions.find(q => q.uid === uid);
+    if (!q) continue;
+    if (!subjAcc[q.subject]) subjAcc[q.subject] = { correct: 0, total: 0 };
+    subjAcc[q.subject].total++;
+    if (att.correct) subjAcc[q.subject].correct++;
+  }
+
+  const weight = (subj: string): number => {
+    const a = subjAcc[subj];
+    if (!a || a.total === 0) return 1.0;
+    const p = a.correct / a.total;
+    return p < 0.5 ? 3.0 : p < 0.7 ? 1.5 : 0.5;
+  };
+
+  // Candidates: wrong or unattempted
+  const candidates = allQuestions.filter(q => !attempts[q.uid]?.correct);
+  if (candidates.length === 0) return [];
+
+  // Weighted shuffle: repeat each candidate proportionally to its weight
+  const bucket: UnifiedQuestion[] = [];
+  for (const q of candidates) {
+    const reps = Math.round(weight(q.subject) * 2);
+    for (let i = 0; i < reps; i++) bucket.push(q);
+  }
+  bucket.sort(() => Math.random() - 0.5);
+
+  // Deduplicate and cap at 20
+  const seen = new Set<string>();
+  const pool: UnifiedQuestion[] = [];
+  for (const q of bucket) {
+    if (seen.has(q.uid)) continue;
+    seen.add(q.uid);
+    pool.push(q);
+    if (pool.length === 20) break;
+  }
+  return pool;
+}
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -66,6 +116,208 @@ function DiffBadge({ level }: { level: string }) {
   );
 }
 
+// ─── Annotation textarea ──────────────────────────────────────────────────────
+
+function QuestionNote({
+  uid, notes, onSave,
+}: { uid: string; notes: Record<string, string>; onSave: (uid: string, text: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState(notes[uid] ?? "");
+  const hasNote = !!notes[uid]?.trim();
+
+  return (
+    <div className="mx-5 mb-5">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <Pencil className={`w-3 h-3 ${hasNote ? "text-primary" : ""}`} />
+        {hasNote ? "Edit note" : "Add note"}
+      </button>
+      {open && (
+        <textarea
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onBlur={() => onSave(uid, text)}
+          placeholder="Your personal note for this question…"
+          rows={3}
+          className="mt-2 w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-mono text-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── Wrong Drill Mode ─────────────────────────────────────────────────────────
+
+interface DrillResult { uid: string; correct: boolean; prevCorrect: boolean | null; }
+
+function DrillView({
+  pool, attempts, onExit, onRecord,
+}: {
+  pool: UnifiedQuestion[];
+  attempts: Record<string, AttemptRecord>;
+  onExit: () => void;
+  onRecord: (uid: string, correct: boolean) => void;
+}) {
+  const [idx, setIdx] = useState(0);
+  const [timer, setTimer] = useState(60);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [results, setResults] = useState<DrillResult[]>([]);
+  const [done, setDone] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const current = pool[idx] ?? null;
+  const revealed = selected !== null;
+  const OPTION_LABELS = ["A", "B", "C", "D"] as const;
+
+  useEffect(() => {
+    if (done || revealed || !current) return;
+    if (timer <= 0) { advance(null); return; }
+    timerRef.current = setTimeout(() => setTimer(t => t - 1), 1000);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [timer, done, revealed, current]);
+
+  function advance(opt: number | null) {
+    if (!current) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    const correct = opt === current.answer;
+    const prevCorrect = attempts[current.uid]?.correct ?? null;
+    setResults(r => [...r, { uid: current.uid, correct, prevCorrect }]);
+    if (opt !== null) onRecord(current.uid, correct);
+
+    if (idx + 1 >= pool.length) {
+      setDone(true);
+    } else {
+      setIdx(i => i + 1);
+      setTimer(60);
+      setSelected(null);
+    }
+  }
+
+  function pick(opt: number) {
+    if (revealed) return;
+    setSelected(opt);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    const correct = opt === current!.answer;
+    const prevCorrect = attempts[current!.uid]?.correct ?? null;
+    setResults(r => [...r, { uid: current!.uid, correct, prevCorrect }]);
+    onRecord(current!.uid, correct);
+    setTimeout(() => {
+      if (idx + 1 >= pool.length) setDone(true);
+      else { setIdx(i => i + 1); setTimer(60); setSelected(null); }
+    }, 1200);
+  }
+
+  const optClass = (i: number) => {
+    if (!revealed) return "border-border text-foreground/80 hover:border-primary/50 hover:bg-primary/5";
+    if (i === current!.answer) return "border-emerald-500 bg-emerald-500/10 text-emerald-300";
+    if (i === selected && i !== current!.answer) return "border-destructive bg-destructive/10 text-destructive";
+    return "border-border/40 text-foreground/30";
+  };
+
+  if (done) {
+    const total   = results.length;
+    const correct = results.filter(r => r.correct).length;
+    const pct     = Math.round((correct / total) * 100);
+    const improved = results.filter(r => r.correct && r.prevCorrect === false).length;
+    return (
+      <div className="max-w-2xl mx-auto space-y-6 py-8">
+        <div className="text-center space-y-2">
+          <Trophy className="w-10 h-10 text-amber-400 mx-auto" />
+          <h2 className="text-xl font-bold text-foreground">Drill Complete!</h2>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Accuracy",  value: `${pct}%`,     color: pct >= 70 ? "text-emerald-400" : pct >= 50 ? "text-amber-400" : "text-destructive" },
+            { label: "Correct",   value: correct,        color: "text-emerald-400" },
+            { label: "Improved",  value: improved,       color: "text-primary" },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="bg-card border border-border rounded-xl p-4 text-center">
+              <p className={`text-2xl font-mono font-bold ${color}`}>{value}</p>
+              <p className="text-[10px] font-mono text-muted-foreground mt-1">{label}</p>
+            </div>
+          ))}
+        </div>
+        {improved > 0 && (
+          <p className="text-center text-xs font-mono text-primary">
+            You fixed {improved} previously wrong answer{improved > 1 ? "s" : ""}!
+          </p>
+        )}
+        <button
+          onClick={onExit}
+          className="w-full py-3 bg-primary text-primary-foreground text-sm font-mono rounded-xl"
+        >
+          Back to Practice
+        </button>
+      </div>
+    );
+  }
+
+  if (!current) return null;
+
+  const timerColor = timer > 30 ? "text-emerald-400" : timer > 10 ? "text-amber-400" : "text-destructive";
+
+  return (
+    <div className="max-w-3xl mx-auto flex flex-col gap-4 h-[calc(100vh-160px)]">
+      {/* Drill header */}
+      <div className="flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
+          <Zap className="w-4 h-4 text-amber-400" />
+          <span className="text-sm font-mono font-semibold text-foreground">Wrong Answer Drill</span>
+          <span className="text-xs font-mono text-muted-foreground">{idx + 1}/{pool.length}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <Clock className={`w-4 h-4 ${timerColor}`} />
+            <span className={`text-lg font-mono font-bold tabular-nums ${timerColor}`}>{timer}</span>
+          </div>
+          <button onClick={onExit} className="text-xs font-mono text-muted-foreground hover:text-foreground border border-border px-2 py-1 rounded-md">
+            Exit
+          </button>
+        </div>
+      </div>
+
+      {/* Timer bar */}
+      <div className="h-1 bg-border rounded-full overflow-hidden shrink-0">
+        <div
+          className={`h-full rounded-full transition-all duration-1000 ${timer > 30 ? "bg-emerald-500" : timer > 10 ? "bg-amber-500" : "bg-destructive"}`}
+          style={{ width: `${(timer / 60) * 100}%` }}
+        />
+      </div>
+
+      {/* Card */}
+      <div className="flex-1 overflow-y-auto bg-card border border-border rounded-xl flex flex-col min-h-0">
+        <div className="px-5 pt-4 pb-3 border-b border-border/50 flex items-center gap-2 flex-wrap">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-border text-muted-foreground">{current.subject}</span>
+          <DiffBadge level={current.difficulty} />
+        </div>
+        <div className="px-5 py-5">
+          <p className="font-serif text-base text-foreground leading-relaxed">{current.stem}</p>
+        </div>
+        <div className="px-5 pb-5 space-y-2.5">
+          {current.options.map((opt, i) => (
+            <button
+              key={i}
+              onClick={() => pick(i)}
+              disabled={revealed}
+              className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all text-sm font-mono flex items-start gap-3 ${optClass(i)}`}
+            >
+              <span className="font-bold shrink-0">{OPTION_LABELS[i]}.</span>
+              <span>{opt}</span>
+            </button>
+          ))}
+        </div>
+        {revealed && (
+          <div className="mx-5 mb-5 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-3">
+            <p className="text-[11px] font-mono text-emerald-400 uppercase tracking-wider mb-1.5">Explanation</p>
+            <p className="text-sm font-mono text-foreground/80 leading-relaxed">{current.explanation}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // ─── Stats View ───────────────────────────────────────────────────────────────
 
@@ -149,15 +401,19 @@ interface PYQBankProps {
 const EXAM_SOURCES: ExamSource[] = ["NEET-PG", "AIIMS", "PGIMER", "JIPMER", "INI-CET"];
 
 export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
-  const [attempts,    setAttempts]    = useState<Record<string, AttemptRecord>>(loadAttempts);
-  const [subject,     setSubject]     = useState<string>("All");
-  const [mode,        setMode]        = useState<FilterMode>("all");
-  const [difficulty,  setDifficulty]  = useState<DifficultyFilter>("all");
-  const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
-  const [qIndex,      setQIndex]      = useState<number>(0);
-  const [selectedOpt, setSelectedOpt] = useState<number | null>(null);
-  const [showStats,   setShowStats]   = useState<boolean>(false);
-  const [search,      setSearch]      = useState<string>("");
+  const [attempts,      setAttempts]      = useState<Record<string, AttemptRecord>>(loadAttempts);
+  const [qNotes,        setQNotes]        = useState<Record<string, string>>(loadNotes);
+  const [subject,       setSubject]       = useState<string>("All");
+  const [mode,          setMode]          = useState<FilterMode>("all");
+  const [difficulty,    setDifficulty]    = useState<DifficultyFilter>("all");
+  const [sourceFilter,  setSourceFilter]  = useState<SourceFilter>("all");
+  const [qIndex,        setQIndex]        = useState<number>(0);
+  const [selectedOpt,   setSelectedOpt]   = useState<number | null>(null);
+  const [showStats,     setShowStats]     = useState<boolean>(false);
+  const [search,        setSearch]        = useState<string>("");
+  const [adaptiveMode,  setAdaptiveMode]  = useState<boolean>(false);
+  const [adaptivePool,  setAdaptivePool]  = useState<UnifiedQuestion[] | null>(null);
+  const [drillMode,     setDrillMode]     = useState<boolean>(false);
 
   const allQuestions = useMemo<UnifiedQuestion[]>(() => {
     const base = QUESTIONS.map(localToUnified);
@@ -169,7 +425,7 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     return [...base, ...specific];
   }, []);
 
-  const pool = useMemo<UnifiedQuestion[]>(() => {
+  const standardPool = useMemo<UnifiedQuestion[]>(() => {
     let qs = allQuestions;
     if (subject !== "All")      qs = qs.filter(q => q.subject === subject);
     if (difficulty !== "all")   qs = qs.filter(q => q.difficulty === difficulty);
@@ -182,6 +438,8 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     }
     return qs;
   }, [allQuestions, subject, difficulty, sourceFilter, mode, search, attempts]);
+
+  const pool = adaptiveMode && adaptivePool ? adaptivePool : standardPool;
 
   const current = pool[qIndex] ?? null;
   const attempt = current ? attempts[current.uid] : null;
@@ -207,12 +465,38 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     }
   };
 
+  const saveNote = (uid: string, text: string) => {
+    const next = { ...qNotes, [uid]: text };
+    setQNotes(next);
+    safeSave("neetpg_q_notes", next);
+  };
+
   const resetAll = () => {
     setAttempts({});
     saveAttempts({});
     setQIndex(0);
     setSelectedOpt(null);
   };
+
+  const activateAdaptive = () => {
+    const p = buildAdaptivePool(allQuestions, attempts);
+    setAdaptivePool(p);
+    setAdaptiveMode(true);
+    setQIndex(0);
+    setSelectedOpt(null);
+  };
+
+  const deactivateAdaptive = () => {
+    setAdaptiveMode(false);
+    setAdaptivePool(null);
+    setQIndex(0);
+    setSelectedOpt(null);
+  };
+
+  const wrongCount = useMemo(() =>
+    allQuestions.filter(q => attempts[q.uid] && !attempts[q.uid].correct).length,
+    [allQuestions, attempts]
+  );
 
   const totalAttempted = Object.keys(attempts).length;
   const totalCorrect   = Object.values(attempts).filter(a => a.correct).length;
@@ -227,6 +511,24 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
     if (i === chosen && i !== current!.answer) return "border-destructive bg-destructive/10 text-destructive";
     return "border-border/40 text-foreground/30";
   };
+
+  // ── Drill mode ───────────────────────────────────────────────────────────────
+  if (drillMode) {
+    const wrongPool = allQuestions.filter(q => attempts[q.uid] && !attempts[q.uid].correct);
+    return (
+      <DrillView
+        pool={wrongPool}
+        attempts={attempts}
+        onExit={() => setDrillMode(false)}
+        onRecord={(uid, correct) => {
+          const opt = correct ? allQuestions.find(q => q.uid === uid)?.answer ?? 0 : -1;
+          const next = { ...attempts, [uid]: { selected: opt as number, correct } };
+          setAttempts(next);
+          saveAttempts(next);
+        }}
+      />
+    );
+  }
 
   if (showStats) {
     return (
@@ -251,16 +553,24 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
           <div>
             <h2 className="font-mono font-bold text-foreground uppercase tracking-wider text-sm">PYQ Practice</h2>
             <p className="text-xs text-muted-foreground font-mono">
-              {allQuestions.length.toLocaleString()} questions · AIIMS · PGIMER · JIPMER · INI-CET
+              {allQuestions.length.toLocaleString()} questions · NEET-PG · AIIMS · PGIMER · JIPMER · INI-CET
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {overallPct !== null && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
               <TrendingUp className="w-3 h-3 text-emerald-400" />
               <span className="text-xs font-mono text-emerald-400">{overallPct}% accuracy</span>
             </div>
+          )}
+          {wrongCount > 0 && (
+            <button
+              onClick={() => setDrillMode(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-amber-400 border border-amber-500/30 bg-amber-500/10 rounded-full hover:bg-amber-500/20 transition-colors"
+            >
+              <Zap className="w-3 h-3" /> Drill Wrongs ({wrongCount})
+            </button>
           )}
           <button onClick={() => setShowStats(true)} className="px-3 py-1.5 text-xs font-mono text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors">
             Stats
@@ -273,7 +583,7 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
         <input
           value={search}
-          onChange={e => { setSearch(e.target.value); setQIndex(0); setSelectedOpt(null); }}
+          onChange={e => { setSearch(e.target.value); setQIndex(0); setSelectedOpt(null); if (adaptiveMode) deactivateAdaptive(); }}
           placeholder="Search questions, topics, subjects…"
           className="w-full bg-card border border-border rounded-lg pl-8 pr-3 py-2 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary"
         />
@@ -286,9 +596,9 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
           {["All", ...QUESTION_SUBJECTS].map(s => (
             <button
               key={s}
-              onClick={() => { setSubject(s); setQIndex(0); setSelectedOpt(null); }}
+              onClick={() => { setSubject(s); setQIndex(0); setSelectedOpt(null); deactivateAdaptive(); }}
               className={`px-2.5 py-1 text-[11px] font-mono rounded-full border transition-colors ${
-                subject === s ? "bg-secondary text-secondary-foreground border-secondary" : "text-muted-foreground border-border hover:border-muted-foreground"
+                subject === s && !adaptiveMode ? "bg-secondary text-secondary-foreground border-secondary" : "text-muted-foreground border-border hover:border-muted-foreground"
               }`}
             >
               {s}
@@ -301,10 +611,11 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
           {(["all", ...EXAM_SOURCES] as SourceFilter[]).map(s => (
             <button
               key={s}
-              onClick={() => { setSourceFilter(s); setQIndex(0); setSelectedOpt(null); }}
+              onClick={() => { setSourceFilter(s); setQIndex(0); setSelectedOpt(null); deactivateAdaptive(); }}
               className={`px-2.5 py-1 text-[11px] font-mono rounded-full border transition-colors ${
-                sourceFilter === s
-                  ? s === "AIIMS" ? "bg-blue-500/20 text-blue-400 border-blue-500/40"
+                sourceFilter === s && !adaptiveMode
+                  ? s === "NEET-PG" ? "bg-rose-500/20 text-rose-400 border-rose-500/40"
+                    : s === "AIIMS" ? "bg-blue-500/20 text-blue-400 border-blue-500/40"
                     : s === "PGIMER" ? "bg-violet-500/20 text-violet-400 border-violet-500/40"
                     : s === "JIPMER" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
                     : s === "INI-CET" ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
@@ -317,14 +628,26 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
           ))}
         </div>
 
-        {/* Mode + Difficulty */}
+        {/* Mode + Difficulty + Adaptive */}
         <div className="flex gap-1.5 flex-wrap">
+          {/* Adaptive button */}
+          <button
+            onClick={() => adaptiveMode ? deactivateAdaptive() : activateAdaptive()}
+            className={`flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono rounded-full border transition-colors ${
+              adaptiveMode
+                ? "bg-primary/20 text-primary border-primary/40"
+                : "text-muted-foreground border-border/50 hover:border-muted-foreground"
+            }`}
+          >
+            <Zap className="w-2.5 h-2.5" /> Adaptive
+          </button>
+          <div className="w-px h-5 bg-border self-center mx-1" />
           {(["all", "unattempted", "wrong"] as FilterMode[]).map(m => (
             <button
               key={m}
-              onClick={() => { setMode(m); setQIndex(0); setSelectedOpt(null); }}
+              onClick={() => { setMode(m); setQIndex(0); setSelectedOpt(null); if (adaptiveMode) deactivateAdaptive(); }}
               className={`px-2.5 py-1 text-[11px] font-mono rounded-full border transition-colors ${
-                mode === m ? "bg-card text-foreground border-border" : "text-muted-foreground border-border/50 hover:border-muted-foreground"
+                mode === m && !adaptiveMode ? "bg-card text-foreground border-border" : "text-muted-foreground border-border/50 hover:border-muted-foreground"
               }`}
             >
               {m === "unattempted" ? "New" : m === "wrong" ? "Wrong" : "All"}
@@ -334,9 +657,9 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
           {(["all", "easy", "medium", "hard"] as DifficultyFilter[]).map(d => (
             <button
               key={d}
-              onClick={() => { setDifficulty(d); setQIndex(0); setSelectedOpt(null); }}
+              onClick={() => { setDifficulty(d); setQIndex(0); setSelectedOpt(null); if (adaptiveMode) deactivateAdaptive(); }}
               className={`px-2.5 py-1 text-[11px] font-mono rounded-full border transition-colors capitalize ${
-                difficulty === d
+                difficulty === d && !adaptiveMode
                   ? d === "all"    ? "bg-secondary text-secondary-foreground border-secondary"
                   : d === "easy"   ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
                   : d === "medium" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/40"
@@ -348,6 +671,19 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
             </button>
           ))}
         </div>
+
+        {/* Adaptive mode banner */}
+        {adaptiveMode && (
+          <div className="flex items-center justify-between px-3 py-2 bg-primary/10 border border-primary/30 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Zap className="w-3.5 h-3.5 text-primary" />
+              <span className="text-xs font-mono text-primary">Adaptive mode — {pool.length} questions weighted to your weakest subjects</span>
+            </div>
+            <button onClick={deactivateAdaptive} className="text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors">
+              Clear
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Empty state */}
@@ -356,10 +692,11 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
           <div className="text-center space-y-3">
             <CheckCircle className="w-12 h-12 text-emerald-400/40 mx-auto" />
             <p className="text-sm font-mono text-muted-foreground">
-              {mode === "unattempted" ? "All questions attempted!" : "No wrong answers — great work!"}
+              {adaptiveMode ? "No wrong/unattempted questions — well done!" :
+               mode === "unattempted" ? "All questions attempted!" : "No wrong answers — great work!"}
             </p>
             <button
-              onClick={() => { setMode("all"); setDifficulty("all"); setQIndex(0); }}
+              onClick={() => { setMode("all"); setDifficulty("all"); setQIndex(0); deactivateAdaptive(); }}
               className="px-4 py-2 bg-primary text-primary-foreground text-xs font-mono rounded-md"
             >
               Show All
@@ -379,6 +716,7 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
                 <DiffBadge level={current.difficulty} />
                 {current.source && (
                   <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${
+                    current.source === "NEET-PG" ? "bg-rose-500/10 border-rose-500/30 text-rose-400" :
                     current.source === "AIIMS" ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
                     current.source === "PGIMER" ? "bg-violet-500/10 border-violet-500/30 text-violet-400" :
                     current.source === "JIPMER" ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" :
@@ -386,6 +724,9 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
                   }`}>
                     {current.source} {current.year}
                   </span>
+                )}
+                {qNotes[current.uid]?.trim() && (
+                  <Pencil className="w-3.5 h-3.5 text-primary" title="Note saved" />
                 )}
                 {attempt && (attempt.correct
                   ? <CheckCircle className="w-4 h-4 text-emerald-400" />
@@ -433,10 +774,15 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
 
             {/* Explanation */}
             {revealed && (
-              <div className="mx-5 mb-5 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-3">
+              <div className="mx-5 mb-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-3">
                 <p className="text-[11px] font-mono text-emerald-400 uppercase tracking-wider mb-1.5">Explanation</p>
                 <p className="text-sm font-mono text-foreground/80 leading-relaxed">{current.explanation}</p>
               </div>
+            )}
+
+            {/* Per-question annotation */}
+            {revealed && (
+              <QuestionNote uid={current.uid} notes={qNotes} onSave={saveNote} />
             )}
           </div>
 

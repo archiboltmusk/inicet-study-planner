@@ -9,8 +9,10 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
-import { TrendingUp, Activity, Calendar, Flame, Trophy, Target, Clock } from "lucide-react";
+import { TrendingUp, Activity, Calendar, Flame, Trophy, Target, Clock, Brain } from "lucide-react";
 import { SCHEDULE } from "@/data/schedule";
+import { calcAllMastery } from "@/lib/mastery";
+import { QUESTION_SUBJECTS } from "@/data/questions";
 
 export interface McqScore {
   attempted: number;
@@ -494,6 +496,59 @@ export function AnalyticsPanel({ mcqScores, completedDays, streak, examDate }: P
         </div>
       </div>
 
+      {/* ── Section 6: Subject Mastery Scores ─────────────────────────────────── */}
+      <MasterySection />
+
+    </div>
+  );
+}
+
+function MasterySection() {
+  const mastery = useMemo(() => calcAllMastery(QUESTION_SUBJECTS), []);
+  const rows = QUESTION_SUBJECTS
+    .map(subj => ({ subj, score: mastery[subj] ?? null }))
+    .filter(r => r.score !== null)
+    .sort((a, b) => (a.score ?? 0) - (b.score ?? 0));
+
+  if (rows.length === 0) return null;
+
+  const masteryColor = (score: number) =>
+    score >= 70 ? "bg-emerald-500" : score >= 50 ? "bg-amber-500" : "bg-red-500";
+  const masteryText = (score: number) =>
+    score >= 70 ? "text-emerald-400" : score >= 50 ? "text-amber-400" : "text-red-400";
+
+  return (
+    <div className="bg-card border border-border rounded-xl p-5">
+      <div className="flex items-center gap-2 mb-1">
+        <Brain className="w-4 h-4 text-muted-foreground" />
+        <h3 className="text-xs uppercase text-muted-foreground font-mono">Subject Mastery Score</h3>
+        <span className="text-[10px] text-muted-foreground ml-auto">(0–100, weakest first)</span>
+      </div>
+      <p className="text-[10px] text-muted-foreground mb-4">Combines PYQ accuracy, spaced-repetition ease, and mistake recency.</p>
+      <div className="space-y-3">
+        {rows.map(({ subj, score }) => (
+          <div key={subj} className="flex items-center gap-3">
+            <span className="text-[11px] text-muted-foreground w-32 truncate flex-shrink-0">{subj}</span>
+            <div className="flex-1 h-2 bg-background rounded-full overflow-hidden border border-border">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${masteryColor(score!)}`}
+                style={{ width: `${score}%` }}
+              />
+            </div>
+            <span className={`text-[11px] font-bold w-8 text-right flex-shrink-0 ${masteryText(score!)}`}>
+              {score}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-4 mt-3 pt-2 border-t border-border/40">
+        {([["bg-red-500", "< 50"], ["bg-amber-500", "50–69"], ["bg-emerald-500", "≥ 70"]] as [string, string][]).map(([cls, label]) => (
+          <div key={label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+            <span className={`w-2 h-2 rounded-sm inline-block ${cls}`} />
+            {label}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
