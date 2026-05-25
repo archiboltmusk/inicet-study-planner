@@ -1,0 +1,60 @@
+name: Auto-sync PR branches with main
+
+# Every time main is updated, merge main into every open PR branch.
+# This keeps branches current so conflicts stay small and localised.
+# If a branch has genuine conflicts GitHub will skip it (no force-push).
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    # Don't run on bot-generated main pushes (avoids loops)
+    if: "!contains(github.event.head_commit.author.name, 'github-actions[bot]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update all open PR branches
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: 'main',
+              per_page: 50,
+            });
+
+            if (prs.length === 0) {
+              console.log('No open PRs — nothing to sync.');
+              return;
+            }
+
+            for (const pr of prs) {
+              try {
+                await github.rest.pulls.updateBranch({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                });
+                console.log(`✓ Synced PR #${pr.number}: "${pr.title}"`);
+              } catch (err) {
+                // 422 = merge conflict — skip, don't fail the whole job
+                if (err.status === 422) {
+                  console.log(`⚠ PR #${pr.number} has conflicts — skipped (manual resolve needed)`);
+                } else {
+                  console.log(`✗ PR #${pr.number} failed: ${err.message}`);
+                }
+              }
+            }
