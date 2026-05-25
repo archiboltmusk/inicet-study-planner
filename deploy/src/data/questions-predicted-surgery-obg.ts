@@ -570,7 +570,7 @@ export const PREDICTED_SURGERY_OBG_QUESTIONS: Question[] = [
     subject: "OBG",
     stem: "According to FIGO 2023 staging, cervical cancer with tumour confined to the cervix measuring 3 cm in greatest dimension is classified as:",
     options: ["Stage Ia1", "Stage Ib1", "Stage Ib2", "Stage IIa1"],
-    answer: 1,
+    answer: 2,
     explanation:
       "FIGO 2023 cervical cancer staging: Stage Ia — microscopic invasive cancer only (Ia1: ≤3 mm depth, Ia2: 3–5 mm depth). Stage Ib — clinically visible or microscopic >5 mm: Ib1 = <2 cm confined to cervix; Ib2 = 2–4 cm; Ib3 = ≥4 cm confined to cervix. Stage IIa1 = upper vagina <4 cm. Stage IIb = parametrial involvement. A 3 cm tumour confined to cervix = Ib2. Key FIGO 2023 update: IIIc substages (IIIc1 = pelvic LN, IIIc2 = para-aortic LN) added based on imaging/pathology findings.",
   },

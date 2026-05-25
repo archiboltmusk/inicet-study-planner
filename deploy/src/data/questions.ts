@@ -3459,7 +3459,7 @@ const RAW_QUESTIONS = [
     subject: "Paediatrics",
     stem: "The MUAC (mid-upper arm circumference) cutoff for severe acute malnutrition (SAM) in children aged 6-59 months is:",
     options: ["<13.5 cm", "<12.5 cm", "<11.5 cm", "<10.5 cm"],
-    answer: 1,
+    answer: 2,
     explanation:
       "WHO SAM criteria: MUAC <11.5 cm (severe) — requires therapeutic feeding (F-75 then F-100 or RUTF). MUAC 11.5-12.5 = moderate acute malnutrition (MAM) — supplementary feeding. MUAC >12.5 = normal. MUAC is independent of age (6-59 months), easy to use in field settings. WHZ <-3 also defines SAM.",
   },
