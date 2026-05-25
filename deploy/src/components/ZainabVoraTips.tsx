@@ -119,7 +119,7 @@ const TIP_SECTIONS: TipSection[] = [
     iconBg: "bg-blue-500/20",
     tips: [
       { id: 1, text: "Attempt Surgery, Medicine, OBG and Paeds first in the exam — highest weightage, highest confidence." },
-      { id: 2, text: "Skip questions you genuinely don't know in the first pass. Come back with fresh eyes. Never guess randomly with -1/3 marking." },
+      { id: 2, text: "Skip questions you genuinely don't know in the first pass. Come back with fresh eyes. Never guess randomly — NEET PG uses +4/−1 marking (25% penalty per wrong answer)." },
       { id: 3, text: "In the last 15 minutes, review only marked/skipped questions — don't re-examine answered ones." },
       { id: 4, text: "Aim for 160+ net correct to be in top 100. 145+ net gets you AIR < 500." },
       { id: 5, text: "Read all 4 options before marking — NEET PG loves 'most appropriate' over 'correct'. Second best can trap you." },
@@ -231,7 +231,7 @@ const TIP_SECTIONS: TipSection[] = [
       { id: 1, text: "SLEEP: Memory consolidation happens during NREM deep sleep (stages 3-4). Cutting sleep from 8h to 6h reduces memory retention by up to 40%. No revision technique compensates for sleep deficit." },
       { id: 2, text: "EXERCISE: 20 minutes of brisk walking 3x/week increases hippocampal volume — the brain region responsible for memory formation. Exercise is not taking time away from studying; it's multiplying the effect of studying." },
       { id: 3, text: "HYDRATION: Even 2% dehydration reduces working memory and attention. Keep 1L water on your desk. Drink before you feel thirsty — thirst is already a sign of deficit." },
-      { id: 4, text: "FOOD TIMING: Avoid heavy carbs at lunch (2 PM crash is real — it's postprandial hypoglycaemia). Eat a protein-rich lunch. Keep study sessions at 2-3 PM lighter or use for MCQs, not new reading." },
+      { id: 4, text: "FOOD TIMING: Avoid heavy carbs at lunch (2 PM crash is real — it's the post-lunch circadian dip compounded by a postprandial glucose fluctuation). Eat a protein-rich lunch. Keep study sessions at 2-3 PM lighter or use for MCQs, not new reading." },
       { id: 5, text: "SUNLIGHT: 10 minutes of morning sunlight sets your circadian clock, improves alertness, and boosts serotonin. Simple, free, and dramatically effective for mood and focus throughout the day." },
       { id: 6, text: "PHONE DISCIPLINE: iOS Screen Time / Android Digital Wellbeing — set daily limits. 'Downtime' mode from 10 PM to 6 AM. Remove social apps from home screen; friction reduces usage by 40%." },
       { id: 7, text: "CAFFEINE TIMING: Coffee 90 minutes after waking (not immediately) avoids the cortisol crash. Cut caffeine by 2 PM — caffeine half-life is 5-6 hours and will sabotage your sleep quality even if you 'fall asleep fine'." },
