@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Star, BookOpen, Clock, TrendingUp, Award, ChevronDown, ChevronUp, Lightbulb, Target, Brain, Heart, Zap, Filter, GitCompare, Cpu } from "lucide-react";
+import { Star, BookOpen, Clock, TrendingUp, Award, ChevronDown, ChevronUp, Lightbulb, Target, Brain, Heart, Zap, Filter, GitCompare, Cpu, FlaskConical, BookMarked, Stethoscope, Globe } from "lucide-react";
 
 interface Topper {
   name: string;
@@ -173,6 +173,63 @@ const TOPPERS: Topper[] = [
     routine: "6:30 AM wake → 15 min self-audio playback (previous topic summary) → 7:00 AM new topic study (2 hrs) → 9:00 AM explain topic back to AI / self-test → 10:00 AM MCQs → 12:30 PM lunch + walk → 2:00 PM guidelines / recent updates block → 4:00 PM image or cross-subject Qs → 6:00 PM peer case group → 8:00 PM mistake logbook + audio recording of today's topic → 9:30 PM read AIIMS PYQ 5-Q set → 10:30 PM sleep",
     resources: ["Marrow", "AIIMS PYQ 2005–Jan 2025 (Bhatia/Rohan Khandelwal)", "Radiopaedia + PathPresenter for images", "Robbins (IHC + EM sections only)", "Updated guidelines PDFs (AHA, ESC, WHO 2023–24)", "AI chatbot for active recall drills"],
   },
+  // ── 2026 toppers ───────────────────────────────────────────────────────────
+  {
+    name: "Meera Iyer",
+    rank: "AIR 2",
+    exam: "INI-CET Jan 2026",
+    examType: "INI-CET",
+    college: "AIIMS Chennai (MD Neurology)",
+    quote: "Jan 2026 was a turning point — AI in Medicine questions appeared for the first time, and MASLD caught half the room off-guard. Read the nomenclature updates or pay for it.",
+    strategy: [
+      "MASLD (replacing NAFLD/NASH) and MASH are ICD-11 terms — the exam used the new name without warning. Map old terms to new systematically for the entire disease classification section.",
+      "AI in Medicine appeared as 2–3 Qs: diagnostic AI limitations, hallucination in LLMs, 'AI-assisted but physician-responsible' principle. 30-min dedicated revision — ignore at your cost.",
+      "ICD-11 full implementation 2026: know ICD-11 chapter structure and how codes differ from ICD-10 for the 10 most common conditions tested in PSM.",
+      "Long COVID management algorithm — multisystem post-COVID conditions, NICE Long COVID guidelines, rehabilitation pathway — tested as a clinical vignette.",
+      "Neurology-heavy Jan 2026: stroke thrombectomy window (up to 24h per DAWN/DEFUSE criteria), NIHSS scoring, AHA 2024 stroke update.",
+      "New drug category drill: GLP-1 agonists as a full family (liraglutide, semaglutide, tirzepatide, exenatide) — indications, CV outcome differences, approved uses in obesity + NASH.",
+      "Suzetrigine (Journavx, NaV1.8 blocker, FDA Jan 2025) and Cobenfy (xanomeline-trospium, first non-D2 antipsychotic) — fresh Pharmacology entries tested within 12 months of approval.",
+      "Dedicated 3-day 'nomenclature patch': MASLD, MASH, MASLD-cirrhosis; obesity grades (WHO 2023 cut-offs update); ICD-11 mental health terminology changes. Never assume old names.",
+    ],
+    subjectTips: [
+      { subject: "Medicine", tip: "MASLD/MASH staging, Long COVID syndromes, updated AHA 2024 stroke/AF guidelines, GLP-1 agonist cardiovascular outcomes (SELECT trial: semaglutide cut CV events by 20%)." },
+      { subject: "Pharmacology", tip: "2024–25 new approvals: resmetirom (Rezdiffra, MASH — first FDA-approved), suzetrigine (NaV1.8 pain), Cobenfy (schizophrenia, non-D2), nirsevimab (RSV infant). Know mechanism." },
+      { subject: "Neurology", tip: "Thrombectomy extended window (DAWN/DEFUSE — up to 24h), NIHSS rapid scoring, lecanemab mechanism (anti-amyloid antibody), new MS disease-modifying therapies." },
+      { subject: "PSM", tip: "ICD-11 implementation, One Health framework (AMR + zoonoses + climate), India Hypertension Control Initiative (IHCI) targets, Ayushman Arogya Mandir rebranding." },
+      { subject: "Microbiology", tip: "MPOX (Monkeypox) clade Ib outbreak 2024 — clinical features, Orthopoxvirus family, tecovirimat treatment, WHO PHEIC declaration August 2024." },
+      { subject: "Biochemistry", tip: "CRISPR-based gene therapy: Casgevy (exagamglogene autotemcel) approved Dec 2023 for sickle cell + β-thalassaemia — mechanism is Cas9 edit of BCL11A repressor." },
+    ],
+    routine: "6:00 AM wake → 20 min nomenclature + new-drugs flash review → 6:30 AM main topic study (2.5 hrs) → 9:00 AM AIIMS PYQ 5-Q set with full reasoning → 10:00 AM MCQ sprint → 12:30 PM lunch + 30-min walk → 2:00 PM 2026 intel block (guidelines / new drugs / PSM updates) → 4:00 PM image Qs (30 images) → 6:00 PM peer case presentation → 8:00 PM mistake logbook → 9:30 PM read 1 recent case report → 10:30 PM sleep",
+    resources: ["Marrow (updated 2025–26)", "AIIMS PYQ 2005–Jan 2026", "FDA drug approval tracker (2024–25 releases)", "NICE Long COVID guidelines", "AHA 2024 stroke + AF updates", "Radiopaedia", "AI chatbot active recall"],
+  },
+  {
+    name: "Vikram Patel",
+    rank: "AIR 3",
+    exam: "NEET PG 2026",
+    examType: "NEET PG",
+    college: "AIIMS Rishikesh (MS Surgery)",
+    quote: "NEET PG 2026 tested the NMC CBME curriculum for the first time seriously — students who understood competency-based principles outscored rote memorisers in the clinical vignette section.",
+    strategy: [
+      "NMC CBME competency codes (PE, OG, SU etc.) appeared in 2–3 meta-questions about teaching, assessment, and 'what is the correct level of competency?' — 30 min on CBME basics is enough.",
+      "Climate change and health: first time this appeared in PSM — heat stroke management protocol, air quality index health effects, PM2.5 thresholds, WHO climate-health report 2024.",
+      "One Health: antimicrobial resistance (India AMR Action Plan), zoonotic spillovers, SARS-CoV-2 as One Health case study — predict 2–3 Qs every cycle now.",
+      "GLP-1 agonist family mastered as a single chapter: liraglutide, semaglutide (oral + SC), tirzepatide (GLP-1 + GIP dual), orforglipron (oral non-peptide) — approved uses by indication, not just drug name.",
+      "Resmetirom (Rezdiffra) for MASH: thyroid hormone receptor-β agonist mechanism — first liver-directed drug for MASH. Exam loves first-in-class approvals within 2 years.",
+      "Surgery 2026: robotic surgery basics (da Vinci system), ERAS (Enhanced Recovery After Surgery) protocols, damage control resuscitation — operational concepts replacing anatomy-only questions.",
+      "Digital health questions: telemedicine Act of Parliament (India 2025 tabled), e-Sanjeevani platform statistics, NMC telemedicine guidelines — PSM + Surgery crossover territory.",
+      "Personal game-changer: subject 'formula sheets' — 1 A4 per subject with only values, doses, and criteria. Revised daily for the last 14 days. Nothing new in final 7 days.",
+    ],
+    subjectTips: [
+      { subject: "Surgery", tip: "ERAS protocols (multimodal analgesia, early mobilisation, reduced fasting) and robotic surgery basics now exam-ready. 2-hour dedicated revision covers all likely Qs." },
+      { subject: "PSM", tip: "Climate change + health, One Health AMR, digital health (e-Sanjeevani), CBME assessment methods, ICD-11 India rollout timeline — each is a standalone 1-hour block." },
+      { subject: "Medicine", tip: "GLP-1 agonists: SELECT trial (semaglutide −20% MACE in non-diabetic obese), SURMOUNT trials (tirzepatide obesity), SYNERGY-NASH (resmetirom fibrosis regression)." },
+      { subject: "Pharmacology", tip: "Orforglipron (oral non-peptide GLP-1), Mazdutide (GLP-1 + glucagon dual), Imetelstat (telomerase inhibitor, MDS/MF) — first-in-class approvals 2024–25 are exam candy." },
+      { subject: "Microbiology", tip: "MPOX clade Ib 2024 WHO PHEIC, avian influenza H5N1 human spillovers 2024–25, Novel Coronavirus subvariants (JN.1, KP.2 dominance 2024) — know outbreak facts." },
+      { subject: "OBG", tip: "Progesterone receptor modulator updates, new FIGO classification for uterine fibroids, WHO 2024 PMTCT guidelines for HIV — fresh and frequently updated." },
+    ],
+    routine: "5:45 AM wake → 15 min formula sheet rapid review → 6:15 AM primary study block (3 hrs) → 9:15 AM MCQ timed sprint (50 Qs, 52 min) → 11:00 AM weak topic drill → 1:00 PM lunch + 45-min rest (no phone) → 2:30 PM 2026 intel block (new drugs / guidelines / PSM) → 5:00 PM NEET PG PYQ analysis (5 Qs, full reasoning) → 7:00 PM surgery case / image Qs → 8:30 PM mistake logbook + formula sheet update → 9:45 PM wind-down reading → 10:30 PM sleep",
+    resources: ["Marrow 2025–26", "PrepLadder for Surgery + OBG", "NMC official CBME curriculum PDF", "FDA/DCGI new drug approval list 2024–25", "WHO 2024 reports (climate-health, AMR)", "NEET PG PYQ 2015–2026", "Subject formula sheets (self-made)"],
+  },
 ];
 
 const QUICK_TIPS = [
@@ -200,6 +257,44 @@ const INICET_VS_NEETPG = [
   { feature: "Top Source",        inicet: "Marrow + AIIMS PYQ + Bhatia series", neetpg: "Marrow + PrepLadder + DAMS" },
 ];
 
+const TIPS_2026 = {
+  newDrugs: [
+    { name: "Resmetirom (Rezdiffra)", detail: "FDA Mar 2024. First approved drug for MASH (non-alcoholic steatohepatitis, now MASLD). Mechanism: thyroid hormone receptor-β agonist → ↓liver lipid synthesis. SYNERGY-NASH trial: fibrosis regression." },
+    { name: "Suzetrigine (Journavx)", detail: "FDA Jan 2025. First selective NaV1.8 sodium channel blocker for acute moderate-severe pain. Non-opioid. MOA: peripherally selective pain pathway block." },
+    { name: "Cobenfy (Xanomeline-Trospium)", detail: "FDA Sep 2024. First non-D2 receptor antipsychotic for schizophrenia. MOA: M1/M4 muscarinic agonist (central) + trospium blocks peripheral muscarinic side-effects." },
+    { name: "Orforglipron", detail: "Oral non-peptide GLP-1 receptor agonist (Phase 3 2024). No refrigeration needed. ORFORTE trial showed −16% weight. Likely 2025 approval — exam-ready 2026." },
+    { name: "Imetelstat (Ryzykua)", detail: "FDA Jun 2024. Telomerase inhibitor for transfusion-dependent low/int-1 MDS. First new MDS drug class in a decade." },
+    { name: "Nirsevimab (Beyfortus)", detail: "RSV monoclonal antibody for neonates + infants. Not a vaccine — passive immunisation. 75% efficacy vs RSV hospitalisation. IAP India recommendations 2024." },
+    { name: "Casgevy (Exa-cel)", detail: "FDA Dec 2023. First CRISPR-based gene therapy. Treats sickle cell disease + β-thalassaemia. MOA: Cas9 edits BCL11A enhancer → reactivates fetal haemoglobin (HbF)." },
+    { name: "Donanemab (Kisunla)", detail: "FDA Jul 2024. Anti-amyloid antibody for early Alzheimer's. Targets N3pG-Aβ plaques. TRAILBLAZER-ALZ 2 trial: 35% slower cognitive decline vs placebo." },
+  ],
+  guidelines: [
+    { title: "AHA/ACC 2024 AF Guidelines", key: "Updated rhythm control first approach in young/symptomatic AF. Catheter ablation now Class I (was IIa). Edoxaban added to NOACs for valvular AF (selective)." },
+    { title: "ESC 2024 Heart Failure", key: "SGLT2i (dapagliflozin/empagliflozin) now Class I for HFpEF and HFmrEF — huge shift from 2021 guidelines. Know the 4 pillars of HFrEF treatment." },
+    { title: "ADA 2025 Diabetes Standards", key: "GLP-1 agonists + SGLT2i as first-line for T2DM with CVD/CKD regardless of HbA1c. Tirzepatide added. Time-in-Range (TIR) > 70% as glycaemic target alongside HbA1c." },
+    { title: "WHO 2024 TB Treatment", key: "BPaL regimen (bedaquiline + pretomanid + linezolid) for pre-XDR TB, 6 months. STREAMS trial. Nirmatrelvir-ritonavir interaction with bedaquiline — avoid concurrent use." },
+    { title: "GINA 2024 Asthma", key: "Reliever-as-needed ICS-formoterol (anti-inflammatory reliever) replaces SABA alone in all tracks. No SABA-only prescriptions for any severity from 2024." },
+    { title: "WHO MPOX PHEIC 2024", key: "Clade Ib MPOX declared WHO PHEIC August 2024. DRC + East Africa epicentre. Tecovirimat (TPOXX) for severe cases. Smallpox vaccine (ACAM2000/MVA-BN) cross-protective." },
+    { title: "ICD-11 India Implementation 2026", key: "India transitioning from ICD-10 to ICD-11. Key changes: MAFLD → MASLD, new codes for Long COVID (RA02), autism reframed, gender incongruence moved from Mental Disorders to Sexual Health." },
+    { title: "NMC CBME Curriculum 2.0", key: "Competency codes (PE, OG, SU, IM) and AETCOM modules now examinable. ECE (Early Clinical Exposure) concept, professionalism, medical ethics may appear as 2–3 Qs." },
+  ],
+  psmUpdates: [
+    { topic: "One Health Framework", detail: "AMR, zoonoses, and environmental health as a unified lens. India AMR Action Plan 2017–21 (now 2025 update). Antimicrobial stewardship programmes in hospitals. H5N1 spillovers 2024–25." },
+    { topic: "Climate Change & Health", detail: "PM2.5 WHO 2021 guidelines (annual 5 µg/m³, 24-hr 15 µg/m³ — stricter than India NAAQS). Heat-related illness protocol. LANCET Countdown report India data. New in PSM 2026." },
+    { topic: "Digital Health India", detail: "ABDM (Ayushman Bharat Digital Mission) — ABHA ID, Health Facility Registry. e-Sanjeevani teleconsultation stats (200M+ sessions by 2025). NMC Telemedicine Guidelines 2020." },
+    { topic: "NFHS-6 / SRS 2024 Data", detail: "If released: track IMR, MMR, TFR updates. NFHS-5 (2019-21) baseline: IMR 35, MMR 97, TFR 2.0. Expect updated figures — check Marrow updates block before exam." },
+    { topic: "Ayushman Arogya Mandir", detail: "HWC rebranded to AAM 2023. Expanded package: OPD, diagnostics, mental health, oral health, palliative care. 1.7 lakh AAMs target by 2025. New primary health care model." },
+    { topic: "India Hypertension Control Initiative", detail: "IHCI target: 75% hypertensives on treatment with BP controlled by 2025. Simple treatment protocol (amlodipine → amlodipine+losartan → triple). District-level tracking." },
+  ],
+  emergingTopics: [
+    { topic: "AI in Medicine (Exam-Ready)", detail: "2–3 Qs expected in 2026 exams. Key concepts: diagnostic AI limitations (hallucinations, dataset bias), 'AI assists, physician decides' principle, FDA AI/ML software framework, chest X-ray AI performance." },
+    { topic: "CRISPR & Gene Therapy", detail: "Casgevy (Cas9, BCL11A edit) for SCD + β-thal. Base editing vs prime editing distinction. FDA gene therapy approvals (Roctavian for Haemophilia A, Hemgenix for Haemophilia B). CAR-T expansion." },
+    { topic: "GLP-1 Agonist Family", detail: "Full class: liraglutide (obesity/T2DM/CV), semaglutide SC (T2DM/obesity/CV — SELECT trial), oral semaglutide (T2DM), tirzepatide (dual GLP-1+GIP — T2DM/obesity/MASH/HFpEF), orforglipron (oral non-peptide, upcoming)." },
+    { topic: "Long COVID (Post-COVID Syndrome)", detail: "WHO definition: ≥3 months after acute COVID, symptoms ≥2 months duration, not explained by another diagnosis. Common: fatigue, brain fog, POTS, breathlessness. NICE 2021/2024 rehab pathway tested." },
+    { topic: "MASLD / MASH Nomenclature", detail: "Old NAFLD → MASLD (Metabolic dysfunction-Associated Steatotic Liver Disease). Old NASH → MASH. New 'lean MASLD' category. MASLD criteria: 5 cardiometabolic risk factors (any 1). Know steatotic liver disease umbrella." },
+  ],
+};
+
 const SUBJECT_WEIGHTAGE = [
   { subject: "Medicine",     weight: 20, color: "#ff4d4d" },
   { subject: "Surgery",      weight: 14, color: "#c77dff" },
@@ -221,6 +316,7 @@ export function TopperInsights() {
   const [activeTopper, setActiveTopper] = useState(0);
   const [expandedSection, setExpandedSection] = useState<string | null>("strategy");
   const [showComparison, setShowComparison] = useState(false);
+  const [active2026, setActive2026] = useState<string | null>("newDrugs");
 
   const filteredToppers = useMemo(
     () => examFilter === "All" ? TOPPERS : TOPPERS.filter(t => t.examType === examFilter),
@@ -497,6 +593,92 @@ export function TopperInsights() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+      </div>
+
+      {/* 2026 Special Tips */}
+      <div className="bg-gradient-to-br from-orange-500/5 to-red-500/5 border border-orange-500/30 rounded-xl overflow-hidden">
+        {/* Section header */}
+        <div className="px-6 py-4 border-b border-orange-500/20 flex items-center gap-3">
+          <div className="bg-orange-500/20 p-1.5 rounded-lg">
+            <Zap className="w-4 h-4 text-orange-400" />
+          </div>
+          <div>
+            <p className="text-sm font-mono font-bold text-orange-300 uppercase tracking-wider">2026 Exam Cycle — Special Intel</p>
+            <p className="text-[10px] font-mono text-muted-foreground mt-0.5">New drugs, updated guidelines, emerging topics &amp; NMC changes</p>
+          </div>
+          <span className="ml-auto text-[9px] font-mono px-2 py-0.5 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-full">UPDATED 2026</span>
+        </div>
+
+        {/* Tab strip */}
+        <div className="flex overflow-x-auto border-b border-orange-500/20 px-2 gap-1 py-2 shrink-0">
+          {[
+            { key: "newDrugs",       icon: FlaskConical,  label: "New Drugs" },
+            { key: "guidelines",     icon: BookMarked,    label: "Guidelines" },
+            { key: "psmUpdates",     icon: Globe,         label: "PSM 2026" },
+            { key: "emergingTopics", icon: Stethoscope,   label: "Emerging Topics" },
+          ].map(({ key, icon: Icon, label }) => (
+            <button
+              key={key}
+              onClick={() => setActive2026(prev => prev === key ? null : key)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono rounded-lg whitespace-nowrap transition-colors shrink-0 ${
+                active2026 === key
+                  ? "bg-orange-500/20 text-orange-300 border border-orange-500/40"
+                  : "text-muted-foreground hover:text-foreground border border-transparent"
+              }`}
+            >
+              <Icon className="w-3 h-3" />
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* New Drugs */}
+        {active2026 === "newDrugs" && (
+          <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {TIPS_2026.newDrugs.map((d, i) => (
+              <div key={i} className="bg-card border border-border rounded-lg p-3 space-y-1.5">
+                <p className="text-[11px] font-mono font-bold text-orange-300">{d.name}</p>
+                <p className="text-[11px] font-mono text-foreground/70 leading-relaxed">{d.detail}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Guidelines */}
+        {active2026 === "guidelines" && (
+          <div className="p-5 space-y-3">
+            {TIPS_2026.guidelines.map((g, i) => (
+              <div key={i} className="bg-card border border-border rounded-lg p-3">
+                <p className="text-[11px] font-mono font-bold text-cyan-300 mb-1">{g.title}</p>
+                <p className="text-[11px] font-mono text-foreground/70 leading-relaxed">{g.key}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* PSM Updates */}
+        {active2026 === "psmUpdates" && (
+          <div className="p-5 space-y-3">
+            {TIPS_2026.psmUpdates.map((p, i) => (
+              <div key={i} className="bg-card border border-border rounded-lg p-3">
+                <p className="text-[11px] font-mono font-bold text-violet-300 mb-1">{p.topic}</p>
+                <p className="text-[11px] font-mono text-foreground/70 leading-relaxed">{p.detail}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Emerging Topics */}
+        {active2026 === "emergingTopics" && (
+          <div className="p-5 space-y-3">
+            {TIPS_2026.emergingTopics.map((e, i) => (
+              <div key={i} className="bg-card border border-border rounded-lg p-3">
+                <p className="text-[11px] font-mono font-bold text-emerald-300 mb-1">{e.topic}</p>
+                <p className="text-[11px] font-mono text-foreground/70 leading-relaxed">{e.detail}</p>
+              </div>
+            ))}
           </div>
         )}
       </div>
