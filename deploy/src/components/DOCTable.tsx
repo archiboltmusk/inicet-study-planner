@@ -100,7 +100,7 @@ const DOC_DATA: DOCEntry[] = [
   { condition:"Pre-eclampsia — antihypertensive", doc:"Labetalol IV (acute)", alternative:"Nifedipine / Hydralazine", subject:"OBG" },
   { condition:"Gestational diabetes", doc:"Metformin (2nd trimester onwards)", alternative:"Insulin (if targets not met)", subject:"OBG" },
   { condition:"Ectopic pregnancy (unruptured, stable)", doc:"Methotrexate IM", notes:"hCG <5000, no fetal cardiac activity, tube <4cm", subject:"OBG" },
-  { condition:"PCOS — ovulation induction", doc:"Clomiphene citrate", alternative:"Letrozole (better live birth rates, off-label)", subject:"OBG" },
+  { condition:"PCOS — ovulation induction", doc:"Letrozole (aromatase inhibitor)", alternative:"Clomiphene citrate (if letrozole unavailable)", notes:"ESHRE/ASRM 2023: letrozole now first-line — better live birth & ovulation rates vs clomiphene", subject:"OBG" },
   { condition:"PCOS — insulin resistance", doc:"Metformin", subject:"OBG" },
   { condition:"Tocolysis (preterm labour)", doc:"Nifedipine (calcium channel blocker)", alternative:"Atosiban (oxytocin antagonist)", notes:"Aim for 48h to complete steroids", subject:"OBG" },
   { condition:"Cervical ripening", doc:"Misoprostol (PGE1)", alternative:"Dinoprostone (PGE2 gel)", subject:"OBG" },

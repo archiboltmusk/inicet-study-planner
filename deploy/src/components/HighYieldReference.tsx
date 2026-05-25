@@ -133,7 +133,7 @@ const DATA: Record<string, SubjectData> = {
           { title: "NYHA Class II", value: "Slight limitation; comfortable at rest" },
           { title: "NYHA Class III", value: "Marked limitation; comfortable only at rest" },
           { title: "NYHA Class IV", value: "Symptoms at rest" },
-          { title: "Hypertension (JNC-8)", value: "Stage 1: 130–139/80–89 mmHg, Stage 2: ≥140/90 mmHg" },
+          { title: "Hypertension (ACC/AHA 2017)", value: "Elevated: 120–129/<80; Stage 1: 130–139/80–89; Stage 2: ≥140/90 mmHg", note: "JNC-7: Stage 1 =140–159, Stage 2 ≥160/100; India exams use both — know which guideline is cited" },
           { title: "HTN emergency vs urgency", value: "Emergency: BP↑ + end-organ damage; Urgency: no organ damage" },
         ],
       },
@@ -285,7 +285,7 @@ const DATA: Record<string, SubjectData> = {
         items: [
           { title: "NMR target (India)", value: "< 20 per 1000 LB (SDG: < 12)" },
           { title: "IMR target (India)", value: "< 25 per 1000 LB" },
-          { title: "MMR (India 2022)", value: "≈ 97 per 1,00,000 LB (target < 70)" },
+          { title: "MMR (India, SRS 2018–20)", value: "97 per 1,00,000 LB (SRS 2019-21 updated: 93; SDG target: < 70)" },
           { title: "TFR target (NHM)", value: "2.1 (replacement level)" },
           { title: "Immunisation coverage target (UIP)", value: "≥ 90 % full immunisation" },
           { title: "Iodine deficiency — goitre prevalence", value: "≥ 5% = public health problem" },
