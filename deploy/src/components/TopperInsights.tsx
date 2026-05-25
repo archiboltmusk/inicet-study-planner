@@ -126,7 +126,7 @@ const TOPPERS: Topper[] = [
     college: "AIIMS New Delhi (MD Radiodiagnosis)",
     quote: "INI-CET is an AIIMS exam at heart. It tests clinical reasoning, not recall. If you're memorising, you're preparing for the wrong exam.",
     strategy: [
-      "INI-CET has NO negative marking — attempt every single question. Never leave a blank. Even a random guess has positive EV.",
+      "INI-CET marking: +1 correct, −1/3 wrong. A 4-option Q with any 1 option eliminated has positive expected value — attempt it. Pure random guess (no elimination) is EV-neutral (1/4 × 1 = 3/4 × 1/3), so still worth attempting over leaving blank.",
       "200 questions in 3.5 hours = 63 sec/Q, but stems are longer — train with 90-sec/Q pacing to avoid panic.",
       "AIIMS-style reasoning: 'what is the most appropriate next step' — not 'what is correct in theory'. Hospital protocol matters.",
       "Image questions are 25–30% of the paper. Daily 30-image drill for 3 weeks builds pattern recognition that can't be crammed.",
@@ -159,7 +159,7 @@ const TOPPERS: Topper[] = [
       "Hybrid Q-type drilling: made 'cross-subject cards' — e.g., a Biochemistry card with clinical correlation on back. INI-CET Q-setters love these bridges.",
       "Recent guidelines batch: dedicated 1 week only to 2023–2025 updates (AHA HF guidelines, updated WHO malaria treatment, new TB regimens). Paid off immediately.",
       "Group study 6–8 PM daily — one person presents a case, rest diagnose and manage. Made INI-CET's clinical scenario format feel familiar by exam day.",
-      "Attempted AIIMS PYQ papers under strict timed conditions. No negative marking means your strategy should be 'speed + complete attempt' not caution.",
+      "INI-CET has −1/3 negative marking (+1/−0.33 scheme). Still, with any elimination the EV is positive — attempt confidently when you can rule out even one option. Never leave a blank if you have any reasoning.",
       "Self-audio recordings: recorded 3-minute summaries of each topic. Played them while walking. Passive absorption of high-yield points without screen fatigue.",
     ],
     subjectTips: [
@@ -234,8 +234,8 @@ const TOPPERS: Topper[] = [
 
 const QUICK_TIPS = [
   { icon: Brain, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", title: "The 80/20 Rule", tip: "80% of marks come from 20% of topics. Master Cardiology, Respiratory, Nephrology, Pathology basics, Obstetric emergencies, and India-specific content — you cover the exam spine." },
-  { icon: Clock, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", title: "Time Per Question", tip: "Both NEET PG and INI-CET give ~63 sec/Q (210 min / 200 Qs). Train at 90-sec/Q to build a buffer for the longer clinical vignettes now appearing in 2025 exams." },
-  { icon: Target, color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", title: "Negative Marking Strategy", tip: "NEET PG: −0.25 per wrong. 3 options eliminated = attempt. INI-CET: NO negative marking — always attempt every question, never leave blank." },
+  { icon: Clock, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", title: "Time Per Question", tip: "NEET PG: 210 min / 200 Qs = 63 sec/Q. INI-CET: 180 min / 200 Qs = 54 sec/Q — 15% less time. Train at 70-sec/Q for INI-CET to build a buffer for longer clinical vignettes." },
+  { icon: Target, color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", title: "Negative Marking Strategy", tip: "NEET PG: +4 correct, −1 wrong. INI-CET: +1 correct, −1/3 wrong. For INI-CET, eliminating even 1 option makes guessing EV-positive. Never leave a blank if you have any reasoning at all." },
   { icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", title: "Mock Score Trajectory", tip: "Don't panic at a 50% Day-1 score. Topper trajectory: Week 1 avg 55% → Week 2 avg 65% → Week 3 avg 72% → Week 4 avg 78%+. The learning curve is exponential." },
   { icon: Lightbulb, color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/20", title: "The Mistake Logbook", tip: "Every wrong MCQ: write the correct answer + 1-line reason. Review Sunday mornings. This single habit accounts for more rank improvement than any other strategy." },
   { icon: Heart, color: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20", title: "Burnout Prevention", tip: "One rest day per week is not optional — it is mandatory. Sleep 7 hours minimum. Brain consolidates memory during sleep, not during cramming. Sleeping IS studying." },
@@ -246,14 +246,14 @@ const QUICK_TIPS = [
 
 const INICET_VS_NEETPG = [
   { feature: "Questions",         inicet: "200 Qs",                 neetpg: "200 Qs" },
-  { feature: "Duration",          inicet: "3.5 hours (210 min)",    neetpg: "3.5 hours (210 min)" },
-  { feature: "Negative Marking",  inicet: "NONE — attempt all",     neetpg: "−0.25 per wrong answer" },
+  { feature: "Duration",          inicet: "3 hours (180 min)",      neetpg: "3.5 hours (210 min)" },
+  { feature: "Negative Marking",  inicet: "−1/3 per wrong answer",  neetpg: "−1 per wrong answer" },
   { feature: "Question Style",    inicet: "Clinical reasoning, AIIMS grand-rounds style",  neetpg: "Recall + clinical, shorter stems" },
   { feature: "Image Qs",          inicet: "~25–30% of paper",       neetpg: "~15–20% of paper" },
   { feature: "Basic Science Wt.", inicet: "Higher (~25–28%)",       neetpg: "Lower (~15%)" },
-  { feature: "Frequency",         inicet: "Twice yearly (Jan + Jun)", neetpg: "Once yearly" },
+  { feature: "Frequency",         inicet: "Twice yearly (Nov + May)", neetpg: "Once yearly" },
   { feature: "PYQ Importance",    inicet: "AIIMS PYQ 2005+ essential", neetpg: "NEET PG PYQ 2010+ essential" },
-  { feature: "Marking Scheme",    inicet: "+1 correct, 0 wrong",    neetpg: "+4 correct, −1 wrong" },
+  { feature: "Marking Scheme",    inicet: "+1 correct, −1/3 wrong", neetpg: "+4 correct, −1 wrong" },
   { feature: "Top Source",        inicet: "Marrow + AIIMS PYQ + Bhatia series", neetpg: "Marrow + PrepLadder + DAMS" },
 ];
 
