@@ -155,6 +155,7 @@ export function MistakeLogbook() {
 
   const [subjectFilter, setSubjectFilter] = useState("All");
   const [reviewMode, setReviewMode] = useState(false);
+  const [reviewPool, setReviewPool] = useState<MistakeEntry[]>([]); // snapshot so markReviewed can't shift indices
   const [reviewIdx, setReviewIdx] = useState(0);
   const [reviewStep, setReviewStep] = useState<ReviewStep>("question");
   const [showForm, setShowForm] = useState(false);
@@ -238,7 +239,7 @@ export function MistakeLogbook() {
 
   // ── Review mode ────────────────────────────────────────────────────────────
   if (reviewMode) {
-    const card = reviewEntries[reviewIdx];
+    const card = reviewPool[reviewIdx];
     if (!card) {
       return (
         <div className="flex flex-col items-center justify-center gap-4 py-16">
@@ -254,9 +255,9 @@ export function MistakeLogbook() {
           <h2 className="text-lg font-bold text-foreground">Weekly Review</h2>
           <button onClick={() => setReviewMode(false)} className="text-sm text-muted-foreground hover:text-foreground">Exit</button>
         </div>
-        <div className="text-xs font-mono text-muted-foreground">{reviewIdx + 1} / {reviewEntries.length} cards</div>
+        <div className="text-xs font-mono text-muted-foreground">{reviewIdx + 1} / {reviewPool.length} cards</div>
         <div className="w-full bg-card border border-border rounded-full h-2">
-          <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${(reviewIdx / reviewEntries.length) * 100}%` }} />
+          <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${(reviewIdx / reviewPool.length) * 100}%` }} />
         </div>
         <div className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4">
           <span className={`self-start px-2 py-0.5 rounded text-xs font-mono ${SUBJECT_COLORS[card.subject] ?? ""}`}>{card.subject}</span>
@@ -325,7 +326,15 @@ export function MistakeLogbook() {
 
       {/* Weekly Review Button */}
       {reviewEntries.length > 0 && (
-        <button onClick={() => { setReviewMode(true); setReviewIdx(0); setReviewStep("question"); }} className="flex items-center justify-center gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-xl text-sm font-mono hover:bg-amber-500/20 transition-colors">
+        <button
+          onClick={() => {
+            setReviewPool([...reviewEntries]); // snapshot — prevents index shift when entries are marked reviewed
+            setReviewMode(true);
+            setReviewIdx(0);
+            setReviewStep("question");
+          }}
+          className="flex items-center justify-center gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-xl text-sm font-mono hover:bg-amber-500/20 transition-colors"
+        >
           <BookOpen className="w-4 h-4" /> Review This Week ({reviewEntries.length} unreviewed)
         </button>
       )}
