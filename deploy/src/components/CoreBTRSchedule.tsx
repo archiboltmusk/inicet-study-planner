@@ -55,7 +55,7 @@ function countdownLabel(target: Date, today: Date): string {
 
 // ─── Schedule Data ────────────────────────────────────────────────────────────
 
-const TODAY = new Date(2026, 4, 22); // 2026-05-22
+const TODAY = new Date(); // live date — do NOT hardcode
 
 const SCHEDULE: ScheduleEntry[] = [
   // MILESTONE

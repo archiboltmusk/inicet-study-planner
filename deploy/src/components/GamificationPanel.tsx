@@ -120,7 +120,7 @@ function ShareCard({ xp, rank, streak, completed, displayName }: {
     // Bottom tag
     ctx.fillStyle = "rgba(255,255,255,0.25)";
     ctx.font = "10px 'Courier New', monospace";
-    ctx.fillText("Nov 16, 2026 • NEET PG", W - 180, H - 16);
+    ctx.fillText("Aug 30, 2026 • NEET PG", W - 180, H - 16);
   }, [xp, rank, streak, completed, displayName]);
 
   const handleShare = async () => {
