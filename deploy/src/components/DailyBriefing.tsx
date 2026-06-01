@@ -84,31 +84,35 @@ function getCoreBTRPhase(): { label: string; color: string; bg: string; subjects
   const d = today.getDate();
   const stamp = y * 10000 + m * 100 + d;
 
-  if (stamp >= 20260523 && stamp <= 20260526) return { label: "Baseline GT-4", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Grand Test" };
-  if (stamp >= 20260527 && stamp <= 20260530) return { label: "Phase 1 · Surgery", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Surgery" };
-  if (stamp >= 20260531 && stamp <= 20260601) return { label: "Phase 1 · Ortho", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Orthopaedics" };
-  if (stamp >= 20260602 && stamp <= 20260603) return { label: "Phase 1 · Radiology", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Radiology" };
-  if (stamp >= 20260605 && stamp <= 20260607) return { label: "Phase 1 · Microbiology", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Microbiology" };
-  if (stamp >= 20260608 && stamp <= 20260610) return { label: "Phase 1 · Anatomy", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Anatomy" };
-  if (stamp >= 20260609 && stamp <= 20260612) return { label: "Core BTR GT-5", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Grand Test" };
-  if (stamp >= 20260613 && stamp <= 20260616) return { label: "Phase 2 · CVS+Renal+Hemat+GI", color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30", subjects: "Integrated Systems 1" };
-  if (stamp >= 20260617 && stamp <= 20260620) return { label: "Phase 2 · Neuro+Endo+Rheumat+Respi", color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30", subjects: "Integrated Systems" };
-  if (stamp >= 20260621 && stamp <= 20260622) return { label: "Phase 2 · Path+Pharm+Physio+Immuno", color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30", subjects: "Integrated Systems 2" };
-  if (stamp >= 20260621 && stamp <= 20260624) return { label: "Core BTR GT-6", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Grand Test" };
-  if (stamp >= 20260625 && stamp <= 20260628) return { label: "Phase 3 · OBG", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30", subjects: "OBG" };
-  if (stamp >= 20260629 && stamp <= 20260630) return { label: "Phase 3 · Paediatrics", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30", subjects: "Paediatrics" };
-  if (stamp >= 20260702 && stamp <= 20260705) return { label: "Phase 3 · PSM", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30", subjects: "PSM" };
-  if (stamp >= 20260706 && stamp <= 20260707) return { label: "Phase 3 · Dermatology", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30", subjects: "Dermatology" };
-  if (stamp >= 20260708 && stamp <= 20260709) return { label: "Phase 3 · Anesthesia", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30", subjects: "Anesthesia" };
-  if (stamp >= 20260708 && stamp <= 20260711) return { label: "Core BTR GT-7", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Grand Test" };
-  if (stamp >= 20260712 && stamp <= 20260714) return { label: "Phase 4 · Biochemistry", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30", subjects: "Biochemistry" };
-  if (stamp >= 20260716 && stamp <= 20260717) return { label: "Phase 4 · FMT", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30", subjects: "Forensic Medicine" };
-  if (stamp >= 20260718 && stamp <= 20260719) return { label: "Phase 4 · Psychiatry", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30", subjects: "Psychiatry" };
-  if (stamp >= 20260720 && stamp <= 20260721) return { label: "Phase 4 · ENT", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30", subjects: "ENT" };
-  if (stamp >= 20260722 && stamp <= 20260724) return { label: "Phase 4 · Ophthalmology", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30", subjects: "Ophthalmology" };
-  if (stamp >= 20260723 && stamp <= 20260726) return { label: "Core BTR GT-8", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Grand Test" };
-  if (stamp >= 20260727 && stamp <= 20260822) return { label: "Revision Cycle #2", color: "text-green-400", bg: "bg-green-500/15 border-green-500/30", subjects: "Full Revision" };
-  if (stamp >= 20260823 && stamp <= 20260830) return { label: "Mega-NEET BTR · Revision #3", color: "text-rose-400", bg: "bg-rose-500/15 border-rose-500/30", subjects: "Final Revision" };
+  // Milestone — Medicine R1 + GT-16 (May 23-26)
+  if (stamp >= 20260523 && stamp <= 20260526) return { label: "Milestone · GT-16 Baseline", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Medicine R1 + Grand Test 16" };
+  // Phase 1 R1 (May 27 – Jun 14)
+  if (stamp >= 20260527 && stamp <= 20260528) return { label: "Phase 1 · Surgery R1", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Surgery" };
+  if (stamp >= 20260529 && stamp <= 20260530) return { label: "Phase 1 · Path + Pharm R1", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Pathology + Pharmacology" };
+  if (stamp >= 20260531 && stamp <= 20260601) return { label: "Phase 1 · OBG + Paeds R1", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "OBG + Paediatrics" };
+  if (stamp >= 20260602 && stamp <= 20260603) return { label: "Phase 1 · PSM + Micro R1", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "PSM + Microbiology" };
+  if (stamp >= 20260604 && stamp <= 20260606) return { label: "Phase 1 · Forensic + Basic Sci R1", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Forensic + Biochem + Physio + Anatomy + ENT + Ophth" };
+  if (stamp >= 20260607 && stamp <= 20260608) return { label: "Grand Test 17", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Grand Test 17" };
+  if (stamp >= 20260609 && stamp <= 20260614) return { label: "Phase 1 · Misc + Cross-Revision", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30", subjects: "Derm + Radiology + Psychiatry + Ortho + Cross-Revision" };
+  // Phase 2 R2 (Jun 15 – Jun 25)
+  if (stamp >= 20260615 && stamp <= 20260617) return { label: "Phase 2 · Med + Surg + Path + Pharm R2", color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30", subjects: "Medicine + Surgery + Pathology + Pharmacology" };
+  if (stamp >= 20260618 && stamp <= 20260620) return { label: "Phase 2 · Pharm + OBG + Paeds + PSM R2", color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30", subjects: "Pharmacology + OBG + Paediatrics + PSM" };
+  if (stamp >= 20260621 && stamp <= 20260625) return { label: "Phase 2 · PSM + Micro + Forensic + Basic R2", color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30", subjects: "PSM + Microbiology + Forensic + Basic Sciences + Misc" };
+  // Phase 3 R3 + INI-CET + GT-18 (Jun 26 – Jul 9)
+  if (stamp >= 20260626 && stamp <= 20260627) return { label: "Phase 3 · Med + Surg R3", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30", subjects: "Medicine + Surgery" };
+  if (stamp >= 20260628 && stamp <= 20260629) return { label: "INI-CET Recall May 2026", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "INI-CET Recall" };
+  if (stamp >= 20260630 && stamp <= 20260704) return { label: "Phase 3 · Pharm + OBG + PSM + Micro R3", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30", subjects: "Pharmacology + OBG + Paediatrics + PSM + Microbiology" };
+  if (stamp >= 20260705 && stamp <= 20260706) return { label: "Grand Test 18", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Grand Test 18" };
+  if (stamp >= 20260707 && stamp <= 20260709) return { label: "Phase 3 · Forensic + Basic Sci R3", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30", subjects: "Forensic + Biochem + Physio + Anatomy + ENT + Ophth" };
+  // Phase 4 R4 + GT-19 + National Mock (Jul 10 – Aug 3)
+  if (stamp >= 20260710 && stamp <= 20260714) return { label: "Phase 4 · Med + Surg + Path + Pharm + OBG R4", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30", subjects: "Medicine + Surgery + Pathology + Pharmacology + OBG" };
+  if (stamp >= 20260715 && stamp <= 20260718) return { label: "Phase 4 · Paeds + PSM + Micro + Forensic R4", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30", subjects: "Paediatrics + PSM + Microbiology + Forensic + Basic Sciences" };
+  if (stamp >= 20260719 && stamp <= 20260720) return { label: "Grand Test 19", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "Grand Test 19" };
+  if (stamp >= 20260721 && stamp <= 20260801) return { label: "Phase 4 · Open Revision", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30", subjects: "Anatomy + ENT + Ophthalmology + Derm + Weak Areas" };
+  if (stamp >= 20260802 && stamp <= 20260803) return { label: "National NEET-PG Mock 2026", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30", subjects: "National Mock" };
+  // Final Runway (Aug 4 – Aug 30)
+  if (stamp >= 20260804 && stamp <= 20260822) return { label: "Final Runway · R5 Revision", color: "text-green-400", bg: "bg-green-500/15 border-green-500/30", subjects: "Final Runway — R5 Revision + Cheat Sheets" };
+  if (stamp >= 20260823 && stamp <= 20260830) return { label: "Mega-NEET BTR · Revision #3", color: "text-rose-400", bg: "bg-rose-500/15 border-rose-500/30", subjects: "Mega-NEET BTR — Revision Cycle #3 + Exam Day" };
   return { label: "Pre-schedule", color: "text-muted-foreground", bg: "bg-muted/20 border-border", subjects: "Start Core BTR" };
 }
 
