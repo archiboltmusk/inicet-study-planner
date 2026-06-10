@@ -3,4 +3,12 @@
 -- makes payload.old available on DELETE, consistent with mistake_logbook behaviour.
 
 ALTER TABLE user_data REPLICA IDENTITY FULL;
-ALTER PUBLICATION supabase_realtime ADD TABLE user_data;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime' AND tablename = 'user_data'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE user_data;
+  END IF;
+END $$;

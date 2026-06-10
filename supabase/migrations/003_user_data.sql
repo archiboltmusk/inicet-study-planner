@@ -81,14 +81,17 @@ CREATE TABLE IF NOT EXISTS user_data (
 -- Row-level security: users can only read/write their own row
 ALTER TABLE user_data ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users read own data" ON user_data;
 CREATE POLICY "Users read own data"
   ON user_data FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users insert own data" ON user_data;
 CREATE POLICY "Users insert own data"
   ON user_data FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users update own data" ON user_data;
 CREATE POLICY "Users update own data"
   ON user_data FOR UPDATE
   USING (auth.uid() = user_id);
@@ -102,6 +105,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS user_data_updated_at ON user_data;
 CREATE TRIGGER user_data_updated_at
   BEFORE UPDATE ON user_data
   FOR EACH ROW EXECUTE FUNCTION update_user_data_timestamp();

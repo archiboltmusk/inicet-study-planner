@@ -21,6 +21,7 @@ ALTER TABLE mistake_logbook REPLICA IDENTITY FULL;
 -- Row-level security: each user owns their own rows
 ALTER TABLE mistake_logbook ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users manage own mistake rows" ON mistake_logbook;
 CREATE POLICY "Users manage own mistake rows"
   ON mistake_logbook FOR ALL
   USING  (auth.uid() = user_id)
@@ -30,5 +31,13 @@ CREATE POLICY "Users manage own mistake rows"
 CREATE INDEX IF NOT EXISTS mistake_logbook_user_created
   ON mistake_logbook (user_id, created_at DESC);
 
--- Enable realtime for this table
-ALTER PUBLICATION supabase_realtime ADD TABLE mistake_logbook;
+-- Enable realtime for this table (skip if already a member)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime' AND tablename = 'mistake_logbook'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE mistake_logbook;
+  END IF;
+END $$;

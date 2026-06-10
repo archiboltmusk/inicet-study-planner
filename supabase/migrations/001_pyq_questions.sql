@@ -20,5 +20,8 @@ CREATE INDEX IF NOT EXISTS idx_pyq_batch_date ON pyq_questions (batch_date DESC)
 CREATE INDEX IF NOT EXISTS idx_pyq_difficulty ON pyq_questions (difficulty);
 
 -- Public read-only via anon key
+-- (DROP IF EXISTS first: the remote DB may have been provisioned before the
+-- CLI migration history existed, so every migration must be re-runnable)
 ALTER TABLE pyq_questions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "public_read" ON pyq_questions;
 CREATE POLICY "public_read" ON pyq_questions FOR SELECT USING (true);

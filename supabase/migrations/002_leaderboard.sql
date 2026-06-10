@@ -12,13 +12,16 @@ create table if not exists public.leaderboard (
 alter table public.leaderboard enable row level security;
 
 -- Everyone can read the leaderboard
+drop policy if exists "leaderboard_read" on public.leaderboard;
 create policy "leaderboard_read" on public.leaderboard
   for select using (true);
 
 -- Users can only upsert their own row
+drop policy if exists "leaderboard_write" on public.leaderboard;
 create policy "leaderboard_write" on public.leaderboard
   for insert with check (auth.uid() = user_id);
 
+drop policy if exists "leaderboard_update" on public.leaderboard;
 create policy "leaderboard_update" on public.leaderboard
   for update using (auth.uid() = user_id);
 
@@ -33,8 +36,10 @@ create table if not exists public.user_achievements (
 
 alter table public.user_achievements enable row level security;
 
+drop policy if exists "achievements_read" on public.user_achievements;
 create policy "achievements_read" on public.user_achievements
   for select using (true);
 
+drop policy if exists "achievements_write" on public.user_achievements;
 create policy "achievements_write" on public.user_achievements
   for insert with check (auth.uid() = user_id);

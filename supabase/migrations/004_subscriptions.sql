@@ -19,11 +19,13 @@ CREATE INDEX IF NOT EXISTS subscriptions_expires_at_idx ON subscriptions (expire
 -- Row-level security: users can only read their own subscriptions
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users read own subscriptions" ON subscriptions;
 CREATE POLICY "Users read own subscriptions"
   ON subscriptions FOR SELECT
   USING (auth.uid() = user_id);
 
 -- Only the service role (Edge Functions) may insert/update
+DROP POLICY IF EXISTS "Service role manages subscriptions" ON subscriptions;
 CREATE POLICY "Service role manages subscriptions"
   ON subscriptions FOR ALL
   USING (auth.role() = 'service_role');
