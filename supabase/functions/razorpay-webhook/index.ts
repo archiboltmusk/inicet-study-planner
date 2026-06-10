@@ -18,6 +18,13 @@ serve(async (req) => {
     const signature = req.headers.get("X-Razorpay-Signature") || "";
     const secret = Deno.env.get("RAZORPAY_WEBHOOK_SECRET") || "";
 
+    // An unset secret must hard-fail — otherwise anyone who computes an
+    // HMAC with an empty key can forge refund events.
+    if (!secret) {
+      console.error("[webhook] RAZORPAY_WEBHOOK_SECRET is not configured");
+      return new Response("Webhook not configured", { status: 500 });
+    }
+
     const valid = await verifyWebhookSignature(body, signature, secret);
     if (!valid) {
       console.error("[webhook] Invalid signature");

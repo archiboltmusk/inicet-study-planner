@@ -98,7 +98,7 @@ export function NeetPGMockTest() {
     for (const q of questions) {
       const resp = responses.get(q.id);
       if (resp !== undefined && resp !== q.answer) {
-        mistakes.push({ subject: q.subject, question: q.question, correctAnswer: q.options[q.answer] ?? q.answer, myAnswer: q.options[resp] ?? resp, explanation: q.rationale ?? "" });
+        mistakes.push({ subject: q.subject, question: q.question, correctAnswer: q.options[q.answer] ?? q.answer, myAnswer: q.options[resp as keyof typeof q.options] ?? resp, explanation: q.rationale ?? "" });
       }
     }
     if (mistakes.length > 0) autoLogMistakes(mistakes);
@@ -330,9 +330,9 @@ export function NeetPGMockTest() {
   }
 
   if (phase === "results" && mockTest) {
-    const correct = mockTest.responses.filter(r => r.isCorrect).length;
-    const wrong = mockTest.responses.filter(r => !r.isCorrect && r.selectedOption).length;
-    const skipped = mockTest.responses.filter(r => !r.selectedOption).length;
+    const correct = mockTest.responses.filter(r => r.correct).length;
+    const wrong = mockTest.responses.filter(r => !r.correct && r.answered).length;
+    const skipped = mockTest.responses.filter(r => !r.answered).length;
     const score = correct * 4 - wrong;
     const maxScore = questions.length * 4;
 

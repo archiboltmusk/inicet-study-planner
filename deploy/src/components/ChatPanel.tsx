@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Bot, Send, Trash2, Loader2, Key } from "lucide-react";
 import { safeLoad, safeSave } from "@/lib/storage";
+import { useAuth } from "@/lib/auth";
 
 interface Message {
   role: "user" | "assistant";
@@ -79,6 +80,7 @@ const DEFAULT_PROMPTS = [
 ];
 
 export function ChatPanel({ studyContext, onFirstMessage }: Props) {
+  const { session } = useAuth();
   const [messages,  setMessages]  = useState<Message[]>([]);
   const [input,     setInput]     = useState<string>("");
   const [streaming, setStreaming] = useState<boolean>(false);
@@ -127,6 +129,8 @@ export function ChatPanel({ studyContext, onFirstMessage }: Props) {
         headers: {
           "Content-Type": "application/json",
           ...(apiKey ? { "x-api-key": apiKey } : {}),
+          // Premium subscribers get server-funded AI; the API verifies this JWT
+          ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}),
         },
         body: JSON.stringify({
           messages: nextMessages.map(m => ({ role: m.role, content: m.content })),
@@ -246,7 +250,7 @@ export function ChatPanel({ studyContext, onFirstMessage }: Props) {
           </div>
           {!apiKey && (
             <p className="text-[10px] font-mono text-muted-foreground/60">
-              Without a key, the server uses its configured provider (GEMINI_API_KEY if set).
+              Premium members don't need a key — the server's AI provider is included in the subscription.
             </p>
           )}
         </div>

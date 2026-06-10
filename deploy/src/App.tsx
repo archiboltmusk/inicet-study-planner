@@ -78,6 +78,7 @@ const DailyTodoList       = mk(() => import("@/components/DailyTodoList"),      
 const PlannerCalendar     = mk(() => import("@/components/PlannerCalendar"),     "PlannerCalendar");
 const NotesEditor         = mk(() => import("@/components/NotesEditor"),         "NotesEditor");
 const UpgradePage         = mk(() => import("@/components/UpgradePage"),         "UpgradePage");
+const ChatPanel           = mk(() => import("@/components/ChatPanel"),           "ChatPanel");
 const GapDiagnostic       = mk(() => import("@/components/GapDiagnostic"),       "GapDiagnostic");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -618,6 +619,23 @@ function StudyApp({ prefix, user }: StudyAppProps) {
           {visitedTabs.has('ai') && <Suspense fallback={<TabFallback />}>
             <HighYieldReference />
           </Suspense>}
+        </div>
+        <div hidden={activeGroup !== 'learn' || activeTab !== 'tutor'}>
+          {visitedTabs.has('tutor') && (
+            <PremiumGate isPremium={isPremium} feature="Clinical Socratic Engine" onUpgrade={goToUpgrade}>
+              <Suspense fallback={<TabFallback />}>
+                <ChatPanel
+                  studyContext={{
+                    completedDays,
+                    mcqScores,
+                    flaggedCount: flagged.length,
+                    currentDayFocus: selectedDay ? `Day ${selectedDay.day}: ${selectedDay.focus}` : 'General revision',
+                    examDate,
+                  }}
+                />
+              </Suspense>
+            </PremiumGate>
+          )}
         </div>
         <div hidden={activeGroup !== 'learn' || activeTab !== 'mnemonics'}>
           {visitedTabs.has('mnemonics') && <Suspense fallback={<TabFallback />}>

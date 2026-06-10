@@ -13,7 +13,7 @@ export type MainTab =
   | 'planner' | 'circadian' | 'stress' | 'coreBTR' | 'marrow' | 'todolist' | 'smartstart'
   | 'pyq' | 'drills' | 'rapid' | 'oneliners' | 'simulation' | 'revision'
   | 'custommock' | 'psmcalc' | 'imagequiz' | 'microburst' | 'neetpg2026'
-  | 'notes' | 'ai' | 'mnemonics' | 'analysis' | 'flashcards'
+  | 'notes' | 'ai' | 'tutor' | 'mnemonics' | 'analysis' | 'flashcards'
   | 'doctable' | 'revschedule' | 'mistakelogbook'
   | 'analytics' | 'toppers' | 'resources' | 'community' | 'weakheatmap' | 'gapdiagnostic'
   | 'cutoffhistory' | 'specialtyseats' | 'guidelines'
@@ -76,6 +76,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     tabs: [
       { id: 'notes',          label: 'Notes',      Icon: StickyNote   },
       { id: 'ai',             label: 'HY Ref',     Icon: BookOpen     },
+      { id: 'tutor',          label: 'AI Tutor',   Icon: MessageSquare},
       { id: 'mnemonics',      label: 'Mnemonics',  Icon: Brain        },
       { id: 'analysis',       label: 'Analysis',   Icon: BarChart2    },
       { id: 'flashcards',     label: 'Flashcards', Icon: BookMarked   },

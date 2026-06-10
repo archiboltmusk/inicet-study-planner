@@ -1,8 +1,71 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
+// Root-level Vercel serverless function — zero npm deps, pure fetch
 
+// SUPABASE_URL is safe to hardcode (public project URL).
+// SUPABASE_KEY should be set in Vercel environment variables.
+// The anon/publishable key is intentionally public (Supabase security comes from RLS).
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://fkqazoltrxmwlareblpi.supabase.co";
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || "sb_publishable_r_YTJolEVNR9vQR7oTVENA_7ZADmY3o";
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+
+// ── Typed interfaces for API responses ──────────────────────────────────────
+
+interface DailyQuestion {
+  id: number;
+  subject: string;
+  topic: string;
+  stem: string;
+  options: [string, string, string, string];
+  answer: 0 | 1 | 2 | 3;
+  explanation: string;
+  prediction?: { confidence: string; rationale: string; topic_frequency: string };
+}
+
+interface DailyQuestionsPayload {
+  date: string;
+  theme: string;
+  questions: DailyQuestion[];
+}
+
+interface GeminiResponse {
+  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+}
+
+interface GroqResponse {
+  choices?: Array<{ message?: { content?: string } }>;
+}
+
+interface AnthropicResponse {
+  content?: Array<{ text?: string }>;
+}
+
+// ── Supabase REST helpers ────────────────────────────────────────────────────
+
+async function sbRead(date: string): Promise<DailyQuestionsPayload | null> {
+  if (!SUPABASE_KEY) return null;
+  const res = await fetch(
+    // encodeURIComponent prevents any query-param injection via the date value
+    `${SUPABASE_URL}/rest/v1/daily_questions?date=eq.${encodeURIComponent(date)}&select=*&limit=1`,
+    { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+  );
+  if (!res.ok) return null;
+  const rows = (await res.json()) as DailyQuestionsPayload[];
+  return rows.length > 0 ? rows[0] : null;
+}
+
+async function sbWrite(date: string, data: DailyQuestionsPayload): Promise<void> {
+  if (!SUPABASE_KEY) return;
+  await fetch(`${SUPABASE_URL}/rest/v1/daily_questions`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "resolution=ignore-duplicates,return=minimal",
+    },
+    body: JSON.stringify({ date, ...data }),
+  });
+}
+
+// ── Subject rotation ────────────────────────────────────────────────────────
 
 function getSubjectRotation(date: string): string[] {
   const day = new Date(date).getDate();
@@ -30,8 +93,6 @@ function buildPrompt(date: string): string {
   return `Generate 10 NEET PG MCQs for date ${date} (day ${dayOfYear} of the year).
 
 Subject distribution for today: ${subjects.join(", ")} — 2 questions each.
-
-For each question include a "prediction" field explaining why this topic is high-yield for Nov 2026 NEET PG based on frequency in 2022/2023/2024/2025 papers.
 
 Return a JSON object with this exact structure:
 {
@@ -65,73 +126,49 @@ Rules:
 }
 
 function parseJSON(text: string): object {
-  try {
-    return JSON.parse(text);
-  } catch {
+  try { return JSON.parse(text); }
+  catch {
     const cleaned = text.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
     return JSON.parse(cleaned);
   }
 }
 
-// ── Provider: Google Gemini (free via AI Studio) ───────────────────────────────
-async function generateWithGemini(date: string, apiKey: string): Promise<object> {
-  const model = "gemini-2.0-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+// ── AI providers ─────────────────────────────────────────────────────────────
 
-  const body = {
-    system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-    contents: [{ role: "user", parts: [{ text: buildPrompt(date) }] }],
-    generationConfig: { responseMimeType: "application/json", maxOutputTokens: 4096, temperature: 0.4 },
-  };
-
+async function withGemini(date: string, apiKey: string): Promise<DailyQuestionsPayload> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents: [{ role: "user", parts: [{ text: buildPrompt(date) }] }],
+      generationConfig: { responseMimeType: "application/json", maxOutputTokens: 4096, temperature: 0.4 },
+    }),
   });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Gemini ${res.status}: ${err.slice(0, 200)}`);
-  }
-
-  const data = await res.json() as { candidates: { content: { parts: { text: string }[] } }[] };
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  return parseJSON(text);
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const data = await res.json() as GeminiResponse;
+  return parseJSON(data.candidates?.[0]?.content?.parts?.[0]?.text ?? "") as DailyQuestionsPayload;
 }
 
-// ── Provider: Groq (free, Llama 3.3 70B) ─────────────────────────────────────
-async function generateWithGroq(date: string, apiKey: string): Promise<object> {
+async function withGroq(date: string, apiKey: string): Promise<DailyQuestionsPayload> {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: "llama-3.3-70b-versatile",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: buildPrompt(date) },
-      ],
+      messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: buildPrompt(date) }],
       response_format: { type: "json_object" },
       max_tokens: 4096,
       temperature: 0.4,
     }),
   });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Groq ${res.status}: ${err.slice(0, 200)}`);
-  }
-
-  const data = await res.json() as { choices: { message: { content: string } }[] };
-  const text = data.choices?.[0]?.message?.content ?? "";
-  return parseJSON(text);
+  if (!res.ok) throw new Error(`Groq ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const data = await res.json() as GroqResponse;
+  return parseJSON(data.choices?.[0]?.message?.content ?? "") as DailyQuestionsPayload;
 }
 
-// ── Provider: Anthropic (fallback, paid) ──────────────────────────────────────
-async function generateWithAnthropic(date: string, apiKey: string): Promise<object> {
+async function withAnthropic(date: string, apiKey: string): Promise<DailyQuestionsPayload> {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -146,19 +183,14 @@ async function generateWithAnthropic(date: string, apiKey: string): Promise<obje
       messages: [{ role: "user", content: buildPrompt(date) }],
     }),
   });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Anthropic ${res.status}: ${err.slice(0, 200)}`);
-  }
-
-  const data = await res.json() as { content: { type: string; text: string }[] };
-  const text = data.content?.[0]?.type === "text" ? data.content[0].text : "";
-  return parseJSON(text);
+  if (!res.ok) throw new Error(`Anthropic ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const data = await res.json() as AnthropicResponse;
+  return parseJSON(data.content?.[0]?.text ?? "") as DailyQuestionsPayload;
 }
 
-// ── Generation with provider fallback ─────────────────────────────────────────
-async function generateAndStore(date: string): Promise<object> {
+// ── Generate + store ─────────────────────────────────────────────────────────
+
+async function generateAndStore(date: string): Promise<DailyQuestionsPayload> {
   const geminiKey    = process.env.GEMINI_API_KEY;
   const groqKey      = process.env.GROQ_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
@@ -169,52 +201,58 @@ async function generateAndStore(date: string): Promise<object> {
     );
   }
 
-  let parsed: object | undefined;
+  let parsed: DailyQuestionsPayload | undefined;
   const errors: string[] = [];
 
-  if (geminiKey) {
-    try { parsed = await generateWithGemini(date, geminiKey); } catch (e) { errors.push(`Gemini: ${e}`); }
-  }
-  if (!parsed && groqKey) {
-    try { parsed = await generateWithGroq(date, groqKey); } catch (e) { errors.push(`Groq: ${e}`); }
-  }
-  if (!parsed && anthropicKey) {
-    try { parsed = await generateWithAnthropic(date, anthropicKey); } catch (e) { errors.push(`Anthropic: ${e}`); }
-  }
+  if (geminiKey)    { try { parsed = await withGemini(date, geminiKey); }    catch (e) { errors.push(`Gemini: ${e}`); } }
+  if (!parsed && groqKey)      { try { parsed = await withGroq(date, groqKey); }       catch (e) { errors.push(`Groq: ${e}`); } }
+  if (!parsed && anthropicKey) { try { parsed = await withAnthropic(date, anthropicKey); } catch (e) { errors.push(`Anthropic: ${e}`); } }
 
   if (!parsed) throw new Error(`All providers failed: ${errors.join(" | ")}`);
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-  await supabase.from("daily_questions").upsert(
-    { date, ...(parsed as Record<string, unknown>) },
-    { onConflict: "date", ignoreDuplicates: true }
-  );
-
+  await sbWrite(date, parsed);
   return parsed;
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "GET") return res.status(405).end();
+// ── Minimal request/response types (avoids importing @vercel/node at root level) ──
+
+interface Req {
+  method?: string;
+  query?: Record<string, string | string[] | undefined>;
+}
+interface Res {
+  status(code: number): Res;
+  json(body: unknown): void;
+  setHeader(name: string, value: string): void;
+  end(): void;
+}
+
+// ── Handler ──────────────────────────────────────────────────────────────────
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+export default async function handler(req: Req, res: Res) {
+  if (req.method !== "GET") { res.status(405).end(); return; }
 
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=3600");
 
-  const date = (req.query.date as string | undefined) || new Date().toISOString().slice(0, 10);
+  const rawDate = (req.query?.date as string | undefined) || new Date().toISOString().slice(0, 10);
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-  const { data, error } = await supabase
-    .from("daily_questions")
-    .select("*")
-    .eq("date", date)
-    .single();
+  // Reject dates that don't match YYYY-MM-DD to prevent injection via URL params
+  if (!DATE_RE.test(rawDate)) {
+    res.status(400).json({ error: "Invalid date format. Expected YYYY-MM-DD." });
+    return;
+  }
+  const date = rawDate;
 
-  if (!error && data) return res.json(data);
+  const cached = await sbRead(date);
+  if (cached) { res.json(cached); return; }
 
   try {
     const generated = await generateAndStore(date);
-    return res.json(generated);
+    res.json(generated);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return res.status(503).json({ error: msg });
+    res.status(503).json({ error: err instanceof Error ? err.message : String(err) });
   }
 }

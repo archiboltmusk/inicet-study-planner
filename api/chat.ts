@@ -204,6 +204,28 @@ async function streamAnthropic(
   }
 }
 
+// ── Premium check ─────────────────────────────────────────────────────────────
+// Server-funded AI is a paid feature. Users who bring their own API key skip
+// this entirely (they pay their own provider). Everyone else must present a
+// Supabase JWT belonging to a user with an active subscription. RLS only lets
+// a user read their own subscription rows, so the anon key + user JWT is
+// sufficient — no service-role key needed here.
+
+const SUPABASE_URL = process.env.SUPABASE_URL || "https://fkqazoltrxmwlareblpi.supabase.co";
+
+async function hasActivePremium(jwt: string): Promise<boolean> {
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+  if (!anonKey) return false; // fail closed: never give away server-funded AI
+  const url = `${SUPABASE_URL}/rest/v1/subscriptions` +
+    `?status=eq.active&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=id&limit=1`;
+  const res = await fetch(url, {
+    headers: { apikey: anonKey, Authorization: `Bearer ${jwt}` },
+  });
+  if (!res.ok) return false;
+  const rows = (await res.json()) as unknown[];
+  return Array.isArray(rows) && rows.length > 0;
+}
+
 // ── Handler ───────────────────────────────────────────────────────────────────
 
 export default async function handler(req: Req, res: ResStream) {
@@ -238,10 +260,25 @@ export default async function handler(req: Req, res: ResStream) {
   const userIsGemini    = userKey?.startsWith("AI") || userKey?.startsWith("ai");
   const userIsGroq      = userKey?.startsWith("gsk_");
   const userIsAnthropic = userKey?.startsWith("sk-ant");
+  const hasOwnKey       = !!(userIsGemini || userIsGroq || userIsAnthropic);
 
-  const geminiKey    = (userIsGemini    ? userKey : null) ?? process.env.GEMINI_API_KEY;
-  const groqKey      = (userIsGroq      ? userKey : null) ?? process.env.GROQ_API_KEY;
-  const anthropicKey = (userIsAnthropic ? userKey : null) ?? process.env.ANTHROPIC_API_KEY;
+  // Server-funded keys are reserved for premium subscribers
+  let usePremiumKeys = false;
+  if (!hasOwnKey) {
+    const rawAuth = req.headers["authorization"];
+    const auth = Array.isArray(rawAuth) ? rawAuth[0] : rawAuth;
+    const jwt = auth?.startsWith("Bearer ") ? auth.slice(7) : undefined;
+    usePremiumKeys = jwt ? await hasActivePremium(jwt) : false;
+    if (!usePremiumKeys) {
+      return res.status(402).json({
+        error: "AI Tutor is a Premium feature. Upgrade for server-funded AI, or tap the key icon and add a free Gemini key from aistudio.google.com/apikey",
+      });
+    }
+  }
+
+  const geminiKey    = (userIsGemini    ? userKey : null) ?? (usePremiumKeys ? process.env.GEMINI_API_KEY    : undefined);
+  const groqKey      = (userIsGroq      ? userKey : null) ?? (usePremiumKeys ? process.env.GROQ_API_KEY      : undefined);
+  const anthropicKey = (userIsAnthropic ? userKey : null) ?? (usePremiumKeys ? process.env.ANTHROPIC_API_KEY : undefined);
 
   if (!geminiKey && !groqKey && !anthropicKey) {
     return res.status(401).json({

@@ -29,7 +29,7 @@ const PYQ_TO_SUBJECT: Record<string, string> = {
   "Anaesthesia": "Anaesthesia",
 };
 
-export function calcAllMastery(subjects: string[]): Record<string, number | null> {
+export function calcAllMastery(subjects: readonly string[]): Record<string, number | null> {
   const pyqAttempts = safeLoad<Record<string, { selected: number; correct: boolean }>>("neetpg_pyq_attempts", {});
   const mistakes = safeLoad<StoredEntry[]>(MISTAKE_STORAGE_KEY, []);
   const revTopics = safeLoad<ScheduledTopic[]>(REVISION_SCHEDULER_KEY, []);

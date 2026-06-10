@@ -1114,7 +1114,7 @@ export const SPECIFIC_PYQS: SpecificPYQ[] = [
     id: "neetpg-2023-ortho-02",
     source: "NEET-PG", year: 2023, subject: "Orthopaedics",
     stem: "Compartment syndrome is suspected when the 5 P's are present. Which is the EARLIEST sign?",
-    options: ["Pulselessness", "Paralysis", "Pain out of proportion to the injury (especially on passive stretch)", "Pallor", "Paraesthesia"],
+    options: ["Pulselessness", "Paralysis", "Pain out of proportion to the injury (especially on passive stretch)", "Pallor"],
     answer: 2,
     explanation: "Pain out of proportion + pain on passive stretch of the compartment muscles are the earliest signs of compartment syndrome. Pulselessness and paralysis are late signs indicating irreversible ischaemia. Management: emergency fasciotomy.",
     difficulty: "medium",

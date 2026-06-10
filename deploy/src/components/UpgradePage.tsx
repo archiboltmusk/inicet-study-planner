@@ -7,12 +7,30 @@ import { useSubscription, startCheckout, PLANS, type Plan } from "@/lib/subscrip
 import { useAuth } from "@/lib/auth";
 
 const PREMIUM_FEATURES = [
-  { icon: Sparkles,      label: "Clinical Socratic Engine",       desc: "An Anthropic-powered tutor that grills you on clinical scenarios until you own the concept — not just recognise it." },
-  { icon: Brain,         label: "Clinical Socratic Engine",       desc: "On-demand AI chat that forces active recall. Free users read static notes. You get interrogated until the answer is instinctive." },
-  { icon: CalendarCheck, label: "Dynamic Retention Protocol",     desc: "SM-2 algorithm pings you exactly on the day your memory decay hits the critical threshold — Micro, Pharma, Patho included." },
-  { icon: Zap,           label: "Dynamic Retention Protocol",     desc: "Flashcards scheduled by decay curve, not gut feeling. Never manually guess when to revise again." },
+  { icon: Sparkles,      label: "Clinical Socratic Engine",            desc: "An AI tutor that grills you on clinical scenarios until you own the concept — server-funded, no API key needed. Free users read static notes; you get interrogated until the answer is instinctive." },
+  { icon: CalendarCheck, label: "Dynamic Retention Protocol",          desc: "SM-2 flashcards scheduled by your memory decay curve, not gut feeling — pings you exactly on the day a topic hits the critical threshold. Micro, Pharma, Patho included." },
   { icon: BarChart2,     label: "Vulnerability Heatmap & Diagnostics", desc: "Actively diagnoses where you are bleeding marks. Visual heatmap of high-yield subjects that need immediate triage." },
-  { icon: FlaskConical,  label: "High-Fidelity Exam Drills",      desc: "Adaptive, timed INI-CET simulations that replicate the exact cognitive fatigue of the real exam — not casual practice." },
+  { icon: Brain,         label: "Knowledge Gap Diagnostic",            desc: "Pinpoints the topics you think you know but don't — before the exam does it for you." },
+  { icon: FlaskConical,  label: "High-Fidelity Exam Drills",           desc: "Adaptive, timed INI-CET simulations that replicate the exact cognitive fatigue of the real exam — not casual practice." },
+  { icon: Zap,           label: "Auto Mistake Cloud Sync",             desc: "Every wrong answer is logged and synced across devices, feeding the AI tutor your personal weak points." },
+];
+
+// Replace with your real support inbox before going live on Razorpay
+const SUPPORT_EMAIL = "support@inicetplanner.app";
+
+const LEGAL_SECTIONS = [
+  {
+    title: "Terms of Service",
+    body: `INICET Planner Premium grants access to the premium feature set (AI tutor, retention scheduling, diagnostics, exam drills) for the duration purchased — 30 days (Monthly Pulse) or 180 days (INI-CET Cycle Pass). Subscriptions are personal, tied to your signed-in account, and may not be shared or resold. Study content is provided for exam preparation only and is not medical advice. We may suspend accounts that abuse the service (e.g. automated scraping or credential sharing).`,
+  },
+  {
+    title: "Privacy Policy",
+    body: `We store your account email, study progress, and subscription status in Supabase to sync your data across devices. Payment card / UPI details are handled entirely by Razorpay — they never touch our servers. Questions you ask the AI tutor are sent to the AI provider to generate a response and are not used to train models. We do not sell your data. You can request deletion of your account and all associated data at any time via the support email below.`,
+  },
+  {
+    title: "Refund & Cancellation Policy",
+    body: `Plans are one-time purchases with no auto-renewal, so there is nothing to cancel. If you were charged and premium did not activate within 24 hours, contact support with your payment ID for a full refund. Refunds for change of mind are available within 7 days of purchase, provided premium features have not been substantially used. Approved refunds are processed back to the original payment method by Razorpay within 5–7 business days.`,
+  },
 ];
 
 const FREE_FEATURES = [
@@ -139,7 +157,7 @@ export function UpgradePage() {
               </div>
               {isCycle && (
                 <div className="text-emerald-400 text-xs font-medium mb-3">
-                  Save ₹{199 * 6 - 899} vs monthly
+                  Save ₹{PLANS.monthly.price * 6 - PLANS.cycle.price} vs monthly
                 </div>
               )}
               <div className={`w-4 h-4 rounded-full border-2 mt-1 ${
@@ -204,6 +222,22 @@ export function UpgradePage() {
         Payments processed securely by Razorpay. UPI, cards, net banking accepted.
         No auto-renewal — you choose when to extend.
       </p>
+
+      {/* Legal — required for Razorpay live-mode approval */}
+      <div className="border-t border-slate-800 pt-6 space-y-2">
+        {LEGAL_SECTIONS.map(({ title, body }) => (
+          <details key={title} className="group bg-slate-800/30 rounded-xl px-4 py-3">
+            <summary className="text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer list-none flex items-center justify-between">
+              {title}
+              <span className="text-slate-600 group-open:rotate-90 transition-transform">›</span>
+            </summary>
+            <p className="text-xs text-slate-500 leading-relaxed mt-2 whitespace-pre-line">{body}</p>
+          </details>
+        ))}
+        <p className="text-center text-slate-700 text-[11px] pt-2">
+          Support: {SUPPORT_EMAIL}
+        </p>
+      </div>
     </div>
   );
 }

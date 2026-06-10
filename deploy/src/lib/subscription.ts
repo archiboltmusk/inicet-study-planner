@@ -43,7 +43,7 @@ export function useSubscription(): SubscriptionState {
       .gt("expires_at", now)
       .order("expires_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
     setRow(data ?? null);
     setLoading(false);
   }, [user]);

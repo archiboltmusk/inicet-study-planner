@@ -797,7 +797,7 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
                   </span>
                 )}
                 {qNotes[current.uid]?.trim() && (
-                  <Pencil className="w-3.5 h-3.5 text-primary" title="Note saved" />
+                  <span title="Note saved"><Pencil className="w-3.5 h-3.5 text-primary" /></span>
                 )}
                 {attempt && (attempt.correct
                   ? <CheckCircle className="w-4 h-4 text-emerald-400" />

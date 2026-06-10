@@ -280,7 +280,7 @@ describe("generatePersonalizedSequence", () => {
       { id: "q2", subject: "Med", topic: "Test2", difficulty: 4 },
     ];
 
-    const mastery = [];
+    const mastery: Parameters<typeof generatePersonalizedSequence>[1] = [];
     const seq = generatePersonalizedSequence(questions, mastery, 2, 2);
     expect(seq.questionIds.length).toBeGreaterThan(0);
   });
