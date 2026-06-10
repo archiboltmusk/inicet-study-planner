@@ -1,9 +1,6 @@
 {
-  "name": "inicet-question-generator",
+  "name": "inicet-scripts",
   "version": "1.0.0",
   "type": "module",
-  "scripts": { "generate": "node generate-questions.mjs" },
-  "dependencies": {
-    "groq-sdk": "^0.9.0"
-  }
+  "scripts": {}
 }
