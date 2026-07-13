@@ -164,8 +164,8 @@
 /* ============================================================ */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(240 20% 20%); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(240 20% 30%); }
+::-webkit-scrollbar-thumb { background: rgba(196, 40, 71, 0.4); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(232, 169, 61, 0.6); }
 
 /* === begin planner utility classes === */
 
@@ -188,16 +188,16 @@
 /* GRADIENTS & GLOW                                             */
 /* ============================================================ */
 .gradient-text {
-  background: linear-gradient(135deg, #ff4d4d 0%, #ff8c00 50%, #00e5cc 100%);
+  background: linear-gradient(135deg, #C42847 0%, #E8A93D 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.glow-red   { box-shadow: 0 0 24px rgba(255, 77,  77,  0.35); }
-.glow-amber { box-shadow: 0 0 24px rgba(255, 170,  0,  0.35); }
-.glow-teal  { box-shadow: 0 0 24px rgba(  0, 229, 204, 0.35); }
-.glow-white { box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); }
+.glow-red   { box-shadow: 0 0 24px rgba(196, 40,  71,  0.45); }
+.glow-amber { box-shadow: 0 0 24px rgba(232, 169,  61, 0.45); }
+.glow-teal  { box-shadow: 0 0 24px rgba(232, 169,  61, 0.25); }
+.glow-white { box-shadow: 0 0 20px rgba(255, 255, 255, 0.10); }
 
 /* ============================================================ */
 /* ANIMATED MESH BACKGROUND                                     */
@@ -216,9 +216,9 @@
   opacity: 0.06;
   animation: meshFloat 20s ease-in-out infinite;
 }
-.mesh-blob:nth-child(1) { width: 600px; height: 600px; background: #ff4d4d; top: -200px; left: -100px; animation-delay: 0s; }
-.mesh-blob:nth-child(2) { width: 500px; height: 500px; background: #00e5cc; bottom: -150px; right: -100px; animation-delay: -7s; }
-.mesh-blob:nth-child(3) { width: 400px; height: 400px; background: #8b5cf6; top: 50%; left: 40%; animation-delay: -14s; }
+.mesh-blob:nth-child(1) { width: 600px; height: 600px; background: #C42847; top: -200px; left: -100px; animation-delay: 0s; }
+.mesh-blob:nth-child(2) { width: 500px; height: 500px; background: #E8A93D; bottom: -150px; right: -100px; animation-delay: -7s; }
+.mesh-blob:nth-child(3) { width: 400px; height: 400px; background: #8B3A1A; top: 50%; left: 40%; animation-delay: -14s; }
 
 @keyframes meshFloat {
   0%, 100% { transform: translate(0, 0) scale(1); }
@@ -266,7 +266,7 @@
 .xp-fill {
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, #ff4d4d, #ffaa00, #00e5cc);
+  background: linear-gradient(90deg, #C42847, #E8A93D);
   transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -333,7 +333,7 @@
   right: 12px;
   height: 2px;
   border-radius: 99px;
-  background: linear-gradient(90deg, #ff4d4d, #00e5cc);
+  background: linear-gradient(90deg, #C42847, #E8A93D);
 }
 
 /* ============================================================ */
