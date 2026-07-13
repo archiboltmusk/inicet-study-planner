@@ -1,6 +1,12 @@
 node_modules/
 dist/
+.next/
+.vercel/
+pnpm-lock.yaml
+*.local
 .env
+.env.*
+!.env.example
 .env.local
 .ideavo/project
 *.log
