@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS aspirant_kv (
 ALTER TABLE aspirant_kv ENABLE ROW LEVEL SECURITY;
 
 -- Each device can only read/write its own rows, matched via custom request header
+DROP POLICY IF EXISTS "aspirant_kv_own_device" ON aspirant_kv;
 CREATE POLICY "aspirant_kv_own_device" ON aspirant_kv
   FOR ALL
   USING (device_id = (current_setting('request.headers', true)::json->>'x-device-id'))
