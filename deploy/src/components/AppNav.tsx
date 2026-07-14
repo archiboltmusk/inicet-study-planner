@@ -1,5 +1,5 @@
 import { useRef, type ChangeEvent } from "react";
-import { Download, Upload, Search } from "lucide-react";
+import { Download, Upload, Search, ExternalLink } from "lucide-react";
 import { NAV_GROUPS, type NavGroup, type MainTab } from "@/lib/nav-config";
 
 interface AppNavProps {
@@ -61,6 +61,19 @@ export function AppNav({
         </nav>
 
         <div className="flex items-center gap-2 shrink-0">
+          <a
+            href="/perfect-aspirant.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="The Perfect Aspirant — revision queue & readiness engine"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono font-semibold transition-all"
+            style={{ background: 'rgba(196,40,71,0.15)', color: '#c42847', border: '1px solid rgba(196,40,71,0.35)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(196,40,71,0.25)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(196,40,71,0.15)'; }}
+          >
+            <ExternalLink className="w-3 h-3" aria-hidden="true" />
+            Aspirant
+          </a>
           <span className="text-xs font-mono text-muted-foreground whitespace-nowrap hidden sm:block">
             {completedCount}/{totalDays}
           </span>
