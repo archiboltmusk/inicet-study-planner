@@ -104,7 +104,7 @@ function ShareCard({ xp, rank, streak, completed, displayName }: {
 
     // Stats row
     const stats = [
-      { label: "DAYS DONE", value: `${completed}/28` },
+      { label: "DAYS DONE", value: `${completed}` },
       { label: "STREAK",    value: `${streak} days`  },
     ];
     stats.forEach((s, i) => {
@@ -343,7 +343,7 @@ export function GamificationPanel({ xp, unlockedIds, completedDays, streak, disp
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { label: 'Total XP',      value: xp.toLocaleString(),    Icon: Zap,   color: 'text-violet-400' },
-            { label: 'Days Complete', value: `${completedDays}/28`,  Icon: Medal, color: 'text-green-400'  },
+            { label: 'Days Complete', value: `${completedDays}`,     Icon: Medal, color: 'text-green-400'  },
             { label: 'Best Streak',   value: `${streak} days`,       Icon: Star,  color: 'text-orange-400' },
           ].map(({ label, value, Icon, color }) => (
             <div key={label} className="bg-card border border-border rounded-xl p-5 flex flex-col gap-2">

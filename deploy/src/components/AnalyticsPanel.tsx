@@ -187,7 +187,7 @@ export function AnalyticsPanel({ mcqScores, completedDays, streak, examDate }: P
 
   // ── Section 5: pace indicator ───────────────────────────────────────────────
 
-  const expectedCompleted = Math.min(28, Math.max(0, 28 - daysToExam));
+  const expectedCompleted = Math.min(SCHEDULE.length, Math.max(0, SCHEDULE.length - daysToExam));
   const actualCompleted = completedDays.length;
   const diff = actualCompleted - expectedCompleted;
 
@@ -206,7 +206,7 @@ export function AnalyticsPanel({ mcqScores, completedDays, streak, examDate }: P
     paceColor = "text-red-400";
   }
 
-  const remainingDays = Math.max(0, 28 - actualCompleted);
+  const remainingDays = Math.max(0, SCHEDULE.length - actualCompleted);
   const paceDetail =
     daysToExam > 0 && remainingDays > 0
       ? `${remainingDays} more day${remainingDays > 1 ? "s" : ""} to complete in ${daysToExam} remaining`
@@ -238,7 +238,7 @@ export function AnalyticsPanel({ mcqScores, completedDays, streak, examDate }: P
         <StatChip
           icon={<Calendar className="w-3.5 h-3.5" />}
           label="Days Completed"
-          value={`${actualCompleted}/28`}
+          value={`${actualCompleted}/${SCHEDULE.length}`}
           sub={`${progressPct}% of plan`}
         />
         <StatChip

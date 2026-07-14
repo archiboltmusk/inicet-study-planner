@@ -327,9 +327,20 @@ function DrillView({
           ))}
         </div>
         {revealed && (
-          <div className="mx-5 mb-5 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-4">
-            <p className="text-[11px] font-mono text-emerald-400 uppercase tracking-wider mb-2">Explanation</p>
-            <p className="text-base font-mono text-foreground/80 leading-relaxed">{current.explanation}</p>
+          <div className="mx-5 mb-5 space-y-3">
+            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-4">
+              <p className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <CheckCircle className="w-3 h-3" />
+                Why {["A","B","C","D"][current.answer]} is correct
+              </p>
+              <p className="text-sm font-mono text-foreground/85 leading-relaxed">{current.explanation}</p>
+            </div>
+            <div className="bg-amber-500/5 border border-amber-500/25 rounded-xl px-4 py-3 flex items-start gap-2">
+              <span className="text-amber-400 text-base leading-none mt-0.5">★</span>
+              <p className="text-xs font-mono text-foreground/75 leading-relaxed">
+                Review all 4 options before moving on — wrong answer patterns are what the exam tests.
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -843,11 +854,84 @@ export function PYQBank({ onCorrect, onWrong }: PYQBankProps = {}) {
               ))}
             </div>
 
-            {/* Explanation */}
+            {/* AMBOSS-style Explanation */}
             {revealed && (
-              <div className="mx-5 mb-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-4">
-                <p className="text-[11px] font-mono text-emerald-400 uppercase tracking-wider mb-2">Explanation</p>
-                <p className="text-base font-mono text-foreground/80 leading-relaxed">{current.explanation}</p>
+              <div className="mx-5 mb-3 space-y-3">
+                {/* Verdict banner */}
+                {(() => {
+                  const chosen = selectedOpt ?? attempt?.selected ?? -1;
+                  const isCorrect = chosen === current!.answer;
+                  return (
+                    <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border ${
+                      isCorrect
+                        ? "bg-emerald-500/10 border-emerald-500/30"
+                        : "bg-destructive/10 border-destructive/30"
+                    }`}>
+                      {isCorrect
+                        ? <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                        : <XCircle    className="w-4 h-4 text-destructive shrink-0" />
+                      }
+                      <span className={`text-sm font-mono font-semibold ${isCorrect ? "text-emerald-400" : "text-destructive"}`}>
+                        {isCorrect ? "Correct!" : `Incorrect — answer is ${["A","B","C","D"][current!.answer]}: ${current!.options[current!.answer]}`}
+                      </span>
+                    </div>
+                  );
+                })()}
+
+                {/* Why correct */}
+                <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-4">
+                  <p className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <CheckCircle className="w-3 h-3" />
+                    Why <span className="font-bold">{["A","B","C","D"][current!.answer]}</span> is correct
+                  </p>
+                  <p className="text-sm font-mono text-foreground/85 leading-relaxed">{current!.explanation}</p>
+                </div>
+
+                {/* Options breakdown */}
+                <div className="bg-card border border-border/60 rounded-xl px-4 py-3 space-y-2">
+                  <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">Option Analysis</p>
+                  {current!.options.map((opt, i) => {
+                    const isAns = i === current!.answer;
+                    const chosen = selectedOpt ?? attempt?.selected ?? -1;
+                    const isChosen = i === chosen;
+                    return (
+                      <div key={i} className={`flex items-start gap-2 text-xs font-mono py-1 ${
+                        isAns ? "text-emerald-400" : isChosen ? "text-destructive" : "text-muted-foreground/60"
+                      }`}>
+                        <span className={`shrink-0 font-bold w-4 mt-0.5 ${isAns ? "text-emerald-400" : "text-muted-foreground/40"}`}>{["A","B","C","D"][i]}.</span>
+                        <span className="leading-snug">{opt}</span>
+                        {isAns && <CheckCircle className="w-3 h-3 shrink-0 mt-0.5 text-emerald-400" />}
+                        {!isAns && isChosen && <XCircle className="w-3 h-3 shrink-0 mt-0.5 text-destructive" />}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Clinical Pearl */}
+                <div className="bg-amber-500/5 border border-amber-500/25 rounded-xl px-4 py-3 flex items-start gap-2">
+                  <span className="text-amber-400 text-base leading-none mt-0.5">★</span>
+                  <div>
+                    <p className="text-[10px] font-mono text-amber-400 uppercase tracking-wider mb-1">Clinical Pearl</p>
+                    <p className="text-xs font-mono text-foreground/75 leading-relaxed">
+                      {current!.subject === "Pharmacology"
+                        ? "Memorize DOC → mechanism → unique side effects. That triangle covers 80% of pharmacology MCQs."
+                        : current!.subject === "Pathology"
+                        ? "Classic vs. exception. Know the rule first, then the one high-yield exception that always appears."
+                        : current!.subject === "Microbiology"
+                        ? "Think: organism → unique feature → disease → treatment. Chain the four and the MCQ collapses."
+                        : current!.subject === "Physiology"
+                        ? "Draw the graph or table in your head. Most physiology MCQs test curves, not text."
+                        : current!.subject === "Biochemistry"
+                        ? "Enzymes, substrates, products — name the block and the clinical consequence. Two steps = full marks."
+                        : current!.subject === "Medicine" || current!.subject === "Surgery"
+                        ? "First identify the diagnosis from buzzwords. Then: investigation of choice → treatment of choice → DOC."
+                        : current!.subject === "PSM/Community Medicine"
+                        ? "India-specific data (NFHS-5, NTEP, NVBDCP) is pure memorisation. Read your cheat sheet daily."
+                        : "High-yield topic. Master the core concept and revisit this question before exam day."
+                      }
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 

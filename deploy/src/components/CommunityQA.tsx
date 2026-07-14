@@ -122,7 +122,7 @@ const SEEDED_QA: QAPost[] = [
     answers: [
       {
         id: 8, isExpert: true,
-        text: "India-specific content is actually the easiest place to gain marks — unlike clinical reasoning which requires understanding, India stats are pure memorisation and available 100% from known sources. Strategy: (1) Make a 2-page 'India cheat sheet' with NFHS-5 key stats (MMR, IMR, TFR, stunting, institutional delivery), NTEP regimens, NVBDCP data, acts (NDPS, MHCA, POCSO, MTP, PNDT). (2) Read it every day for 5 minutes. (3) Do 10 India-specific MCQs daily. In 28 days you'll have reviewed it 28 times — it'll be effortless.",
+        text: "India-specific content is actually the easiest place to gain marks — unlike clinical reasoning which requires understanding, India stats are pure memorisation and available 100% from known sources. Strategy: (1) Make a 2-page 'India cheat sheet' with NFHS-5 key stats (MMR, IMR, TFR, stunting, institutional delivery), NTEP regimens, NVBDCP data, acts (NDPS, MHCA, POCSO, MTP, PNDT). (2) Read it every day for 5 minutes. (3) Do 10 India-specific MCQs daily. In 30 days you'll have reviewed it 30 times — it'll be effortless.",
         author: "Zainab_Strategy",
         createdAt: "6 days ago",
         upvotes: 38,

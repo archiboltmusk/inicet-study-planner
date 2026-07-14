@@ -55,7 +55,6 @@ const AnalyticsPanel      = mk(() => import("@/components/AnalyticsPanel"),     
 const ErrorAnalysis       = mk(() => import("@/components/ErrorAnalysis"),       "ErrorAnalysis");
 const TopperInsights      = mk(() => import("@/components/TopperInsights"),      "TopperInsights");
 const ResourceHub         = mk(() => import("@/components/ResourceHub"),         "ResourceHub");
-const CommunityQA         = mk(() => import("@/components/CommunityQA"),         "CommunityQA");
 const WeakTopicHeatmap    = mk(() => import("@/components/WeakTopicHeatmap"),    "WeakTopicHeatmap");
 const CutoffHistory       = mk(() => import("@/components/CutoffHistory"),       "CutoffHistory");
 const SpecialtySeatTracker = mk(() => import("@/components/SpecialtySeatTracker"), "SpecialtySeatTracker");
@@ -66,7 +65,6 @@ const MicroBurst          = mk(() => import("@/components/MicroBurst"),         
 const CircadianPlanner    = mk(() => import("@/components/CircadianPlanner"),    "CircadianPlanner");
 const TopicPredictor      = mk(() => import("@/components/TopicPredictor"),      "TopicPredictor");
 const StudyRooms          = mk(() => import("@/components/StudyRooms"),          "StudyRooms");
-const BuddyMatch          = mk(() => import("@/components/BuddyMatch"),          "BuddyMatch");
 const StressAdaptive      = mk(() => import("@/components/StressAdaptive"),      "StressAdaptive");
 const FitnessWellness     = mk(() => import("@/components/FitnessWellness"),     "FitnessWellness");
 const NeetPGMockTest      = mk(() => import("@/components/NeetPGMockTest"),      "NeetPGMockTest");
@@ -77,7 +75,6 @@ const MarrowSchedule      = mk(() => import("@/components/MarrowSchedule"),     
 const DailyTodoList       = mk(() => import("@/components/DailyTodoList"),       "DailyTodoList");
 const PlannerCalendar     = mk(() => import("@/components/PlannerCalendar"),     "PlannerCalendar");
 const NotesEditor         = mk(() => import("@/components/NotesEditor"),         "NotesEditor");
-const UpgradePage         = mk(() => import("@/components/UpgradePage"),         "UpgradePage");
 const GapDiagnostic       = mk(() => import("@/components/GapDiagnostic"),       "GapDiagnostic");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -404,7 +401,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
 
   // ── Subscription / premium ────────────────────────────────────────────────
   const { isPremium } = useSubscription();
-  const goToUpgrade   = useCallback(() => handleNavigate('rewards', 'upgrade'), [handleNavigate]);
+  const goToUpgrade   = useCallback(() => handleNavigate('rewards', 'rewards'), [handleNavigate]);
   useRealtimeSync(!!user, prefix);
 
   // Keep mistakeLogger aware of auth/premium state so autoLogMistakes can
@@ -457,7 +454,7 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             activeTab={activeTab}
             flagBadge={flagBadge}
             completedCount={completedDays.length}
-            totalDays={28}
+            totalDays={SCHEDULE.length}
             onGroupClick={handleGroupClick}
             onTabClick={setActiveTab}
             onExport={() => exportAllData(prefix)}
@@ -680,11 +677,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             <ResourceHub />
           </Suspense>}
         </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'community'}>
-          {visitedTabs.has('community') && <Suspense fallback={<TabFallback />}>
-            <CommunityQA />
-          </Suspense>}
-        </div>
         <div hidden={activeGroup !== 'insights' || activeTab !== 'gapdiagnostic'}>
           {visitedTabs.has('gapdiagnostic') && (
             <PremiumGate isPremium={isPremium} feature="Knowledge Gap Diagnostic" onUpgrade={goToUpgrade}>
@@ -728,11 +720,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             <StudyRooms />
           </Suspense>}
         </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'buddymatch'}>
-          {visitedTabs.has('buddymatch') && <Suspense fallback={<TabFallback />}>
-            <BuddyMatch onGoToStudyRooms={() => handleNavigate('insights', 'studyrooms')} />
-          </Suspense>}
-        </div>
         <div hidden={activeGroup !== 'insights' || activeTab !== 'zainabvora'}>
           {visitedTabs.has('zainabvora') && <Suspense fallback={<TabFallback />}>
             <ZainabVoraTips onNavigate={handleNavigate} />
@@ -749,13 +736,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
               streak={streak.longest}
               displayName={user?.email ?? 'Aspirant'}
             />
-          </Suspense>}
-        </div>
-
-        {/* PREMIUM UPGRADE */}
-        <div hidden={activeGroup !== 'rewards' || activeTab !== 'upgrade'}>
-          {visitedTabs.has('upgrade') && <Suspense fallback={<TabFallback />}>
-            <UpgradePage />
           </Suspense>}
         </div>
 

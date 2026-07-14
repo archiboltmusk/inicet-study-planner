@@ -7,6 +7,7 @@ import {
 import { QUESTION_SUBJECTS } from "@/data/questions";
 import { safeLoad } from "@/lib/storage";
 import { getTodayMarrowDay } from "@/data/marrow-schedule";
+import { SCHEDULE } from "@/data/schedule";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,10 +66,10 @@ function computeWeakSubjects(
 }
 
 function getPlanDay(completedDays: number[]): number {
-  for (let d = 1; d <= 28; d++) {
+  for (let d = 1; d <= SCHEDULE.length; d++) {
     if (!completedDays.includes(d)) return d;
   }
-  return 28;
+  return SCHEDULE.length;
 }
 
 function getTodayMood(): number | null {
@@ -185,7 +186,7 @@ export function DailyBriefing({ completedDays, mcqScores, streak, examDate, onGo
   const zvTip         = ZV_TIPS[Math.floor(Date.now() / 86400000) % ZV_TIPS.length];
   const streakActive  = studiedToday && streak.count > 0;
   const top3Weak      = weakSubjs.slice(0, 3);
-  const completionPct = Math.round((completedDays.length / 28) * 100);
+  const completionPct = Math.round((completedDays.length / SCHEDULE.length) * 100);
 
   // Urgency
   const urgencyColor = daysLeft > 30 ? "text-emerald-400" : daysLeft >= 14 ? "text-yellow-400" : "text-red-400";

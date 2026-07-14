@@ -95,7 +95,7 @@ const TOPPERS: Topper[] = [
       "PSM and Forensic revised every 3rd day — neglected by most, loved by examiners.",
     ],
     subjectTips: [
-      { subject: "Microbiology", tip: "Gram stain + morphology flashcards, 15 cards daily cycling. By Day 28 you've seen each 5+ times." },
+      { subject: "Microbiology", tip: "Gram stain + morphology flashcards, 15 cards daily cycling. By Day 30 you've seen each 5+ times." },
       { subject: "Biochemistry", tip: "Enzyme kinetics and LSDs are guaranteed. 2 hours each — limited scope, high yield." },
       { subject: "Paediatrics", tip: "Developmental milestones every exam. Use '3-6-9-12-18-24 month' framework — never miss free marks." },
       { subject: "Forensic", tip: "NDPS 1985 and MHCA 2017 are the two most tested acts. 30 focused minutes is enough." },
@@ -116,7 +116,7 @@ const TOPPERS: Topper[] = [
       "Clinical vignettes: 'scan for buzzwords' technique — identify key clinical clue within 10 seconds of reading the stem.",
       "Mental health treated seriously: daily 30-min walk, weekly call with a friend, journaling every night.",
       "Did not study the day before exam — pure rest, light food. Brain consolidates better with rest than cramming.",
-      "AIR 12 with 28 days focused prep, not 6 months scattered. Focus > duration.",
+      "AIR 12 with focused prep, not 6 months scattered. Focus > duration.",
     ],
     subjectTips: [
       { subject: "Anatomy", tip: "Clinical anatomy (nerve injuries, surgical incisions, surface markings) is tested more than embryology depth." },

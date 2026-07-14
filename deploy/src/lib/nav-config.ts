@@ -3,10 +3,10 @@ import type { ComponentType } from "react";
 import {
   Calendar, Zap, BookOpen, Crosshair, Layers, FlaskConical, Flag,
   CalendarCheck, Sliders, Calculator, Eye, StickyNote, Brain,
-  BarChart2, BookMarked, Pill, XCircle, Award, ExternalLink, MessageSquare,
+  BarChart2, BookMarked, Pill, XCircle, Award, ExternalLink,
   LayoutGrid, TrendingUp, Stethoscope, ScrollText, Trophy, Home, GraduationCap,
-  Timer, Sun, Users, UserCheck, Heart, Radio, ClipboardList,
-  ListOrdered, Star, ListChecks, Crown, Activity, Target,
+  Timer, Sun, Users, Heart, Radio, ClipboardList,
+  ListOrdered, Star, ListChecks, Activity, Target,
 } from "lucide-react";
 
 export type MainTab =
@@ -15,11 +15,11 @@ export type MainTab =
   | 'custommock' | 'psmcalc' | 'imagequiz' | 'microburst' | 'neetpg2026'
   | 'notes' | 'ai' | 'mnemonics' | 'analysis' | 'flashcards'
   | 'doctable' | 'revschedule' | 'mistakelogbook'
-  | 'analytics' | 'toppers' | 'resources' | 'community' | 'weakheatmap' | 'gapdiagnostic'
+  | 'analytics' | 'toppers' | 'resources' | 'weakheatmap' | 'gapdiagnostic'
   | 'cutoffhistory' | 'specialtyseats' | 'guidelines'
-  | 'topicpredict' | 'studyrooms' | 'buddymatch'
+  | 'topicpredict' | 'studyrooms'
   | 'zainabvora'
-  | 'rewards' | 'upgrade';
+  | 'rewards';
 
 export type NavGroup = 'home' | 'practice' | 'learn' | 'insights' | 'rewards';
 
@@ -92,7 +92,6 @@ export const NAV_GROUPS: NavGroupConfig[] = [
       { id: 'analytics',      label: 'Analytics',  Icon: BarChart2    },
       { id: 'toppers',        label: 'Toppers',    Icon: Award        },
       { id: 'resources',      label: 'Resources',  Icon: ExternalLink },
-      { id: 'community',      label: 'Community',  Icon: MessageSquare},
       { id: 'gapdiagnostic',  label: 'Diagnose',   Icon: Activity     },
       { id: 'weakheatmap',    label: 'Weak Areas', Icon: LayoutGrid   },
       { id: 'cutoffhistory',  label: 'Cutoffs',    Icon: TrendingUp   },
@@ -100,7 +99,6 @@ export const NAV_GROUPS: NavGroupConfig[] = [
       { id: 'guidelines',     label: 'Guidelines',  Icon: ScrollText   },
       { id: 'topicpredict',   label: 'Predict',     Icon: TrendingUp   },
       { id: 'studyrooms',     label: 'Study Rooms', Icon: Users        },
-      { id: 'buddymatch',     label: 'Buddy Match', Icon: UserCheck    },
       { id: 'zainabvora',     label: 'ZV Tips',     Icon: Star         },
     ],
   },
@@ -110,7 +108,6 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     Icon: Trophy,
     tabs: [
       { id: 'rewards', label: 'Rewards', Icon: Trophy },
-      { id: 'upgrade', label: 'Premium',  Icon: Crown  },
     ],
   },
 ];
