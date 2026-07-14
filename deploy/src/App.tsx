@@ -58,6 +58,7 @@ const MarrowSchedule      = mk(() => import("@/components/MarrowSchedule"),     
 const DailyTodoList       = mk(() => import("@/components/DailyTodoList"),       "DailyTodoList");
 const PlannerCalendar     = mk(() => import("@/components/PlannerCalendar"),     "PlannerCalendar");
 const NotesEditor         = mk(() => import("@/components/NotesEditor"),         "NotesEditor");
+const WeeklyReview        = mk(() => import("@/components/WeeklyReview"),        "WeeklyReview");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -582,6 +583,11 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         <div hidden={activeGroup !== 'insights' || activeTab !== 'resources'}>
           {visitedTabs.has('resources') && <Suspense fallback={<TabFallback />}>
             <ResourceHub />
+          </Suspense>}
+        </div>
+        <div hidden={activeGroup !== 'insights' || activeTab !== 'weeklyreview'}>
+          {visitedTabs.has('weeklyreview') && <Suspense fallback={<TabFallback />}>
+            <WeeklyReview />
           </Suspense>}
         </div>
         <div hidden={activeGroup !== 'insights' || activeTab !== 'weakheatmap'}>

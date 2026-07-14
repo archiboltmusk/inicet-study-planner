@@ -3,14 +3,14 @@ import type { ComponentType } from "react";
 import {
   Calendar, Zap, BookOpen, Crosshair, Sliders, Eye, StickyNote, Brain,
   BarChart2, BookMarked, XCircle, Award, ExternalLink, LayoutGrid,
-  Trophy, Home, GraduationCap, Heart, ListChecks, ListOrdered,
+  Trophy, Home, GraduationCap, Heart, ListChecks, ListOrdered, ClipboardCheck,
 } from "lucide-react";
 
 export type MainTab =
   | 'planner' | 'stress' | 'coreBTR' | 'marrow' | 'todolist'
   | 'pyq' | 'drills' | 'imagequiz' | 'custommock'
   | 'notes' | 'ai' | 'mnemonics' | 'flashcards' | 'mistakelogbook'
-  | 'analytics' | 'toppers' | 'resources' | 'weakheatmap'
+  | 'analytics' | 'toppers' | 'resources' | 'weakheatmap' | 'weeklyreview'
   | 'rewards';
 
 export type NavGroup = 'home' | 'practice' | 'learn' | 'insights' | 'rewards';
@@ -73,6 +73,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
       { id: 'toppers',     label: 'Toppers',    Icon: Award        },
       { id: 'resources',   label: 'Resources',  Icon: ExternalLink },
       { id: 'weakheatmap', label: 'Weak Areas', Icon: LayoutGrid   },
+      { id: 'weeklyreview', label: 'Weekly Review', Icon: ClipboardCheck },
     ],
   },
   {

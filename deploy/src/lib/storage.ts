@@ -13,6 +13,7 @@ export const enum StorageKey {
   PomodoroSessions = "neetpg_pomodoro_sessions",
   ChatHistory   = "neetpg_chat_history",
   AiKey         = "neetpg_ai_key",
+  WeeklyReviews = "neetpg_weekly_reviews",
 }
 
 // ─── LocalStorage helpers ────────────────────────────────────────────────────
