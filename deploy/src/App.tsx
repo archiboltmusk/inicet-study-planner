@@ -38,44 +38,26 @@ const mk = <T extends Record<string, unknown>>(fn: () => Promise<T>, name: keyof
 
 const PYQBank             = mk(() => import("@/components/PYQBank"),             "PYQBank");
 const SubjectDrill        = mk(() => import("@/components/SubjectDrill"),        "SubjectDrill");
-const RapidRevision       = mk(() => import("@/components/RapidRevision"),       "RapidRevision");
-const OneLinerBank        = mk(() => import("@/components/OneLinerBank"),        "OneLinerBank");
-const ExamSimulation      = mk(() => import("@/components/ExamSimulation"),      "ExamSimulation");
 const CustomMockGenerator = mk(() => import("@/components/CustomMockGenerator"), "CustomMockGenerator");
-const PSMCalculator       = mk(() => import("@/components/PSMCalculator"),       "PSMCalculator");
 const ImageBank           = mk(() => import("@/components/ImageBank"),           "ImageBank");
 const HighYieldReference  = mk(() => import("@/components/HighYieldReference"),  "HighYieldReference");
 const MnemonicsBank       = mk(() => import("@/components/MnemonicsBank"),       "MnemonicsBank");
-const NEETPGPaperAnalysis = mk(() => import("@/components/NEETPGPaperAnalysis"), "NEETPGPaperAnalysis");
 const FlashcardDeck       = mk(() => import("@/components/FlashcardDeck"),       "FlashcardDeck");
-const DOCTable            = mk(() => import("@/components/DOCTable"),            "DOCTable");
-const RevisionScheduler   = mk(() => import("@/components/RevisionScheduler"),   "RevisionScheduler");
 const MistakeLogbook      = mk(() => import("@/components/MistakeLogbook"),      "MistakeLogbook");
 const AnalyticsPanel      = mk(() => import("@/components/AnalyticsPanel"),      "AnalyticsPanel");
 const ErrorAnalysis       = mk(() => import("@/components/ErrorAnalysis"),       "ErrorAnalysis");
 const TopperInsights      = mk(() => import("@/components/TopperInsights"),      "TopperInsights");
 const ResourceHub         = mk(() => import("@/components/ResourceHub"),         "ResourceHub");
 const WeakTopicHeatmap    = mk(() => import("@/components/WeakTopicHeatmap"),    "WeakTopicHeatmap");
-const CutoffHistory       = mk(() => import("@/components/CutoffHistory"),       "CutoffHistory");
-const SpecialtySeatTracker = mk(() => import("@/components/SpecialtySeatTracker"), "SpecialtySeatTracker");
-const GuidelinesFeed      = mk(() => import("@/components/GuidelinesFeed"),      "GuidelinesFeed");
 const GamificationPanel   = mk(() => import("@/components/GamificationPanel"),   "GamificationPanel");
-const SmartStart          = mk(() => import("@/components/SmartStart"),          "SmartStart");
-const MicroBurst          = mk(() => import("@/components/MicroBurst"),          "MicroBurst");
-const CircadianPlanner    = mk(() => import("@/components/CircadianPlanner"),    "CircadianPlanner");
-const TopicPredictor      = mk(() => import("@/components/TopicPredictor"),      "TopicPredictor");
-const StudyRooms          = mk(() => import("@/components/StudyRooms"),          "StudyRooms");
 const StressAdaptive      = mk(() => import("@/components/StressAdaptive"),      "StressAdaptive");
 const FitnessWellness     = mk(() => import("@/components/FitnessWellness"),     "FitnessWellness");
-const NeetPGMockTest      = mk(() => import("@/components/NeetPGMockTest"),      "NeetPGMockTest");
 const WellnessTracker     = mk(() => import("@/components/WellnessTracker"),     "WellnessTracker");
 const CoreBTRSchedule     = mk(() => import("@/components/CoreBTRSchedule"),     "CoreBTRSchedule");
-const ZainabVoraTips      = mk(() => import("@/components/ZainabVoraTips"),      "ZainabVoraTips");
 const MarrowSchedule      = mk(() => import("@/components/MarrowSchedule"),      "MarrowSchedule");
 const DailyTodoList       = mk(() => import("@/components/DailyTodoList"),       "DailyTodoList");
 const PlannerCalendar     = mk(() => import("@/components/PlannerCalendar"),     "PlannerCalendar");
 const NotesEditor         = mk(() => import("@/components/NotesEditor"),         "NotesEditor");
-const GapDiagnostic       = mk(() => import("@/components/GapDiagnostic"),       "GapDiagnostic");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -476,13 +458,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
           </Suspense>}
         </div>
 
-        {/* HOME — Circadian Planner */}
-        <div hidden={activeGroup !== 'home' || activeTab !== 'circadian'}>
-          {visitedTabs.has('circadian') && <Suspense fallback={<TabFallback />}>
-            <CircadianPlanner />
-          </Suspense>}
-        </div>
-
         {/* HOME — Core BTR Schedule */}
         <div hidden={activeGroup !== 'home' || activeTab !== 'coreBTR'}>
           {visitedTabs.has('coreBTR') && <Suspense fallback={<TabFallback />}>
@@ -494,13 +469,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
         <div hidden={activeGroup !== 'home' || activeTab !== 'todolist'}>
           {visitedTabs.has('todolist') && <Suspense fallback={<TabFallback />}>
             <DailyTodoList initialIso={todoListIso ?? undefined} />
-          </Suspense>}
-        </div>
-
-        {/* HOME — Smart Focus / Where to Start */}
-        <div hidden={activeGroup !== 'home' || activeTab !== 'smartstart'}>
-          {visitedTabs.has('smartstart') && <Suspense fallback={<TabFallback />}>
-            <SmartStart flagged={flagged} onNavigate={handleNavigate} />
           </Suspense>}
         </div>
 
@@ -549,32 +517,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             <SubjectDrill onComplete={handleDrillComplete} />
           </Suspense>}
         </div>
-        <div hidden={activeGroup !== 'practice' || activeTab !== 'rapid'}>
-          {visitedTabs.has('rapid') && <Suspense fallback={<TabFallback />}>
-            <RapidRevision onComplete={handleRapidComplete} />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'practice' || activeTab !== 'oneliners'}>
-          {visitedTabs.has('oneliners') && <Suspense fallback={<TabFallback />}>
-            <OneLinerBank />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'practice' || activeTab !== 'simulation'}>
-          {visitedTabs.has('simulation') && (
-            <PremiumGate isPremium={isPremium} feature="High-Fidelity Exam Drills" onUpgrade={goToUpgrade}>
-              <Suspense fallback={<TabFallback />}>
-                <ExamSimulation onComplete={handleSimComplete} />
-              </Suspense>
-            </PremiumGate>
-          )}
-        </div>
-        <div hidden={activeGroup !== 'practice' || activeTab !== 'revision'}>
-          <RevisionList
-            flagged={flagged}
-            onUnflag={toggleFlag}
-            onGoToDay={(day) => { setSelectedDayId(day); handleNavigate('home', 'planner'); }}
-          />
-        </div>
         <div hidden={activeGroup !== 'practice' || activeTab !== 'custommock'}>
           {visitedTabs.has('custommock') && (
             <PremiumGate isPremium={isPremium} feature="High-Fidelity Exam Drills" onUpgrade={goToUpgrade}>
@@ -584,27 +526,11 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             </PremiumGate>
           )}
         </div>
-        <div hidden={activeGroup !== 'practice' || activeTab !== 'psmcalc'}>
-          {visitedTabs.has('psmcalc') && <Suspense fallback={<TabFallback />}>
-            <PSMCalculator />
-          </Suspense>}
-        </div>
         <div hidden={activeGroup !== 'practice' || activeTab !== 'imagequiz'}>
           {visitedTabs.has('imagequiz') && <Suspense fallback={<TabFallback />}>
             <ImageBank />
           </Suspense>}
         </div>
-        <div hidden={activeGroup !== 'practice' || activeTab !== 'microburst'}>
-          {visitedTabs.has('microburst') && <Suspense fallback={<TabFallback />}>
-            <MicroBurst />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'practice' || activeTab !== 'neetpg2026'}>
-          {visitedTabs.has('neetpg2026') && <Suspense fallback={<TabFallback />}>
-            <NeetPGMockTest />
-          </Suspense>}
-        </div>
-
         {/* LEARN */}
         <div hidden={activeGroup !== 'learn' || activeTab !== 'notes'}>
           {visitedTabs.has('notes') && <Suspense fallback={<TabFallback />}>
@@ -621,30 +547,11 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             <MnemonicsBank />
           </Suspense>}
         </div>
-        <div hidden={activeGroup !== 'learn' || activeTab !== 'analysis'}>
-          {visitedTabs.has('analysis') && <Suspense fallback={<TabFallback />}>
-            <NEETPGPaperAnalysis />
-          </Suspense>}
-        </div>
         <div hidden={activeGroup !== 'learn' || activeTab !== 'flashcards'}>
           {visitedTabs.has('flashcards') && (
             <PremiumGate isPremium={isPremium} feature="Dynamic Retention Protocol" onUpgrade={goToUpgrade}>
               <Suspense fallback={<TabFallback />}>
                 <FlashcardDeck />
-              </Suspense>
-            </PremiumGate>
-          )}
-        </div>
-        <div hidden={activeGroup !== 'learn' || activeTab !== 'doctable'}>
-          {visitedTabs.has('doctable') && <Suspense fallback={<TabFallback />}>
-            <DOCTable />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'learn' || activeTab !== 'revschedule'}>
-          {visitedTabs.has('revschedule') && (
-            <PremiumGate isPremium={isPremium} feature="Dynamic Retention Protocol" onUpgrade={goToUpgrade}>
-              <Suspense fallback={<TabFallback />}>
-                <RevisionScheduler />
               </Suspense>
             </PremiumGate>
           )}
@@ -677,15 +584,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             <ResourceHub />
           </Suspense>}
         </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'gapdiagnostic'}>
-          {visitedTabs.has('gapdiagnostic') && (
-            <PremiumGate isPremium={isPremium} feature="Knowledge Gap Diagnostic" onUpgrade={goToUpgrade}>
-              <Suspense fallback={<TabFallback />}>
-                <GapDiagnostic />
-              </Suspense>
-            </PremiumGate>
-          )}
-        </div>
         <div hidden={activeGroup !== 'insights' || activeTab !== 'weakheatmap'}>
           {visitedTabs.has('weakheatmap') && (
             <PremiumGate isPremium={isPremium} feature="Vulnerability Heatmap & Diagnostics" onUpgrade={goToUpgrade}>
@@ -695,37 +593,6 @@ function StudyApp({ prefix, user }: StudyAppProps) {
             </PremiumGate>
           )}
         </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'cutoffhistory'}>
-          {visitedTabs.has('cutoffhistory') && <Suspense fallback={<TabFallback />}>
-            <CutoffHistory />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'specialtyseats'}>
-          {visitedTabs.has('specialtyseats') && <Suspense fallback={<TabFallback />}>
-            <SpecialtySeatTracker />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'guidelines'}>
-          {visitedTabs.has('guidelines') && <Suspense fallback={<TabFallback />}>
-            <GuidelinesFeed />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'topicpredict'}>
-          {visitedTabs.has('topicpredict') && <Suspense fallback={<TabFallback />}>
-            <TopicPredictor />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'studyrooms'}>
-          {visitedTabs.has('studyrooms') && <Suspense fallback={<TabFallback />}>
-            <StudyRooms />
-          </Suspense>}
-        </div>
-        <div hidden={activeGroup !== 'insights' || activeTab !== 'zainabvora'}>
-          {visitedTabs.has('zainabvora') && <Suspense fallback={<TabFallback />}>
-            <ZainabVoraTips onNavigate={handleNavigate} />
-          </Suspense>}
-        </div>
-
         {/* REWARDS */}
         <div hidden={activeGroup !== 'rewards' || activeTab !== 'rewards'}>
           {visitedTabs.has('rewards') && <Suspense fallback={<TabFallback />}>

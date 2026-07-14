@@ -15,7 +15,6 @@ interface Topper {
 }
 
 const TOPPERS: Topper[] = [
-  // ── Featured Mentor ──────────────────────────────────────────────────────────
   {
     name: "Zainab Vora",
     rank: "Core BTR Creator",
@@ -50,221 +49,6 @@ const TOPPERS: Topper[] = [
       "This app (aligns Marrow revision days with BTR subjects + predicted 2026 Qs + progress tracking)",
       "NEET PG PYQ 2010–2026 (pattern recognition for question framing)",
     ],
-  },
-  {
-    name: "Abhishek Singh",
-    rank: "AIR 1",
-    exam: "NEET PG 2024",
-    examType: "NEET PG",
-    college: "AIIMS New Delhi (MS Surgery)",
-    quote: "NEET PG is not about reading everything — it's about mastering what's repeatedly asked. Pattern recognition over depth.",
-    strategy: [
-      "Did Marrow videos at 1.5× speed for first pass, then MCQs immediately — never left a topic without doing its questions the same day.",
-      "Maintained a mistake logbook: every wrong MCQ written with correct answer and 1-line reasoning. Reviewed it every Sunday.",
-      "Pharmacology DOC table revised every 3rd day — it's the highest-yield subject for effort invested.",
-      "India-specific content (NFHS-5, national programmes, legal acts) treated as a separate mini-subject — 30 min daily.",
-      "Image-based questions: 20 images every night before sleep — visual memory consolidates overnight.",
-      "Mocks from Day 15 in strict exam conditions: 200 Qs, 210 minutes, no interruptions.",
-      "Post-mock analysis took 2× mock time — weak subjects identified by question-type, not just subject.",
-      "One rest day per week (Sunday afternoon) — non-negotiable. Burnout after Day 14 kills prep.",
-    ],
-    subjectTips: [
-      { subject: "Medicine", tip: "Clinical vignettes dominate NEET PG — practice 'next best step' questions over pure recall. Build decision trees." },
-      { subject: "Pathology", tip: "Histopathology images are 8–10 guaranteed marks. 20 slides daily — H&E pattern recognition is a skill." },
-      { subject: "Pharmacology", tip: "DOC master table covers 70% of Pharma marks. Make it on Day 1 and revise every 3 days." },
-      { subject: "PSM", tip: "NFHS-5 stats, national programme targets, and NDPS/MHCA are free marks. Write them 3 times — they stick." },
-      { subject: "OBG", tip: "Flowcharts over reading. One-page flowchart each for APH, PPH, pre-eclampsia, Bishop score." },
-      { subject: "Surgery", tip: "Surgical anatomy is heavily tested — Hesselbach triangle, RLN course, portal-systemic anastomoses." },
-    ],
-    routine: "5:30 AM wake → 30 min review previous day notes → 6:00 AM new topic (3 hrs) → 9:00 AM MCQ sprint (1 hr) → break → 11:00 AM topic continues → 2:00 PM rest (45 min, no screen) → 3:00 PM MCQ + weak areas → 6:00 PM India-specific content → 7:00 PM image review (20 images) → 8:00 PM mistake logbook → 9:00 PM write 5 high-yield points → 10:00 PM sleep",
-    resources: ["Marrow (primary)", "Reflex MCQs", "DAMS test series", "'The World of Medicine' by Anoop Kumar", "NEET PG PYQ 2010–2024", "Handwritten mistake logbook"],
-  },
-  {
-    name: "Priya Sharma",
-    rank: "AIR 4",
-    exam: "NEET PG 2024",
-    examType: "NEET PG",
-    college: "MAMC New Delhi (MD Medicine)",
-    quote: "The exam tests elimination, not just recall. Master ruling out wrong options — that's where most marks are made or lost.",
-    strategy: [
-      "3-pass mock system: pass 1 = sure, pass 2 = probable, pass 3 = educated guess (never random).",
-      "Subject-specific one-page cheat sheets by Day 20 — only cheat sheets in the final 8 days, no textbooks.",
-      "Early mock exposure: full 200-Q mocks from Day 15 (not Day 25) — reduces exam anxiety dramatically.",
-      "Paediatrics + OBG studied together on Days 11–12 — many overlapping topics (neonatal jaundice, CHD, RDS).",
-      "90-minute study blocks with 10-min movement breaks — no marathon sessions.",
-      "PSM and Forensic revised every 3rd day — neglected by most, loved by examiners.",
-    ],
-    subjectTips: [
-      { subject: "Microbiology", tip: "Gram stain + morphology flashcards, 15 cards daily cycling. By Day 30 you've seen each 5+ times." },
-      { subject: "Biochemistry", tip: "Enzyme kinetics and LSDs are guaranteed. 2 hours each — limited scope, high yield." },
-      { subject: "Paediatrics", tip: "Developmental milestones every exam. Use '3-6-9-12-18-24 month' framework — never miss free marks." },
-      { subject: "Forensic", tip: "NDPS 1985 and MHCA 2017 are the two most tested acts. 30 focused minutes is enough." },
-    ],
-    routine: "6:00 AM wake → 30 min exercise → 7:00 AM study (90-min blocks) → 1:00 PM lunch + 45-min rest → 2:30 PM MCQs → 5:00 PM weak area revision → 7:00 PM India content + legal acts → 8:30 PM cheat sheet writing → 9:30 PM sleep",
-    resources: ["Marrow", "PrepLadder (Surgery + OBG)", "DAMS notes for PSM", "NEET PG PYQ analysis", "Handwritten cheat sheets"],
-  },
-  {
-    name: "Karthik Nair",
-    rank: "AIR 12",
-    exam: "NEET PG 2023",
-    examType: "NEET PG",
-    college: "JIPMER Puducherry (MD Paediatrics)",
-    quote: "I failed my first NEET PG attempt. The second time I stopped studying hard and started studying smart. Focus beats duration every time.",
-    strategy: [
-      "After first failure, did gap analysis: subject-wise score breakdown. Found 40% of errors were image questions. Fixed that first.",
-      "Spaced repetition: Anki for image flashcards — 50 cards/day, 15-min daily review.",
-      "Clinical vignettes: 'scan for buzzwords' technique — identify key clinical clue within 10 seconds of reading the stem.",
-      "Mental health treated seriously: daily 30-min walk, weekly call with a friend, journaling every night.",
-      "Did not study the day before exam — pure rest, light food. Brain consolidates better with rest than cramming.",
-      "AIR 12 with focused prep, not 6 months scattered. Focus > duration.",
-    ],
-    subjectTips: [
-      { subject: "Anatomy", tip: "Clinical anatomy (nerve injuries, surgical incisions, surface markings) is tested more than embryology depth." },
-      { subject: "Physiology", tip: "Cardiac physiology (Frank-Starling, Wiggers diagram) and renal physiology (GFR, tubular function) are highest yield." },
-      { subject: "Medicine", tip: "Autoimmune disease master table: disease → autoantibody → complement → treatment. One table = 10+ marks." },
-      { subject: "ENT/Ophth", tip: "Often neglected but carry 15-20 marks. SNHL vs CSNHL, CSOM types, trachoma staging, Fuchs endothelial dystrophy." },
-    ],
-    routine: "6:30 AM wake → 20 min Anki image cards → 7:00 AM study block → 12:30 PM lunch + 30-min walk → 2:00 PM MCQs + weak area → 5:00 PM break → 5:30 PM India content → 7:00 PM evening block → 9:00 PM review errors + journal → 10:00 PM sleep",
-    resources: ["Marrow", "Anki (image flashcards)", "NEET PG PYQ 2015–2023", "PrepLadder for Surgery", "DAMS for PSM", "YouTube channels for clinical cases"],
-  },
-  // ── 2025 / INI-CET new toppers ─────────────────────────────────────────────
-  {
-    name: "Siddharth Gupta",
-    rank: "AIR 5",
-    exam: "NEET PG 2025",
-    examType: "NEET PG",
-    college: "AIIMS Jodhpur (MD Psychiatry)",
-    quote: "2025 questions are longer and more clinical. Don't read the whole stem first — read the last sentence first so you know what you're being asked, then scan for clues.",
-    strategy: [
-      "New technique for long stems: read the question ask (last sentence) first → identify what type of Q it is → read stem for the one key finding that answers it.",
-      "2025 exam had heavier surgical anatomy and trauma management — practised ATLS algorithms and zones-of-neck injury daily.",
-      "Official NMC curriculum topic list used as the primary filter — did not study any topic absent from the list.",
-      "Recent drug approvals (2022–2024): new indications for semaglutide, tirzepatide, lecanemab, donanemab — treated this as a dedicated 2-hour block.",
-      "Psychiatry revision daily even as a primary subject — DSM-5-TR criteria changes (prolonged grief disorder, ICD-11 divergence) are fresh exam fodder.",
-      "Used AI chatbots to generate 10 custom 'vignette-style' questions on each topic after reading — better retention than re-reading notes.",
-      "Final 7 days: 0 new topics. Only mock analysis, mistake logbook, and cheat-sheet revision.",
-    ],
-    subjectTips: [
-      { subject: "Medicine", tip: "2025 heavily tested recent guidelines: AHA 2023 heart failure, ESC 2023 hypertension staging (140/90 threshold). Know updated cut-offs." },
-      { subject: "Surgery", tip: "Trauma management (ATLS) and surgical anatomy dominated — know zones of neck, damage control surgery principles, FAST protocol." },
-      { subject: "Pharmacology", tip: "New drug approvals 2022–2024 are exam-ready: semaglutide for obesity, lecanemab for Alzheimer's, RSV vaccines for elderly." },
-      { subject: "Psychiatry", tip: "DSM-5-TR (2022) updates: prolonged grief disorder as new diagnosis, changes to autism terminology. ICD-11 vs DSM-5 differences tested." },
-      { subject: "PSM", tip: "NFHS-5 data + National Health Policy 2017 targets vs actuals. Government schemes launched 2022–2024 (Ayushman Arogya Mandir)." },
-    ],
-    routine: "6:00 AM wake → 15 min previous-day recall (no notes, just memory) → 6:30 AM new topic (2.5 hrs) → 9:00 AM AI-generated custom Qs on that topic → 10:00 AM weak area MCQs → 1:00 PM lunch + rest → 2:30 PM image-based Qs (30 images) → 4:30 PM recent guidelines block → 6:00 PM exercise → 7:00 PM mock or topic revision → 9:30 PM mistake logbook → 10:30 PM sleep",
-    resources: ["Marrow (all subjects)", "PrepLadder for Psychiatry", "NMC official topic list", "NEET PG PYQ 2015–2025", "AI chatbot for custom vignettes", "Recent guideline summaries (Marrow updates)"],
-  },
-  {
-    name: "Rahul Dev",
-    rank: "AIR 1",
-    exam: "INI-CET June 2024",
-    examType: "INI-CET",
-    college: "AIIMS New Delhi (MD Radiodiagnosis)",
-    quote: "INI-CET is an AIIMS exam at heart. It tests clinical reasoning, not recall. If you're memorising, you're preparing for the wrong exam.",
-    strategy: [
-      "INI-CET marking: +1 correct, −1/3 wrong. A 4-option Q with any 1 option eliminated has positive expected value — attempt it. Pure random guess (no elimination) is EV-neutral (1/4 × 1 = 3/4 × 1/3), so still worth attempting over leaving blank.",
-      "200 questions in 3.5 hours = 63 sec/Q, but stems are longer — train with 90-sec/Q pacing to avoid panic.",
-      "AIIMS-style reasoning: 'what is the most appropriate next step' — not 'what is correct in theory'. Hospital protocol matters.",
-      "Image questions are 25–30% of the paper. Daily 30-image drill for 3 weeks builds pattern recognition that can't be crammed.",
-      "Did full AIIMS PYQ banks (2005–2023) before any standard study material — know the AIIMS question style first.",
-      "Cross-subject questions (e.g., microbiology + immunology, path + medicine) are INI-CET hallmarks — study with linkages, not in isolation.",
-      "Radiology basics: chest X-ray interpretation, CT abdomen anatomy, MRI brain signals — guaranteed 8–10 marks across subjects.",
-      "Grand rounds simulation: daily 1 case discussion with a peer, present diagnosis + management. Speaking it aloud cements clinical logic.",
-    ],
-    subjectTips: [
-      { subject: "Medicine", tip: "AIIMS loves rare presentations of common diseases and common presentations of rare diseases. Read case reports in revision week." },
-      { subject: "Radiology", tip: "Even non-radiology candidates need chest X-ray, CT patterns, bone tumour radiographs. 30-image daily drill for 2 weeks = 8–10 guaranteed marks." },
-      { subject: "Pathology", tip: "Electron microscopy findings, IHC markers for tumours, and renal biopsy patterns are INI-CET favourites over basic histology." },
-      { subject: "Microbiology", tip: "Immunity mechanisms (T-cell subtypes, cytokine functions, immunodeficiency patterns) tested heavily — AIIMS loves mechanism-based Qs." },
-      { subject: "Surgery", tip: "Operative steps and surgical decision-making over anatomy. 'What do you do next in the OR?' type questions dominate." },
-      { subject: "Biochemistry", tip: "Metabolic pathways and enzyme defects (LSDs, urea cycle disorders) — one full day of focused revision yields disproportionate marks at INI-CET." },
-    ],
-    routine: "6:00 AM wake → 30 min AIIMS PYQ analysis (5 Qs with full reasoning) → 7:00 AM new topic from Marrow (2 hrs) → 9:00 AM cross-subject MCQs → 11:00 AM image drill (30 Qs) → 1:00 PM lunch + 45-min rest → 2:30 PM clinical case discussion with peer → 4:30 PM weak area targeted revision → 7:00 PM radiology basics or grand rounds videos → 9:00 PM mistake logbook + 5 key points → 10:30 PM sleep",
-    resources: ["Marrow + AIIMS PYQ bank (2005–2023)", "AIIMS-specific test series (Bhatia)", "Harrison's clinical summaries (not full chapters)", "Radiopaedia for image learning", "Robbins for IHC + EM findings", "Peer group case discussions"],
-  },
-  {
-    name: "Ananya Krishnan",
-    rank: "AIR 3",
-    exam: "INI-CET Jan 2025",
-    examType: "INI-CET",
-    college: "AIIMS New Delhi (MD Medicine)",
-    quote: "The Jan 2025 paper was heavier on basic sciences than any recent INI-CET. Those who neglected Biochemistry and Physiology paid for it.",
-    strategy: [
-      "Jan 2025 shift: Basic Sciences had 25–28% weightage — Biochemistry metabolic pathways, Physiology cardiac + renal back in focus. Do NOT skip preclinical.",
-      "Used AI to simulate active recall: after reading a topic, I'd describe it to an AI assistant and ask for gaps in my explanation. Identified blind spots faster than any mock test.",
-      "Hybrid Q-type drilling: made 'cross-subject cards' — e.g., a Biochemistry card with clinical correlation on back. INI-CET Q-setters love these bridges.",
-      "Recent guidelines batch: dedicated 1 week only to 2023–2025 updates (AHA HF guidelines, updated WHO malaria treatment, new TB regimens). Paid off immediately.",
-      "Group study 6–8 PM daily — one person presents a case, rest diagnose and manage. Made INI-CET's clinical scenario format feel familiar by exam day.",
-      "INI-CET has −1/3 negative marking (+1/−0.33 scheme). Still, with any elimination the EV is positive — attempt confidently when you can rule out even one option. Never leave a blank if you have any reasoning.",
-      "Self-audio recordings: recorded 3-minute summaries of each topic. Played them while walking. Passive absorption of high-yield points without screen fatigue.",
-    ],
-    subjectTips: [
-      { subject: "Biochemistry", tip: "Jan 2025: LSDs, glycogen storage disorders, urea cycle defects tested with clinical presentations. One full day of focused revision — don't skip." },
-      { subject: "Physiology", tip: "Cardiac output, Starling curves, renal tubular function (Tm concepts), respiratory mechanics — AIIMS tests mechanism not memorisation." },
-      { subject: "Medicine", tip: "Updated guidelines (AHA 2023 HF, ESC 2023 AF, ACR 2022 SLE) — know new drug approvals + threshold changes that differ from older guidelines." },
-      { subject: "Microbiology", tip: "Innate vs adaptive immunity distinctions, NK cell function, toll-like receptors, interferon types — INI-CET immunology is deep." },
-      { subject: "PSM", tip: "New national health initiatives: Ayushman Arogya Mandir, U-WIN immunisation portal, PM-JAY expansion. Also WHO ICD-11 implementation timeline." },
-      { subject: "Pharmacology", tip: "2023–2024 new approvals: lecanemab (Alzheimer's), donanemab, tirzepatide (obesity + T2DM), nirsevimab (RSV prevention in infants)." },
-    ],
-    routine: "6:30 AM wake → 15 min self-audio playback (previous topic summary) → 7:00 AM new topic study (2 hrs) → 9:00 AM explain topic back to AI / self-test → 10:00 AM MCQs → 12:30 PM lunch + walk → 2:00 PM guidelines / recent updates block → 4:00 PM image or cross-subject Qs → 6:00 PM peer case group → 8:00 PM mistake logbook + audio recording of today's topic → 9:30 PM read AIIMS PYQ 5-Q set → 10:30 PM sleep",
-    resources: ["Marrow", "AIIMS PYQ 2005–Jan 2025 (Bhatia/Rohan Khandelwal)", "Radiopaedia + PathPresenter for images", "Robbins (IHC + EM sections only)", "Updated guidelines PDFs (AHA, ESC, WHO 2023–24)", "AI chatbot for active recall drills"],
-  },
-  // ── 2026 toppers ───────────────────────────────────────────────────────────
-  {
-    name: "Meera Iyer",
-    rank: "AIR 2",
-    exam: "INI-CET Jan 2026",
-    examType: "INI-CET",
-    college: "AIIMS Chennai (MD Neurology)",
-    quote: "Jan 2026 was a turning point — AI in Medicine questions appeared for the first time, and MASLD caught half the room off-guard. Read the nomenclature updates or pay for it.",
-    strategy: [
-      "MASLD (replacing NAFLD/NASH) and MASH are ICD-11 terms — the exam used the new name without warning. Map old terms to new systematically for the entire disease classification section.",
-      "AI in Medicine appeared as 2–3 Qs: diagnostic AI limitations, hallucination in LLMs, 'AI-assisted but physician-responsible' principle. 30-min dedicated revision — ignore at your cost.",
-      "ICD-11 full implementation 2026: know ICD-11 chapter structure and how codes differ from ICD-10 for the 10 most common conditions tested in PSM.",
-      "Long COVID management algorithm — multisystem post-COVID conditions, NICE Long COVID guidelines, rehabilitation pathway — tested as a clinical vignette.",
-      "Neurology-heavy Jan 2026: stroke thrombectomy window (up to 24h per DAWN/DEFUSE criteria), NIHSS scoring, AHA 2024 stroke update.",
-      "New drug category drill: GLP-1 agonists as a full family (liraglutide, semaglutide, tirzepatide, exenatide) — indications, CV outcome differences, approved uses in obesity + NASH.",
-      "Suzetrigine (Journavx, NaV1.8 blocker, FDA Jan 2025) and Cobenfy (xanomeline-trospium, first non-D2 antipsychotic) — fresh Pharmacology entries tested within 12 months of approval.",
-      "Dedicated 3-day 'nomenclature patch': MASLD, MASH, MASLD-cirrhosis; obesity grades (WHO 2023 cut-offs update); ICD-11 mental health terminology changes. Never assume old names.",
-    ],
-    subjectTips: [
-      { subject: "Medicine", tip: "MASLD/MASH staging, Long COVID syndromes, updated AHA 2024 stroke/AF guidelines, GLP-1 agonist cardiovascular outcomes (SELECT trial: semaglutide cut CV events by 20%)." },
-      { subject: "Pharmacology", tip: "2024–25 new approvals: resmetirom (Rezdiffra, MASH — first FDA-approved), suzetrigine (NaV1.8 pain), Cobenfy (schizophrenia, non-D2), nirsevimab (RSV infant). Know mechanism." },
-      { subject: "Neurology", tip: "Thrombectomy extended window (DAWN/DEFUSE — up to 24h), NIHSS rapid scoring, lecanemab mechanism (anti-amyloid antibody), new MS disease-modifying therapies." },
-      { subject: "PSM", tip: "ICD-11 implementation, One Health framework (AMR + zoonoses + climate), India Hypertension Control Initiative (IHCI) targets, Ayushman Arogya Mandir rebranding." },
-      { subject: "Microbiology", tip: "MPOX (Monkeypox) clade Ib outbreak 2024 — clinical features, Orthopoxvirus family, tecovirimat treatment, WHO PHEIC declaration August 2024." },
-      { subject: "Biochemistry", tip: "CRISPR-based gene therapy: Casgevy (exagamglogene autotemcel) approved Dec 2023 for sickle cell + β-thalassaemia — mechanism is Cas9 edit of BCL11A repressor." },
-    ],
-    routine: "6:00 AM wake → 20 min nomenclature + new-drugs flash review → 6:30 AM main topic study (2.5 hrs) → 9:00 AM AIIMS PYQ 5-Q set with full reasoning → 10:00 AM MCQ sprint → 12:30 PM lunch + 30-min walk → 2:00 PM 2026 intel block (guidelines / new drugs / PSM updates) → 4:00 PM image Qs (30 images) → 6:00 PM peer case presentation → 8:00 PM mistake logbook → 9:30 PM read 1 recent case report → 10:30 PM sleep",
-    resources: ["Marrow (updated 2025–26)", "AIIMS PYQ 2005–Jan 2026", "FDA drug approval tracker (2024–25 releases)", "NICE Long COVID guidelines", "AHA 2024 stroke + AF updates", "Radiopaedia", "AI chatbot active recall"],
-  },
-  {
-    name: "Vikram Patel",
-    rank: "AIR 3",
-    exam: "NEET PG 2026",
-    examType: "NEET PG",
-    college: "AIIMS Rishikesh (MS Surgery)",
-    quote: "NEET PG 2026 tested the NMC CBME curriculum for the first time seriously — students who understood competency-based principles outscored rote memorisers in the clinical vignette section.",
-    strategy: [
-      "NMC CBME competency codes (PE, OG, SU etc.) appeared in 2–3 meta-questions about teaching, assessment, and 'what is the correct level of competency?' — 30 min on CBME basics is enough.",
-      "Climate change and health: first time this appeared in PSM — heat stroke management protocol, air quality index health effects, PM2.5 thresholds, WHO climate-health report 2024.",
-      "One Health: antimicrobial resistance (India AMR Action Plan), zoonotic spillovers, SARS-CoV-2 as One Health case study — predict 2–3 Qs every cycle now.",
-      "GLP-1 agonist family mastered as a single chapter: liraglutide, semaglutide (oral + SC), tirzepatide (GLP-1 + GIP dual), orforglipron (oral non-peptide) — approved uses by indication, not just drug name.",
-      "Resmetirom (Rezdiffra) for MASH: thyroid hormone receptor-β agonist mechanism — first liver-directed drug for MASH. Exam loves first-in-class approvals within 2 years.",
-      "Surgery 2026: robotic surgery basics (da Vinci system), ERAS (Enhanced Recovery After Surgery) protocols, damage control resuscitation — operational concepts replacing anatomy-only questions.",
-      "Digital health questions: telemedicine Act of Parliament (India 2025 tabled), e-Sanjeevani platform statistics, NMC telemedicine guidelines — PSM + Surgery crossover territory.",
-      "Personal game-changer: subject 'formula sheets' — 1 A4 per subject with only values, doses, and criteria. Revised daily for the last 14 days. Nothing new in final 7 days.",
-    ],
-    subjectTips: [
-      { subject: "Surgery", tip: "ERAS protocols (multimodal analgesia, early mobilisation, reduced fasting) and robotic surgery basics now exam-ready. 2-hour dedicated revision covers all likely Qs." },
-      { subject: "PSM", tip: "Climate change + health, One Health AMR, digital health (e-Sanjeevani), CBME assessment methods, ICD-11 India rollout timeline — each is a standalone 1-hour block." },
-      { subject: "Medicine", tip: "GLP-1 agonists: SELECT trial (semaglutide −20% MACE in non-diabetic obese), SURMOUNT trials (tirzepatide obesity), SYNERGY-NASH (resmetirom fibrosis regression)." },
-      { subject: "Pharmacology", tip: "Orforglipron (oral non-peptide GLP-1), Mazdutide (GLP-1 + glucagon dual), Imetelstat (telomerase inhibitor, MDS/MF) — first-in-class approvals 2024–25 are exam candy." },
-      { subject: "Microbiology", tip: "MPOX clade Ib 2024 WHO PHEIC, avian influenza H5N1 human spillovers 2024–25, Novel Coronavirus subvariants (JN.1, KP.2 dominance 2024) — know outbreak facts." },
-      { subject: "OBG", tip: "Progesterone receptor modulator updates, new FIGO classification for uterine fibroids, WHO 2024 PMTCT guidelines for HIV — fresh and frequently updated." },
-    ],
-    routine: "5:45 AM wake → 15 min formula sheet rapid review → 6:15 AM primary study block (3 hrs) → 9:15 AM MCQ timed sprint (50 Qs, 52 min) → 11:00 AM weak topic drill → 1:00 PM lunch + 45-min rest (no phone) → 2:30 PM 2026 intel block (new drugs / guidelines / PSM) → 5:00 PM NEET PG PYQ analysis (5 Qs, full reasoning) → 7:00 PM surgery case / image Qs → 8:30 PM mistake logbook + formula sheet update → 9:45 PM wind-down reading → 10:30 PM sleep",
-    resources: ["Marrow 2025–26", "PrepLadder for Surgery + OBG", "NMC official CBME curriculum PDF", "FDA/DCGI new drug approval list 2024–25", "WHO 2024 reports (climate-health, AMR)", "NEET PG PYQ 2015–2026", "Subject formula sheets (self-made)"],
   },
 ];
 
@@ -345,70 +129,25 @@ const SUBJECT_WEIGHTAGE = [
   { subject: "Others",       weight: 7,  color: "#6c757d" },
 ];
 
-type ExamFilter = "All" | "NEET PG" | "INI-CET" | "Educator";
-
 export function TopperInsights() {
-  const [examFilter, setExamFilter] = useState<ExamFilter>("All");
-  const [activeTopper, setActiveTopper] = useState(0);
   const [expandedSection, setExpandedSection] = useState<string | null>("strategy");
   const [showComparison, setShowComparison] = useState(false);
   const [active2026, setActive2026] = useState<string | null>("newDrugs");
-
-  const filteredToppers = useMemo(
-    () => examFilter === "All" ? TOPPERS : TOPPERS.filter(t => t.examType === examFilter),
-    [examFilter]
-  );
-
-  const safeIdx = Math.min(activeTopper, filteredToppers.length - 1);
-  const topper = filteredToppers[safeIdx];
-
+  const topper = TOPPERS[0];
   const toggle = (sec: string) =>
     setExpandedSection(prev => (prev === sec ? null : sec));
-
-  const handleFilterChange = (f: ExamFilter) => {
-    setExamFilter(f);
-    setActiveTopper(0);
-    setExpandedSection("strategy");
-  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="bg-yellow-500/20 p-2 rounded-lg">
-          <Award className="w-5 h-5 text-yellow-400" />
+        <div className="bg-amber-500/20 p-2 rounded-lg">
+          <Award className="w-5 h-5 text-amber-400" />
         </div>
         <div>
-          <h2 className="font-mono font-bold text-foreground uppercase tracking-wider text-sm">Topper Insights</h2>
-          <p className="text-xs text-muted-foreground font-mono">Strategies from NEET PG &amp; INI-CET AIR toppers — updated 2025</p>
+          <h2 className="font-mono font-bold text-foreground uppercase tracking-wider text-sm">Strategy &amp; Insights</h2>
+          <p className="text-xs text-muted-foreground font-mono">Verified strategies from Zainab Vora (Core BTR) + exam data</p>
         </div>
-      </div>
-
-      {/* Exam Filter */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-[10px] font-mono text-muted-foreground uppercase mr-1">Exam:</span>
-        {(["All", "NEET PG", "INI-CET", "Educator"] as ExamFilter[]).map(f => (
-          <button
-            key={f}
-            onClick={() => handleFilterChange(f)}
-            className={`px-3 py-1 text-[11px] font-mono rounded-full border transition-colors ${
-              examFilter === f
-                ? f === "INI-CET"
-                  ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50"
-                  : f === "NEET PG"
-                  ? "bg-violet-500/20 text-violet-300 border-violet-500/50"
-                  : f === "Educator"
-                  ? "bg-amber-500/20 text-amber-300 border-amber-500/50"
-                  : "bg-secondary text-secondary-foreground border-secondary"
-                : "text-muted-foreground border-border hover:border-muted-foreground"
-            }`}
-          >
-            {f}
-            <span className="ml-1.5 text-[9px] opacity-60">
-              {f === "All" ? TOPPERS.length : TOPPERS.filter(t => t.examType === f).length}
-            </span>
-          </button>
-        ))}
       </div>
 
       {/* Subject Weightage Bar */}
@@ -433,66 +172,29 @@ export function TopperInsights() {
         </div>
       </div>
 
-      {/* Topper selector */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {filteredToppers.map((t, i) => (
-          <button
-            key={`${t.name}-${t.exam}`}
-            onClick={() => { setActiveTopper(i); setExpandedSection("strategy"); }}
-            className={`text-left p-4 rounded-xl border-2 transition-all ${
-              safeIdx === i
-                ? t.examType === "INI-CET"
-                  ? "border-cyan-500/60 bg-cyan-500/10"
-                  : t.examType === "Educator"
-                  ? "border-amber-500/60 bg-amber-500/10"
-                  : "border-yellow-500/60 bg-yellow-500/10"
-                : "border-border bg-card hover:border-yellow-500/30"
-            }`}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="font-mono font-bold text-foreground text-sm truncate">{t.name}</p>
-                <p className="text-[10px] font-mono text-muted-foreground mt-0.5 leading-tight">{t.college}</p>
-              </div>
-              <div className="shrink-0 flex flex-col items-end gap-1">
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-                  t.examType === "INI-CET"
-                    ? "bg-cyan-500/20 text-cyan-400"
-                    : t.examType === "Educator"
-                    ? "bg-amber-500/20 text-amber-400"
-                    : "bg-yellow-500/20 text-yellow-400"
-                }`}>{t.rank}</span>
-                <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${
-                  t.examType === "INI-CET"
-                    ? "bg-cyan-500/10 text-cyan-400/80"
-                    : t.examType === "Educator"
-                    ? "bg-amber-500/10 text-amber-400/80"
-                    : "bg-violet-500/10 text-violet-400/80"
-                }`}>{t.examType}</span>
-              </div>
-            </div>
-            <p className="text-[10px] font-mono text-muted-foreground mt-1.5">{t.exam}</p>
-          </button>
-        ))}
+      {/* Mentor card */}
+      <div className="bg-amber-500/5 border border-amber-500/25 rounded-xl p-5 flex items-start gap-4">
+        <div className="bg-amber-500/20 p-3 rounded-xl shrink-0">
+          <Award className="w-6 h-6 text-amber-400" />
+        </div>
+        <div>
+          <p className="font-mono font-bold text-foreground">{topper.name}</p>
+          <p className="text-[11px] font-mono text-amber-400">{topper.rank}</p>
+          <p className="text-[10px] font-mono text-muted-foreground mt-0.5">{topper.college}</p>
+        </div>
       </div>
 
       {/* Topper detail */}
       {topper && (
         <div className="bg-card border border-border rounded-xl overflow-hidden">
           {/* Quote */}
-          <div className={`px-6 py-5 border-b ${
-            topper.examType === "INI-CET"
-              ? "bg-cyan-500/5 border-cyan-500/20"
-              : topper.examType === "Educator"
-              ? "bg-amber-500/5 border-amber-500/20"
-              : "bg-yellow-500/5 border-yellow-500/20"
-          }`}>
+          <div className="px-6 py-5 border-b bg-amber-500/5 border-amber-500/20">
             <div className="flex gap-3">
-              <Star className={`w-4 h-4 shrink-0 mt-0.5 ${topper.examType === "INI-CET" ? "text-cyan-400" : topper.examType === "Educator" ? "text-amber-400" : "text-yellow-400"}`} />
+              <Star className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
               <p className="text-sm font-serif text-foreground/90 italic leading-relaxed">"{topper.quote}"</p>
             </div>
-            <p className={`text-[10px] font-mono mt-2 ml-7 ${topper.examType === "INI-CET" ? "text-cyan-400" : topper.examType === "Educator" ? "text-amber-400" : "text-yellow-400"}`}>
-              — {topper.name} · {topper.rank} · {topper.exam}
+            <p className="text-[10px] font-mono mt-2 ml-7 text-amber-400">
+              — {topper.name} · {topper.rank}
             </p>
           </div>
 

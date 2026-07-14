@@ -1,24 +1,16 @@
 import type { ComponentType } from "react";
 
 import {
-  Calendar, Zap, BookOpen, Crosshair, Layers, FlaskConical, Flag,
-  CalendarCheck, Sliders, Calculator, Eye, StickyNote, Brain,
-  BarChart2, BookMarked, Pill, XCircle, Award, ExternalLink,
-  LayoutGrid, TrendingUp, Stethoscope, ScrollText, Trophy, Home, GraduationCap,
-  Timer, Sun, Users, Heart, Radio, ClipboardList,
-  ListOrdered, Star, ListChecks, Activity, Target,
+  Calendar, Zap, BookOpen, Crosshair, Sliders, Eye, StickyNote, Brain,
+  BarChart2, BookMarked, XCircle, Award, ExternalLink, LayoutGrid,
+  Trophy, Home, GraduationCap, Heart, ListChecks, ListOrdered,
 } from "lucide-react";
 
 export type MainTab =
-  | 'planner' | 'circadian' | 'stress' | 'coreBTR' | 'marrow' | 'todolist' | 'smartstart'
-  | 'pyq' | 'drills' | 'rapid' | 'oneliners' | 'simulation' | 'revision'
-  | 'custommock' | 'psmcalc' | 'imagequiz' | 'microburst' | 'neetpg2026'
-  | 'notes' | 'ai' | 'mnemonics' | 'analysis' | 'flashcards'
-  | 'doctable' | 'revschedule' | 'mistakelogbook'
-  | 'analytics' | 'toppers' | 'resources' | 'weakheatmap' | 'gapdiagnostic'
-  | 'cutoffhistory' | 'specialtyseats' | 'guidelines'
-  | 'topicpredict' | 'studyrooms'
-  | 'zainabvora'
+  | 'planner' | 'stress' | 'coreBTR' | 'marrow' | 'todolist'
+  | 'pyq' | 'drills' | 'imagequiz' | 'custommock'
+  | 'notes' | 'ai' | 'mnemonics' | 'flashcards' | 'mistakelogbook'
+  | 'analytics' | 'toppers' | 'resources' | 'weakheatmap'
   | 'rewards';
 
 export type NavGroup = 'home' | 'practice' | 'learn' | 'insights' | 'rewards';
@@ -42,13 +34,11 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: 'Home',
     Icon: Home,
     tabs: [
-      { id: 'todolist',   label: 'Daily Plan', Icon: ListChecks   },
-      { id: 'smartstart', label: 'Focus',       Icon: Target       },
-      { id: 'planner',    label: 'Planner',     Icon: Calendar     },
-      { id: 'coreBTR',    label: 'Core BTR',    Icon: ListOrdered  },
-      { id: 'marrow',     label: 'Marrow',      Icon: GraduationCap},
-      { id: 'circadian',  label: 'Circadian',   Icon: Sun          },
-      { id: 'stress',     label: 'Wellbeing',   Icon: Heart        },
+      { id: 'todolist', label: 'Daily Plan', Icon: ListChecks   },
+      { id: 'planner',  label: 'Planner',   Icon: Calendar     },
+      { id: 'coreBTR',  label: 'Core BTR',  Icon: ListOrdered  },
+      { id: 'marrow',   label: 'Marrow',    Icon: GraduationCap},
+      { id: 'stress',   label: 'Wellbeing', Icon: Heart        },
     ],
   },
   {
@@ -56,17 +46,10 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: 'Practice',
     Icon: Zap,
     tabs: [
-      { id: 'pyq',        label: 'PYQ',        Icon: BookOpen     },
-      { id: 'drills',     label: 'Drills',     Icon: Crosshair    },
-      { id: 'rapid',      label: 'Rapid',      Icon: Timer        },
-      { id: 'oneliners',  label: 'One-liners', Icon: Layers       },
-      { id: 'simulation', label: 'Simulate',   Icon: FlaskConical },
-      { id: 'revision',   label: 'Revision',   Icon: Flag         },
-      { id: 'custommock', label: 'Custom Mock',Icon: Sliders      },
-      { id: 'psmcalc',    label: 'PSM Calc',   Icon: Calculator   },
-      { id: 'imagequiz',  label: 'Image Bank', Icon: Eye          },
-      { id: 'microburst',  label: 'Micro Burst', Icon: Radio          },
-      { id: 'neetpg2026', label: 'NEET PG 2026', Icon: ClipboardList  },
+      { id: 'pyq',        label: 'PYQ',        Icon: BookOpen  },
+      { id: 'drills',     label: 'Drills',     Icon: Crosshair },
+      { id: 'imagequiz',  label: 'Image Bank', Icon: Eye       },
+      { id: 'custommock', label: 'Custom Mock',Icon: Sliders   },
     ],
   },
   {
@@ -74,14 +57,11 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: 'Learn',
     Icon: GraduationCap,
     tabs: [
-      { id: 'notes',          label: 'Notes',      Icon: StickyNote   },
-      { id: 'ai',             label: 'HY Ref',     Icon: BookOpen     },
-      { id: 'mnemonics',      label: 'Mnemonics',  Icon: Brain        },
-      { id: 'analysis',       label: 'Analysis',   Icon: BarChart2    },
-      { id: 'flashcards',     label: 'Flashcards', Icon: BookMarked   },
-      { id: 'doctable',       label: 'DOC Table',  Icon: Pill         },
-      { id: 'revschedule',    label: 'Rev Sched',  Icon: CalendarCheck},
-      { id: 'mistakelogbook', label: 'Logbook',    Icon: XCircle      },
+      { id: 'notes',          label: 'Notes',     Icon: StickyNote },
+      { id: 'ai',             label: 'HY Ref',    Icon: BookOpen   },
+      { id: 'mnemonics',      label: 'Mnemonics', Icon: Brain      },
+      { id: 'flashcards',     label: 'Flashcards',Icon: BookMarked },
+      { id: 'mistakelogbook', label: 'Logbook',   Icon: XCircle    },
     ],
   },
   {
@@ -89,17 +69,10 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: 'Insights',
     Icon: BarChart2,
     tabs: [
-      { id: 'analytics',      label: 'Analytics',  Icon: BarChart2    },
-      { id: 'toppers',        label: 'Toppers',    Icon: Award        },
-      { id: 'resources',      label: 'Resources',  Icon: ExternalLink },
-      { id: 'gapdiagnostic',  label: 'Diagnose',   Icon: Activity     },
-      { id: 'weakheatmap',    label: 'Weak Areas', Icon: LayoutGrid   },
-      { id: 'cutoffhistory',  label: 'Cutoffs',    Icon: TrendingUp   },
-      { id: 'specialtyseats', label: 'Specialties',Icon: Stethoscope  },
-      { id: 'guidelines',     label: 'Guidelines',  Icon: ScrollText   },
-      { id: 'topicpredict',   label: 'Predict',     Icon: TrendingUp   },
-      { id: 'studyrooms',     label: 'Study Rooms', Icon: Users        },
-      { id: 'zainabvora',     label: 'ZV Tips',     Icon: Star         },
+      { id: 'analytics',   label: 'Analytics',  Icon: BarChart2    },
+      { id: 'toppers',     label: 'Toppers',    Icon: Award        },
+      { id: 'resources',   label: 'Resources',  Icon: ExternalLink },
+      { id: 'weakheatmap', label: 'Weak Areas', Icon: LayoutGrid   },
     ],
   },
   {
